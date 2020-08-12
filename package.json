@@ -19,9 +19,13 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "neo4j-driver": "^4.1.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
+  },
+  "engines": {
+    "node": "12.13.1"
   }
 }
