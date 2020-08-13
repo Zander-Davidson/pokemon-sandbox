@@ -1,3 +1,4 @@
+const getDb = require("../../db").getDb;
 const express = require('express');
 const router = express.Router();
 
@@ -20,17 +21,30 @@ router.post('/', (req, res, next) => {
     });
 });
 
-router.get('/:name', (req, res, next) => {
+router.get('/:name', async (req, res, next) => {
     const name = req.params.name;
-    if (name === 'Fire') {
+
+    var session = getDb().session();
+    try {
+        const result = await session.run(
+            'MATCH (t:Type {name: $name}) RETURN t',
+            { name: name }
+        )
+        
+        const singleRecord = result.records[0]
+        const node = singleRecord.get(0)
+        
         res.status(200).json({
-            message: 'You discovered the Fire poketype',
-            name: name
+            message: 'You discovered a poketype',
+            poketype: node.properties
         });
-    } else {
-        res.status(200).json({
-            message: 'You passed a name'
+    } catch(err) {
+        console.log(err);
+        res.status(400).json({
+            message: 'That type was not found'
         });
+    } finally {
+        await session.close();
     }
 });
 

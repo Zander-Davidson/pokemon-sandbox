@@ -1,33 +1,15 @@
 /* this file spins up an Express application that makes handling requests easier for us */
 
 const express = require('express');
-const neo4j = require('neo4j-driver');
 // a logger middleware. morgan will use the 'next' method (passed to api functions) 
 // in order to log api requests in the console without interfering
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 
+const initDb = require("./db").initDb;
+initDb();
 
 const isDev = process.env.NODE_ENV !== 'production';
-
-var graphenedbURL;
-var graphenedbUser;
-var graphenedbPass;
-var graphenedbEncryption;
-
-if (isDev) {
-    graphenedbURL = 'bolt://localhost:7687';
-    graphenedbUser = 'neo4j';
-    graphenedbPass = 'password';
-    graphenedbEncryption = 'ENCRYPTION_OFF';
-} else {
-    graphenedbURL = process.env.GRAPHENEDB_BOLT_URL;
-    graphenedbUser = process.env.GRAPHENEDB_BOLT_USER;
-    graphenedbPass = process.env.GRAPHENEDB_BOLT_PASSWORD;
-    graphenedbEncryption = 'ENCRYPTION_ON';
-}
-
-var driver = neo4j.driver(graphenedbURL, neo4j.auth.basic(graphenedbUser, graphenedbPass), {encrypted: graphenedbEncryption});
 
 const app = express(); // start the express application which lets us use utility methods, etc.
 
