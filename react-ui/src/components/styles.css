@@ -1,0 +1,25 @@
+img {
+    max-height: 50px;
+    max-width: 50px;
+    margin-right: 10px;
+    margin-left:10px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+
+.header {
+    background-color: #73638F;
+    padding: 0px 0px 0px 0px;
+}
+
+.header a:link, a:visited, a:active {
+    color: white;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.header a:hover {
+    color: #cfcfcf;
+    text-decoration: none;
+    padding-left: 10px;
+    padding-right: 10px;
+}

@@ -1,6 +1,7 @@
 /* this file spins up an Express application that makes handling requests easier for us */
 
 const express = require('express');
+const path = require('path');
 // a logger middleware. morgan will use the 'next' method (passed to api functions) 
 // in order to log api requests in the console without interfering
 const morgan = require('morgan');
@@ -35,9 +36,17 @@ app.use((req, res, next) => {
     next();
 });
 
+// Priority serve any static files.
+app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
+
 // .use() sets up some middleware. an incoming request (and its body) must go through .use() 
 app.use('/poketypes', poketypesRoutes);
 app.use('/pokemoves', pokemovesRoutes);
+
+// All remaining requests return the React app, so it can handle routing.
+app.get('*', function (req, res) {
+    res.sendFile(path.resolve(__dirname, './react-ui/build', 'index.html'));
+});
 
 // forward an invalid route request using the 'next' function
 app.use((req, res, next) => {
