@@ -15,7 +15,7 @@ const isDev = process.env.NODE_ENV !== 'production';
 const app = express(); // start the express application which lets us use utility methods, etc.
 
 // redirecting function passed into app.use() to the file with route specified
-const poketypesRoutes = require('./api/routes/poketypes');
+const typeRoutes = require('./api/routes/type');
 const pokemovesRoutes = require('./api/routes/pokemoves');
 
 app.use(morgan('dev'));
@@ -40,7 +40,7 @@ app.use((req, res, next) => {
 app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
 
 // .use() sets up some middleware. an incoming request (and its body) must go through .use() 
-app.use('/poketypes', poketypesRoutes);
+app.use('/type', typeRoutes);
 app.use('/pokemoves', pokemovesRoutes);
 
 // All remaining requests return the React app, so it can handle routing.

@@ -22,11 +22,6 @@ if (isDev) {
     graphenedbEncryption = 'ENCRYPTION_ON';
 }
 
-console.log("graphenedbURL: " + graphenedbURL);
-console.log("graphenedbUser: " + graphenedbUser);
-console.log("graphenedbPass: " + graphenedbPass);
-console.log("graphenedbEncryption: " + graphenedbEncryption);
-
 function initDb() {
     if (_db) {
         console.warn("Trying to init DB again!");
