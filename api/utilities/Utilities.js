@@ -29,11 +29,7 @@ class Utilities {
                 })[0];
             });
 
-            if (formattedRecords.length === 1) {
-                return formattedRecords[0];
-            } else {
-                return formattedRecords;
-            }
+            return formattedRecords.length === 1 ? formattedRecords[0] : formattedRecords;
         }
     }
 

@@ -16,7 +16,8 @@ const app = express(); // start the express application which lets us use utilit
 
 // redirecting function passed into app.use() to the file with route specified
 const typeRoutes = require('./api/routes/type');
-const pokemovesRoutes = require('./api/routes/pokemoves');
+const abilityRoutes = require('./api/routes/ability');
+const moveRoutes = require('./api/routes/move');
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended: false}));
@@ -41,7 +42,8 @@ app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
 
 // .use() sets up some middleware. an incoming request (and its body) must go through .use() 
 app.use('/type', typeRoutes);
-app.use('/pokemoves', pokemovesRoutes);
+app.use('/ability', abilityRoutes);
+app.use('/move', moveRoutes);
 
 // All remaining requests return the React app, so it can handle routing.
 app.get('*', function (req, res) {
