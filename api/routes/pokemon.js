@@ -1,21 +1,21 @@
 const express = require('express');
-const moveCtx = require("../contexts/MoveCtx");
+const pokemonCtx = require("../contexts/PokemonCtx");
 const router = express.Router();
 
 router.get('/:name?', async (req, res, next) => {
     let name = req.params.name ? req.params.name.toLowerCase() : null;
-    let move = await moveCtx.getMove(name);
+    let pokemon = await pokemonCtx.getPokemon(name);
 
-    let num = Array.isArray(move) ? move.length : 1;
+    let num = Array.isArray(pokemon) ? pokemon.length : 1;
 
-    if (move && move !== null) {
+    if (pokemon && pokemon !== null) {
         res.status(200).json({
-            message: 'Returned ' + num + ' move(s)',
-            move: move
+            message: 'Returned ' + num + ' pokemon(s)',
+            pokemon: pokemon
         });
-    } else if (move === null) {
+    } else if (pokemon === null) {
         res.status(400).json({
-            message: 'That move could not be found, or there was an error with the db query '
+            message: 'That pokemon could not be found, or there was an error with the db query '
         });
     } else {
         res.status(500).json({
@@ -26,18 +26,18 @@ router.get('/:name?', async (req, res, next) => {
 
 router.get('/by-type/:typeName', async (req, res, next) => {
     let typeName = req.params.typeName ? req.params.typeName.toLowerCase() : null;
-    let move = await moveCtx.getMovesByType(typeName);
+    let pokemon = await pokemonCtx.getPokemonsByType(typeName);
 
-    let num = Array.isArray(move) ? move.length : 1;
+    let num = Array.isArray(pokemon) ? pokemon.length : 1;
 
-    if (move && move !== null) {
+    if (pokemon && pokemon !== null) {
         res.status(200).json({
-            message: 'Returned ' + num + ' move(s)',
-            move: move
+            message: 'Returned ' + num + ' pokemon(s)',
+            pokemon: pokemon
         });
-    } else if (move === null) {
+    } else if (pokemon === null) {
         res.status(400).json({
-            message: 'That move could not be found, or there was an error with the db query '
+            message: 'That pokemon could not be found, or there was an error with the db query '
         });
     } else {
         res.status(500).json({
@@ -47,17 +47,17 @@ router.get('/by-type/:typeName', async (req, res, next) => {
 });
 
 router.post('/', async (req, res, next) => {
-    const moveData = {
+    const pokemonData = {
         name: req.body.name,
         effect: req.body.effect
     };
 
-    let newMove = await moveCtx.createMove(moveData);
+    let newPokemon = await pokemonCtx.createPokemon(pokemonData);
 
-    if (move && move !== null) {
+    if (pokemon && pokemon !== null) {
         res.status(201).json({
-            message: 'Move created',
-            move: newMove 
+            message: 'Pokemon created',
+            pokemon: newPokemon 
         });
     } else {
         res.status(500).json({
@@ -66,9 +66,9 @@ router.post('/', async (req, res, next) => {
     }
 });
 
-router.post('/create-pokeapi-moves', async (req, res, next) => {
+router.post('/create-pokeapi-pokemons', async (req, res, next) => {
     res.status(201).json({
-        message: 'Endpoint unavailable'//await moveCtx.createPokeapiMoves()
+        message: 'Endpoint unavailable'//await pokemonCtx.createPokeapiPokemons()
     });
 })
 

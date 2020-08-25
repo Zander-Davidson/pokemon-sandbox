@@ -27,7 +27,7 @@ class AbilityCtx {
     }
 
     async createPokeapiAbilities() {
-        const abilityInitUrl = 'https://pokeapi.co/api/v2/ability?offset=0&limit=233';  // 233 abilities in main series up to gen 7
+        const abilityInitUrl = 'https://pokeapi.co/api/v2/ability?offset=0&limit=1000';  // 233 abilities in main series up to gen 7
         let abilityUrls = [];
 
         abilityUrls = await fetch(abilityInitUrl)

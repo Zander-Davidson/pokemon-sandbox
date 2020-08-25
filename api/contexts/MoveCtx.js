@@ -17,25 +17,33 @@ class MoveCtx {
         return move;
     }
 
+    async getMovesByType(typeName) {
+        let query = `MATCH (m:Move)-[:HAS_TYPE]->(t:Type {name: $typeName}) RETURN m`;
+        let params = { typeName: typeName};
+        return await utilities.queryNeo4j(query, params);
+    }
+
     async createMove(data) {
         let query = `
             CREATE(m:Move {
+                game_id: $game_id,
                 name: $name,
                 type: $type,
-                effectChance: $effectChance,
+                effect_chance: $effect_chance,
                 effect: $effect,
-                damageClass: $damageClass,
+                damage_class: $damage_class,
                 accuracy: $accuracy,
                 power: $power,
                 priority: $priority,
-                pp: $pp
+                pp: $pp,
+                target: $target
             }) RETURN m
         `;
         return await utilities.queryNeo4j(query, data);
     }
 
     async createPokeapiMoves() {
-        const moveInitUrl = 'https://pokeapi.co/api/v2/move?offset=0&limit=728'; // 728 moves in main series to gen 7
+        const moveInitUrl = 'https://pokeapi.co/api/v2/move?offset=0&limit=3000';
         let moveUrls = [];
 
         moveUrls = await fetch(moveInitUrl)
@@ -51,15 +59,17 @@ class MoveCtx {
                 .then(response => { return response.json() })
                 .then(json => {
                     this.createMove({
+                        game_id: json.id,
                         name: json.name,
                         type: json.type.name,
-                        effectChance: json.effect_chance,
+                        effect_chance: json.effect_chance,
                         effect: json.effect_entries[0].effect,
-                        damageClass: json.damage_class.name,
+                        damage_class: json.damage_class.name,
                         accuracy: json.accuracy,
                         power: json.power,
                         priority: json.priority,
                         pp: json.pp,
+                        target: json.target.name,
                     })
                 })
         ))

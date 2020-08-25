@@ -18,6 +18,9 @@ const app = express(); // start the express application which lets us use utilit
 const typeRoutes = require('./api/routes/type');
 const abilityRoutes = require('./api/routes/ability');
 const moveRoutes = require('./api/routes/move');
+const pokemonRoutes = require('./api/routes/pokemon');
+const itemRoutes = require('./api/routes/item');
+
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended: false}));
@@ -44,6 +47,8 @@ app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
 app.use('/type', typeRoutes);
 app.use('/ability', abilityRoutes);
 app.use('/move', moveRoutes);
+app.use('/pokemon', pokemonRoutes);
+app.use('/item', itemRoutes);
 
 // All remaining requests return the React app, so it can handle routing.
 app.get('*', function (req, res) {

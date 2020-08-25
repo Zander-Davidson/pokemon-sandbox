@@ -93,30 +93,20 @@ router.get('/attacking-matchup/:attackingType/:multiplier?', async (req, res, ne
 
 
 
+// router.patch('/:name', (req, res, next) => {
+//     res.status(200).json({
+//         message: 'Updated type!'
+//     });
+// });
+
+// router.delete('/:name', (req, res, next) => {
+//     res.status(200).json({
+//         message: 'Deleted type!'
+//     });
+// });
 
 
 
-router.post('/', (req, res, next) => {
-    const type = {
-        name: req.body.name,
-        color: req.body.color
-    }
-    res.status(201).json({
-        message: 'Handling POST requests to /products',
-        createdtype: type
-    });
-});
 
-router.patch('/:name', (req, res, next) => {
-    res.status(200).json({
-        message: 'Updated type!'
-    });
-});
-
-router.delete('/:name', (req, res, next) => {
-    res.status(200).json({
-        message: 'Deleted type!'
-    });
-});
 
 module.exports = router;
