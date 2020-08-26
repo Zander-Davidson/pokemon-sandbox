@@ -6,6 +6,9 @@ const path = require('path');
 // in order to log api requests in the console without interfering
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const cluster = require('cluster');
+const numCPUs = require('os').cpus().length;
+
 
 const initDb = require("./db").initDb;
 initDb();
