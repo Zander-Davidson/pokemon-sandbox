@@ -66,48 +66,88 @@ class PokemonCtx {
             })
             .catch(err => console.log(err.message));
         
-        iterable.reduce((p, fn) => p.then(fn), Promise.resolve())
+        await pokemonUrls.reduce(async (promise, url) => {
+            await promise.then(
+                fetch(url) 
+                    .then(async response => { return await response.json() })
+                    .then(async json => {
+                        let pokemonData = {
+                            game_id: json.id,
+                            name: json.name,
+                            types: json.types.map(t => {
+                                return {
+                                    slot: t.slot,
+                                    name: t.type.name,
+                                }
+                            }),
+                            abilities: json.abilities.map(a => {
+                                return {
+                                    slot: a.slot,
+                                    name: a.ability.name,
+                                    is_hidden: a.is_hidden
+                                }
+                            }),
+                            moves: json.moves.map(m => {
+                                return {
+                                    name: m.move.name
+                                }
+                            }),
+                            stats: json.stats.map(s => {
+                                return {
+                                    name: s.stat.name,
+                                    value: s.base_stat
+                                }
+                            }),
+                            sprite_link: json.sprites.front_default ? json.sprites.front_default : '',
+                            height: json.height,
+                            weight: json.weight
+                        };
+                        return await this.createPokemon(await pokemonData);
+                    })
+            )
+            .catch(err => console.log(err.message))
+        }, Promise.resolve())
 
-        Promise.all(await pokemonUrls.map(async url => {
-            return await fetch(url) 
-                .then(async response => { return await response.json() })
-                .then(async json => {
-                    let pokemonData = {
-                        game_id: json.id,
-                        name: json.name,
-                        types: json.types.map(t => {
-                            return {
-                                slot: t.slot,
-                                name: t.type.name,
-                            }
-                        }),
-                        abilities: json.abilities.map(a => {
-                            return {
-                                slot: a.slot,
-                                name: a.ability.name,
-                                is_hidden: a.is_hidden
-                            }
-                        }),
-                        moves: json.moves.map(m => {
-                            return {
-                                name: m.move.name
-                            }
-                        }),
-                        stats: json.stats.map(s => {
-                            return {
-                                name: s.stat.name,
-                                value: s.base_stat
-                            }
-                        }),
-                        sprite_link: json.sprites.front_default ? json.sprites.front_default : '',
-                        height: json.height,
-                        weight: json.weight
-                    };
-                    return await this.createPokemon(await pokemonData);
-                })
-            }
-        ))
-        .catch(err => console.log(err.message));
+        // Promise.all(await pokemonUrls.map(async url => {
+        //     return await fetch(url) 
+        //         .then(async response => { return await response.json() })
+        //         .then(async json => {
+        //             let pokemonData = {
+        //                 game_id: json.id,
+        //                 name: json.name,
+        //                 types: json.types.map(t => {
+        //                     return {
+        //                         slot: t.slot,
+        //                         name: t.type.name,
+        //                     }
+        //                 }),
+        //                 abilities: json.abilities.map(a => {
+        //                     return {
+        //                         slot: a.slot,
+        //                         name: a.ability.name,
+        //                         is_hidden: a.is_hidden
+        //                     }
+        //                 }),
+        //                 moves: json.moves.map(m => {
+        //                     return {
+        //                         name: m.move.name
+        //                     }
+        //                 }),
+        //                 stats: json.stats.map(s => {
+        //                     return {
+        //                         name: s.stat.name,
+        //                         value: s.base_stat
+        //                     }
+        //                 }),
+        //                 sprite_link: json.sprites.front_default ? json.sprites.front_default : '',
+        //                 height: json.height,
+        //                 weight: json.weight
+        //             };
+        //             return await this.createPokemon(await pokemonData);
+        //         })
+        //     }
+        // ))
+        // .catch(err => console.log(err.message));
     }
 }
 
