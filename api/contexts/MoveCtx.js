@@ -25,6 +25,9 @@ class MoveCtx {
 
     async createMove(data) {
         let query = `
+            MATCH(dc:DamageClass {name: $damage_class})
+            MATCH(t:Type {name: $type})
+
             MERGE(m:Move {
                 game_id: $game_id,
                 name: $name,
@@ -36,9 +39,6 @@ class MoveCtx {
                 pp: $pp,
                 target: $target
             }) 
-
-            MATCH(dc:DamageClass {name: $damage_class})
-            MATCH(t:Type {name: $type})
             
             MERGE (m)-[:HAS_DAMAGE_CLASS]->(dc)
             MERGE (m)-[:HAS_TYPE]->(t)
