@@ -106,7 +106,7 @@ class PokemonCtx {
                         };
                         return await this.createPokemon(await pokemonData);
                     })
-                    .then(async node => console.log(await node.name))
+                    .then(async node => console.log(await node))
             )
             .catch(err => console.log(err.message))
         }, Promise.resolve())
