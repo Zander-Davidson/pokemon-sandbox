@@ -54,8 +54,8 @@ class PokemonCtx {
         return await utilities.queryNeo4j(query, data);
     }
 
-    async createPokeapiPokemons() {
-        const pokemonInitUrl = 'https://pokeapi.co/api/v2/pokemon?offset=0&limit=3000';
+    async createPokeapiPokemons(offset, limit) {
+        const pokemonInitUrl = 'https://pokeapi.co/api/v2/pokemon?offset=' + offset + '&limit=' + limit;
         let pokemonUrls = [];
 
         pokemonUrls = await fetch(pokemonInitUrl)

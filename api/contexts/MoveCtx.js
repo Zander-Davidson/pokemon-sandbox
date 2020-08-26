@@ -49,7 +49,7 @@ class MoveCtx {
     }
 
     async createPokeapiMoves() {
-        const moveInitUrl = 'https://pokeapi.co/api/v2/move?offset=0&limit=3000';
+        const moveInitUrl = 'https://pokeapi.co/api/v2/move?offset=0&limit=728';
         let moveUrls = [];
 
         moveUrls = await fetch(moveInitUrl)
@@ -64,12 +64,14 @@ class MoveCtx {
             await fetch(url) 
                 .then(async response => { return await response.json() })
                 .then(async json => {
+                    let effect = json.effect_entries.filter(e => e.language.name === 'en')[0].effect;
+
                     let moveData = {
                         game_id: json.id,
                         name: json.name,
                         type: json.type.name,
                         effect_chance: json.effect_chance ? json.effect_chance : -1,
-                        effect: json.effect_entries.filter(e => e.language.name === 'en')[0].effect,
+                        effect: effect ? effect : '',
                         damage_class: json.damage_class.name,
                         accuracy: json.accuracy ? json.accuracy : -1,
                         power: json.power ? json.power : -1,
