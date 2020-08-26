@@ -7,11 +7,10 @@ import TeamTesting from './team-builder/TeamTesting'
 export default function Home() {
     return (
         <div>
-            <TeamTesting/>
-            {/* <hr/>
+            <hr/>
             <PostForm/>
             <hr/>
-            <Posts/> */}
+            <Posts/>
         </div>
     )
 }
