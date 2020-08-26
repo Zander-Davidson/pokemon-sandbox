@@ -68,7 +68,7 @@ router.post('/', async (req, res, next) => {
 
 router.post('/create-pokeapi-pokemons/:offset/:limit', async (req, res, next) => {
     res.status(201).json({
-        message: await pokemonCtx.createPokeapiPokemons()//'Endpoint unavailable'//
+        message: await pokemonCtx.createPokeapiPokemons(req.params.offset, req.params.limit)//'Endpoint unavailable'//
     });
 })
 
