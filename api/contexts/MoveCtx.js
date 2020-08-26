@@ -25,19 +25,25 @@ class MoveCtx {
 
     async createMove(data) {
         let query = `
-            CREATE(m:Move {
+            MERGE(m:Move {
                 game_id: $game_id,
                 name: $name,
-                type: $type,
                 effect_chance: $effect_chance,
                 effect: $effect,
-                damage_class: $damage_class,
                 accuracy: $accuracy,
                 power: $power,
                 priority: $priority,
                 pp: $pp,
                 target: $target
-            }) RETURN m
+            }) 
+
+            MATCH(dc:DamageClass {name: $damage_class})
+            MATCH(t:Type {name: $type})
+            
+            MERGE (m)-[:HAS_DAMAGE_CLASS]->(dc)
+            MERGE (m)-[:HAS_TYPE]->(t)
+
+            RETURN m
         `;
         return await utilities.queryNeo4j(query, data);
     }
@@ -56,21 +62,22 @@ class MoveCtx {
         
         Promise.all(await moveUrls.forEach(async url =>
             await fetch(url) 
-                .then(response => { return response.json() })
-                .then(json => {
-                    this.createMove({
+                .then(async response => { return await response.json() })
+                .then(async json => {
+                    let moveData = {
                         game_id: json.id,
                         name: json.name,
                         type: json.type.name,
-                        effect_chance: json.effect_chance,
-                        effect: json.effect_entries[0].effect,
+                        effect_chance: json.effect_chance ? json.effect_chance : -1,
+                        effect: json.effect_entries.filter(e => e.language.name === 'en')[0].effect,
                         damage_class: json.damage_class.name,
-                        accuracy: json.accuracy,
-                        power: json.power,
+                        accuracy: json.accuracy ? json.accuracy : -1,
+                        power: json.power ? json.power : -1,
                         priority: json.priority,
                         pp: json.pp,
                         target: json.target.name,
-                    })
+                    };
+                    return await this.createMove(await moveData);
                 })
         ))
         .catch(err => console.log(err.message));

@@ -32,7 +32,7 @@ class ItemCtx {
     }
 
     async createPokeapiItems() {
-        const itemInitUrl = 'https://pokeapi.co/api/v2/item?offset=699&limit=300';
+        const itemInitUrl = 'https://pokeapi.co/api/v2/item?offset=0&limit=3000';
         let itemUrls = [];
 
         itemUrls = await fetch(itemInitUrl)
@@ -45,17 +45,17 @@ class ItemCtx {
         
         Promise.all(await itemUrls.forEach(async url =>
             await fetch(url) 
-                .then(response => { return response.json() })
-                .then(json => {
+                .then(async response => { return await response.json() })
+                .then(async json => {
                     let itemData = {
                         game_id: json.id,
                         name: json.name,
-                        effect: json.effect_entries[0].effect,
+                        effect: json.effect_entries.filter(e => e.language.name === 'en')[0].effect,
                         fling_effect: typeof json.fling_effect === 'undefined' || json.fling_effect === null || json.fling_effect.name === null ? '' : json.fling_effect.name,
                         fling_power: typeof json.fling_power === 'undefined' || json.fling_power === null ? '' : json.fling_power,
                         sprite_link: typeof json.sprites.default !== 'undefined' && json.sprites.default !== null ? json.sprites.default : '',
                     };
-                    this.createItem(itemData);
+                    return await this.createItem(await itemData);
                 })
         ))
         .catch(err => console.log(err.message));

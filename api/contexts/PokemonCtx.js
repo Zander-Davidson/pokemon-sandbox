@@ -48,6 +48,8 @@ class PokemonCtx {
             MERGE (p)-[:HAS_TYPE {slot: tMap.slot}]->(t)
             MERGE (p)-[:HAS_ABILITY {slot: aMap.slot, is_hidden: aMap.is_hidden}]->(a)
             MERGE (p)-[:HAS_MOVE]->(m)
+
+            RETURN p
         `;
         return await utilities.queryNeo4j(query, data);
     }
@@ -99,8 +101,7 @@ class PokemonCtx {
                         height: json.height,
                         weight: json.weight
                     };
-
-                    this.createPokemon(await pokemonData);
+                    return await this.createPokemon(await pokemonData);
                 })
         ))
         .catch(err => console.log(err.message));

@@ -40,13 +40,14 @@ class AbilityCtx {
         
         Promise.all(await abilityUrls.forEach(async url =>
             await fetch(url) 
-                .then(response => { return response.json() })
-                .then(json => {
+                .then(async response => { return await response.json() })
+                .then(async json => {
                     if (json.is_main_series) {
-                        this.createAbility({
+                        let abilityData = {
                             name: json.name,
                             effect: json.effect_entries.filter(e => e.language.name === 'en')[0].effect
-                        })
+                        };
+                        return await this.createAbility(await abilityData);
                     }
                 })
         ))

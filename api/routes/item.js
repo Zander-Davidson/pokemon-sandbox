@@ -68,7 +68,7 @@ router.post('/', async (req, res, next) => {
 
 router.post('/create-pokeapi-items', async (req, res, next) => {
     res.status(201).json({
-        message: 'Endpoint unavailable'//await itemCtx.createPokeapiItems()//
+        message: await itemCtx.createPokeapiItems()//'Endpoint unavailable'//
     });
 })
 

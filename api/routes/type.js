@@ -91,6 +91,12 @@ router.get('/attacking-matchup/:attackingType/:multiplier?', async (req, res, ne
     }
 });
 
+router.post('/create-types', async (req, res, next) => {
+    res.status(201).json({
+        message: await itemCtx.createTypes()//'Endpoint unavailable'//
+    });
+})
+
 
 
 // router.patch('/:name', (req, res, next) => {
