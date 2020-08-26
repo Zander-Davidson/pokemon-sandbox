@@ -66,11 +66,13 @@ class PokemonCtx {
             })
             .catch(err => console.log(err.message));
         
-        await pokemonUrls.reduce(async (promise, url) => {
+        await pokemonUrls.reduce(async (promise, url, index) => {
             await promise.then(
                 fetch(url) 
                     .then(async response => { return await response.json() })
                     .then(async json => {
+                        console.log(index)
+
                         let pokemonData = {
                             game_id: json.id,
                             name: json.name,
@@ -104,6 +106,7 @@ class PokemonCtx {
                         };
                         return await this.createPokemon(await pokemonData);
                     })
+                    .then(async node => console.log(await node.name))
             )
             .catch(err => console.log(err.message))
         }, Promise.resolve())
