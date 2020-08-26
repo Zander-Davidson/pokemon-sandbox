@@ -66,8 +66,10 @@ class PokemonCtx {
             })
             .catch(err => console.log(err.message));
         
-        Promise.all(await pokemonUrls.forEach(async url =>
-            await fetch(url) 
+        iterable.reduce((p, fn) => p.then(fn), Promise.resolve())
+
+        Promise.all(await pokemonUrls.map(async url => {
+            return await fetch(url) 
                 .then(async response => { return await response.json() })
                 .then(async json => {
                     let pokemonData = {
@@ -103,6 +105,7 @@ class PokemonCtx {
                     };
                     return await this.createPokemon(await pokemonData);
                 })
+            }
         ))
         .catch(err => console.log(err.message));
     }
