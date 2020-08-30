@@ -1,6 +1,6 @@
 const { Relationship } = require("neo4j-driver");
 
-const getDb = require("../../db").getDb;
+const getDb = require("../db").getDb;
 
 class Utilities {
 

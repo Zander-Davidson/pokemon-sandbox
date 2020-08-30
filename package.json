@@ -8,8 +8,8 @@
   },
   "main": "index.js",
   "scripts": {
-    "test": "nodemon app.js",
-    "start": "node app.js",
+    "test": "nodemon server",
+    "start": "node server",
     "build": "cd react-ui/ && npm install && npm run build"
   },
   "keywords": [

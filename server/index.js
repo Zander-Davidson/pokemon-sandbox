@@ -34,11 +34,11 @@ if (!isDev && cluster.isMaster) {
     const app = express(); // start the express application which lets us use utility methods, etc.
 
     // redirecting function passed into app.use() to the file with route specified
-    const typeRoutes = require('./api/routes/type');
-    const abilityRoutes = require('./api/routes/ability');
-    const moveRoutes = require('./api/routes/move');
-    const pokemonRoutes = require('./api/routes/pokemon');
-    const itemRoutes = require('./api/routes/item');
+    const typeRoutes = require('./routes/type');
+    const abilityRoutes = require('./routes/ability');
+    const moveRoutes = require('./routes/move');
+    const pokemonRoutes = require('./routes/pokemon');
+    const itemRoutes = require('./routes/item');
 
 
     app.use(morgan('dev'));
@@ -71,7 +71,7 @@ if (!isDev && cluster.isMaster) {
 
     // All remaining requests return the React app, so it can handle routing.
     app.get('*', function (req, res) {
-        res.sendFile(path.resolve(__dirname, './react-ui/build', 'index.html'));
+        res.sendFile(path.resolve(__dirname, '../react-ui/build', 'index.html'));
     });
 
     // forward an invalid route request using the 'next' function
