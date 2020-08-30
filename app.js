@@ -9,10 +9,10 @@ const bodyParser = require('body-parser');
 const cluster = require('cluster');
 const numCPUs = require('os').cpus().length;
 
-
 const initDb = require("./db").initDb;
 initDb();
 
+const PORT = process.env.PORT || 5000;
 const isDev = process.env.NODE_ENV !== 'production';
 
 var app;
@@ -91,8 +91,6 @@ if (!isDev && cluster.isMaster) {
         });
     });
 
-
-    const PORT = process.env.PORT || 5000;
     app.listen(PORT, function () {
         console.error(`Node ${isDev ? 'dev server' : 'cluster worker ' + process.pid}: listening on port ${PORT}`);
     });

@@ -8,7 +8,7 @@ const app = require('./app');
 const port = process.env.PORT || 5000;
 
 // this takes a function that is executed whenever we get a new request. it then returns a response
-const server = http.createServer(app);
+// const server = http.createServer(app);
 
 // start the server using the port
 // server.listen(port);

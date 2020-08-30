@@ -2,10 +2,14 @@
   "name": "pokemon-sandbox",
   "version": "1.0.0",
   "description": "A RESTful API to serve Pokemon Sandbox applications",
+  "engines": {
+    "npm": "6.12.1",
+    "node": "12.13.1"
+  },
   "main": "index.js",
   "scripts": {
-    "test": "nodemon server.js",
-    "start": "node server.js",
+    "test": "nodemon app.js",
+    "start": "node app.js",
     "build": "cd react-ui/ && npm install && npm run build"
   },
   "keywords": [
@@ -16,8 +20,16 @@
     "API",
     "Node.js"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Zander-Davidson/pokemon-sandbox.git"
+  },
   "author": "Alexander Davidson",
   "license": "ISC",
+  "cacheDirectories": [
+    "node_modules",
+    "react-ui/node_modules"
+  ],
   "dependencies": {
     "cluster": "^0.7.7",
     "express": "^4.17.1",
@@ -29,8 +41,5 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
-  },
-  "engines": {
-    "node": "12.13.1"
-  }
+  }  
 }
