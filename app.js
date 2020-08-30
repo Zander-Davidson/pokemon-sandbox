@@ -90,6 +90,12 @@ if (!isDev && cluster.isMaster) {
             }
         });
     });
+
+
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, function () {
+        console.error(`Node ${isDev ? 'dev server' : 'cluster worker ' + process.pid}: listening on port ${PORT}`);
+    });
 }
 
 module.exports = app;
