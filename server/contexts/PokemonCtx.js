@@ -4,11 +4,57 @@ const fetch = require("node-fetch");
 class PokemonCtx {
      // return specified Pokemon (or return all Pokemons if no name supplied)
      async getPokemon(name) {
-        let query = name ? 
-            'MATCH (p:Pokemon {name: $name}) RETURN p'
-            : 'MATCH (p:Pokemon) RETURN p';
+        let query = name ? `
+            MATCH (p:Pokemon) WHERE p.name = $name
+            WITH p
+            MATCH (p)-[ht:HAS_TYPE]->(t) WITH p, ht, t ORDER BY ht.slot
+            WITH p, COLLECT({slot: ht.slot, name: t.name, color: t.color}) AS types
+            MATCH (p)-[ha:HAS_ABILITY]->(a) WITH p, types, ha, a ORDER BY ha.slot
+            WITH p, types, COLLECT({slot: ha.slot, name: a.name, is_hidden: ha.is_hidden}) AS abilities
+            MATCH (p)-[hs:HAS_STAT]->(s) WITH p, types, abilities, hs, s ORDER BY s.order
+            WITH p, types, abilities, COLLECT({name: s.name, value: hs.value}) AS stats
+            MATCH (p)-[hm:HAS_MOVE]->(m) WITH m, p, types, abilities, stats ORDER BY m.name
+            WITH p, types, abilities, stats, COLLECT({name: m.name}) AS moves
+
+            RETURN {
+                game_id: p.game_id,
+                name: p.name,
+                sprite_link: p.sprite_link,
+                height: p.height,
+                weight: p.weight,
+                types: types,
+                moves: moves,
+                abilities: abilities,
+                stats: stats
+            }`
+            : `MATCH (p:Pokemon)
+            WITH p ORDER BY p.game_id
+            MATCH (p)-[ht:HAS_TYPE]->(t) WITH p, ht, t ORDER BY ht.slot
+            WITH p, COLLECT({slot: ht.slot, name: t.name, color: t.color}) AS types
+            MATCH (p)-[ha:HAS_ABILITY]->(a) WITH p, types, ha, a ORDER BY ha.slot
+            WITH p, types, COLLECT({slot: ha.slot, name: a.name, is_hidden: ha.is_hidden}) AS abilities
+            MATCH (p)-[hs:HAS_STAT]->(s) WITH p, types, abilities, hs, s ORDER BY s.order
+            WITH p, types, abilities, COLLECT({name: s.name, value: hs.value}) AS stats
+
+            RETURN {
+                game_id: p.game_id,
+                name: p.name,
+                sprite_link: p.sprite_link,
+                height: p.height,
+                weight: p.weight,
+                types: types,
+                abilities: abilities,
+                stats: stats
+            }`;
+
         let params = { name: name ? name : null };
-        let pokemon = await utilities.queryNeo4j(query, params);
+        let formatter = (records) => {
+            let formattedRecords = records.map(r => {
+                return r._fields[0];
+            });
+            return formattedRecords.length > 1 ? formattedRecords : formattedRecords[0];
+        };
+        let pokemon = await utilities.queryNeo4j(query, params, formatter);
 
         if (Array.isArray(pokemon) && pokemon.length === 0) {
             return null;
@@ -110,47 +156,6 @@ class PokemonCtx {
             )
             .catch(err => console.log(err.message))
         }, Promise.resolve())
-
-        // Promise.all(await pokemonUrls.map(async url => {
-        //     return await fetch(url) 
-        //         .then(async response => { return await response.json() })
-        //         .then(async json => {
-        //             let pokemonData = {
-        //                 game_id: json.id,
-        //                 name: json.name,
-        //                 types: json.types.map(t => {
-        //                     return {
-        //                         slot: t.slot,
-        //                         name: t.type.name,
-        //                     }
-        //                 }),
-        //                 abilities: json.abilities.map(a => {
-        //                     return {
-        //                         slot: a.slot,
-        //                         name: a.ability.name,
-        //                         is_hidden: a.is_hidden
-        //                     }
-        //                 }),
-        //                 moves: json.moves.map(m => {
-        //                     return {
-        //                         name: m.move.name
-        //                     }
-        //                 }),
-        //                 stats: json.stats.map(s => {
-        //                     return {
-        //                         name: s.stat.name,
-        //                         value: s.base_stat
-        //                     }
-        //                 }),
-        //                 sprite_link: json.sprites.front_default ? json.sprites.front_default : '',
-        //                 height: json.height,
-        //                 weight: json.weight
-        //             };
-        //             return await this.createPokemon(await pokemonData);
-        //         })
-        //     }
-        // ))
-        // .catch(err => console.log(err.message));
     }
 }
 

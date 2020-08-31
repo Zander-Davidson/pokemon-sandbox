@@ -2,7 +2,7 @@
 
 // provides some functionality for starting a server
 const http = require('http');
-const app = require('./app');
+const app = require('.');
 
 // the port to listen to requests on. 3000 is default if no environment variable present
 const port = process.env.PORT || 5000;

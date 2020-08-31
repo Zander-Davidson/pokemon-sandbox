@@ -1,6 +1,6 @@
 import { FETCH_POKEMONS, LOADING_POKEMONS } from './types'
 
-const fetchPokesUrl = "/api/getAllPokemon"
+const fetchPokemonUrl = "/api/pokemon"
 
 export const fetchPokemons = () => dispatch => {
     console.log('pokemon action')
@@ -8,16 +8,16 @@ export const fetchPokemons = () => dispatch => {
         type: LOADING_POKEMONS,
         payload: true
     })
-    fetch(fetchPokesUrl)
+    fetch(fetchPokemonUrl)
     .then(res => {
         if (!res.ok)
             throw new Error(`status ${res.status}`);
         return res.json();
     })
-    .then(pokemons => {
+    .then(json => {
         dispatch({
             type: FETCH_POKEMONS,
-            payload: pokemons.results
+            payload: json.pokemon
         })
         dispatch({
             type: LOADING_POKEMONS,

@@ -63,11 +63,11 @@ if (!isDev && cluster.isMaster) {
     app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
 
     // .use() sets up some middleware. an incoming request (and its body) must go through .use() 
-    app.use('/type', typeRoutes);
-    app.use('/ability', abilityRoutes);
-    app.use('/move', moveRoutes);
-    app.use('/pokemon', pokemonRoutes);
-    app.use('/item', itemRoutes);
+    app.use('/api/type', typeRoutes);
+    app.use('/api/ability', abilityRoutes);
+    app.use('/api/move', moveRoutes);
+    app.use('/api/pokemon', pokemonRoutes);
+    app.use('/api/item', itemRoutes);
 
     // All remaining requests return the React app, so it can handle routing.
     app.get('*', function (req, res) {

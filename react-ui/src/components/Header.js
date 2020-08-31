@@ -17,7 +17,6 @@ export default function Header() {
                         <Link className='a' to="/pokedex">Pokedex</Link>
                         <Link className='a' to="/movedex">Movedex</Link>
                         <Link className='a' to="/team-builder">Team Builder</Link>
-                        <Link className='a' to="/insertPokedexData">Fetch Pokedex Data</Link>
                         {/* <Link className='a' to="/damage-calculator">Damage Calculator</Link> */}
                     </Nav>
                     {/* <Form inline>

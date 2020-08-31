@@ -12,7 +12,7 @@ export default function PokemonTable(props) {
     const { SearchBar } = Search;
     const columns = [{
         classes: 'col-style',
-        dataField: 'id',
+        dataField: 'game_id',
         text: 'Dex #',
         sort: true,
         formatter: spriteFormatter
@@ -24,43 +24,50 @@ export default function PokemonTable(props) {
         sort: true
     }, {
         classes: 'col-style',
-        dataField: 'ability_1',
-        text: 'Ability',
+        dataField: 'abilities',
+        text: 'Abilities',
         formatter: abilityFormatter
     }, {
         classes: 'col-style',
-        dataField: 'hidden_ability',
-        text: 'Hidden Ability',
-        formatter: haFormatter
-    }, {
-        classes: 'col-style',
-        dataField: 'base_hp',
+        dataField: 'stats[0].value',
         text: 'HP',
+        //formatter: statsFormatter,
+        //formatExtraData: {statName: 'hp'},
         sort: true
     }, {
         classes: 'col-style',
-        dataField: 'base_atk',
+        dataField: 'stats[1].value',
         text: 'ATK',
+        // formatter: statsFormatter,
+        // formatExtraData: {statName: 'attack'},
         sort: true
     }, {
         classes: 'col-style',
-        dataField: 'base_def',
+        dataField: 'stats[2].value',
         text: 'DEF',
+        // formatter: statsFormatter,
+        // formatExtraData: {statName: 'defense'},
         sort: true
     }, {
         classes: 'col-style',
-        dataField: 'base_spa',
+        dataField: 'stats[3].value',
         text: 'SPA',
+        // formatter: statsFormatter,
+        // formatExtraData: {statName: 'special-attack'},
         sort: true
     }, {
         classes: 'col-style',
-        dataField: 'base_spd',
+        dataField: 'stats[4].value',
         text: 'SPD',
+        // formatter: statsFormatter,
+        // formatExtraData: {statName: 'special-defense'},
         sort: true
     }, {
         classes: 'col-style',
-        dataField: 'base_spe',
+        dataField: 'stats[5].value',
         text: 'SPE',
+        // formatter: statsFormatter,
+        // formatExtraData: {statName: 'speed'},
         sort: true
     }]
 
@@ -69,25 +76,25 @@ export default function PokemonTable(props) {
     }
 
     function speciesFormatter(cell, row) {
-        return (
-            <>
-                {cell} <br />
-                <div className="type-icon" style={{ backgroundColor: row.type_1_color }}>{row.type_1}</div>
-                {row.type_2 != null ?
-                    <><div className="type-icon"
-                        style={{ backgroundColor: row.type_2_color }}>{row.type_2}</div></> : ''}
-            </>
-        )
+        return (<>
+            {cell} <br />
+            {row.types.map(t => {
+                return <div className="type-icon" style={{ backgroundColor: t.color }}>{t.name}</div>
+            })}
+        </>)
     }
 
     function abilityFormatter(cell, row) {
-        return (
-            <div>{row.ability_1}<br />{row.ability_2}</div>
-        )
+        return (row.abilities.map((a, index) => {
+            return <div style={{fontStyle: a.is_hidden ? "italic" : "normal"}}>{a.name + (index !== row.abilities.length-1 ? ', ' : '')}</div>
+        }))
     }
 
-    function haFormatter(cell) {
-        return <>{cell}</>
+    function statsFormatter(cell, row, rowIndex, { statName }) {
+            
+        return (<>
+            {row.stats.filter(s => s.name === statName)[0].value}
+        </>)
     }
     
     const customTotal = (from, to, size) => (

@@ -10,7 +10,7 @@ router.get('/:name?', async (req, res, next) => {
 
     if (pokemon && pokemon !== null) {
         res.status(200).json({
-            message: 'Returned ' + num + ' pokemon(s)',
+            message: 'Returned ' + num + ' pokemon',
             pokemon: pokemon
         });
     } else if (pokemon === null) {
