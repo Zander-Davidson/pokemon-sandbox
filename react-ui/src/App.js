@@ -21,11 +21,11 @@ export default function App() {
   // standard react-router-dom site layout
   return (
     <div className="App">
-
-      <Provider store={store}>
-        <Router>
-          <Header/>
-          <Switch>
+fdsafwdfas
+      {/* <Provider store={store}> */}
+        {/* <Router> */}
+          {/* <Header/> */}
+          {/* <Switch>
             <Route exact path='/' component={Home} />
             <Route path='/home' component={Home} />
             <Route path='/pokedex' component={Pokedex} />
@@ -34,9 +34,9 @@ export default function App() {
         
             //<Route path='/damage-calculator' component={DamageCalculator} />
             <Route path='/insertPokedexData' component={FetchPokedexData} />
-          </Switch>
-        </Router>
-      </Provider>
+          </Switch> */}
+        {/* </Router> */}
+      {/* </Provider> */}
 
     </div>
   );
