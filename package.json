@@ -33,6 +33,7 @@
   "dependencies": {
     "cluster": "^0.7.7",
     "express": "^4.17.1",
+    "heroku-ssl-redirect": "^0.1.1",
     "morgan": "^1.10.0",
     "neo4j-driver": "4.0.2",
     "node-fetch": "^2.6.0",
@@ -41,5 +42,5 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
-  }  
+  }
 }

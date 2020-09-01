@@ -1,5 +1,7 @@
 /* this file spins up an Express application that makes handling requests easier for us */
 
+//import sslRedirect from 'heroku-ssl-redirect';
+
 const express = require('express');
 const path = require('path');
 // a logger middleware. morgan will use the 'next' method (passed to api functions) 
@@ -31,17 +33,9 @@ if (!isDev && cluster.isMaster) {
     });
     
 } else {
-    const app = express(); // start the express application which lets us use utility methods, etc.
-
-    // redirecting function passed into app.use() to the file with route specified
-    const typeRoutes = require('./routes/type');
-    const abilityRoutes = require('./routes/ability');
-    const moveRoutes = require('./routes/move');
-    const pokemonRoutes = require('./routes/pokemon');
-    const itemRoutes = require('./routes/item');
-    const userRoutes = require('./routes/user');
-
-
+    const app = express(); // start the express application which lets us use utility methods, etc.   
+    
+    //app.use(sslRedirect()); // enable heroku ssl redirect
     app.use(morgan('dev'));
     app.use(bodyParser.urlencoded({extended: false}));
     app.use(bodyParser.json());
@@ -62,6 +56,14 @@ if (!isDev && cluster.isMaster) {
 
     // Priority serve any static files.
     app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
+    
+    // redirecting function passed into app.use() to the file with route specified
+    const typeRoutes = require('./routes/type');
+    const abilityRoutes = require('./routes/ability');
+    const moveRoutes = require('./routes/move');
+    const pokemonRoutes = require('./routes/pokemon');
+    const itemRoutes = require('./routes/item');
+    const userRoutes = require('./routes/user');
 
     // .use() sets up some middleware. an incoming request (and its body) must go through .use() 
     app.use('/api/type', typeRoutes);

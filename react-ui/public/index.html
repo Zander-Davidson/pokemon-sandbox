@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <script>
+      // redirect all non-ssl requests to https://www.pokemonsandbox.com
       var host = "www.pokemonsandbox.com";
       if ((host == window.location.host) && (window.location.protocol != "https:")){
         window.location.protocol = "https";
