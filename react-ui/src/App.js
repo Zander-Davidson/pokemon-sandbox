@@ -21,22 +21,22 @@ export default function App() {
   // standard react-router-dom site layout
   return (
     <div className="App">
-fdsafwdfas
-      {/* <Provider store={store}> */}
-        {/* <Router> */}
-          {/* <Header/> */}
-          {/* <Switch>
+
+      <Provider store={store}>
+        <Router>
+          <Header/>
+          <Switch>
             <Route exact path='/' component={Home} />
             <Route path='/home' component={Home} />
             <Route path='/pokedex' component={Pokedex} />
             <Route path='/movedex' component={Movedex} />
             <Route path='/team-builder' component={TeamBuilder} />
         
-            //<Route path='/damage-calculator' component={DamageCalculator} />
-            <Route path='/insertPokedexData' component={FetchPokedexData} />
-          </Switch> */}
-        {/* </Router> */}
-      {/* </Provider> */}
+            {/* <Route path='/damage-calculator' component={DamageCalculator} /> */}
+            {/* <Route path='/insertPokedexData' component={FetchPokedexData} /> */}
+          </Switch>
+        </Router>
+      </Provider>
 
     </div>
   );
