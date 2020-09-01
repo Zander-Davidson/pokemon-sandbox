@@ -132,16 +132,6 @@ RETURN {
 }
 
 
-// probably no good
-MATCH (u:User {username: 'Zander'})-[hs:HAS_SET]->(s:UserSet)-[:IS_POKEMON]->(p:Pokemon) WITH u, s, hs, p ORDER BY hs.slot ASC
-WITH u, collect({guid: id(s), slot: hs.slot, sprite_link: p.sprite_link}) AS sets
-MATCH (u)-[ht:HAS_TEAM]->(t:UserTeam) WITH t, sets ORDER BY t.updated_at DESC
-RETURN {guid: id(t), name: t.name, sets: sets} 
 
- WITH {guid: id(t), name: t.name, sets: collect({guid: id(s), slot: hs.slot, sprite_link: p.sprite_link})} AS teams
-RETURN teams
-
-MATCH (u:User {username: 'Zander'})-[:HAS_TEAM]->(t:UserTeam) WITH t ORDER BY t.updated_at DESC
-MATCH (t)-[hs:HAS_SET]->(s:UserSet)-[:IS_POKEMON]->(p:Pokemon) WITH t, s, p, hs ORDER BY hs.slot ASC
-WITH t, collect({guid: id(s), slot: hs.slot, sprite_link: p.sprite_link}) AS sets
-RETURN {guid: id(t), name: t.name, sets: coalesce(sets, [])}
+MATCH (m:Move) WHERE m.accuracy = -1 SET m.accuracy = NULL
+MATCH (m:Move) WHERE m.power = -1 SET m.power = NULL

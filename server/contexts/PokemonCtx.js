@@ -69,6 +69,7 @@ class PokemonCtx {
     //     return await utilities.queryNeo4j(query, params);
     // }
 
+    
     async createPokemon(data) {
         let query = `
             UNWIND $stats AS sMap
@@ -86,6 +87,7 @@ class PokemonCtx {
                 game_id: $game_id,
                 name: $name,
                 sprite_link: $sprite_link,
+                official_artwork_link: $official_artwork_link,
                 height: $height,
                 weight: $weight
             })        
@@ -145,7 +147,8 @@ class PokemonCtx {
                                     value: s.base_stat
                                 }
                             }),
-                            sprite_link: json.sprites.front_default ? json.sprites.front_default : '',
+                            sprite_link: json.sprites.front_default,
+                            official_artwork_link: json.sprites.other['official-artwork'].front_default,
                             height: json.height,
                             weight: json.weight
                         };
