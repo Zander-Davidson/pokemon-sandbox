@@ -65,7 +65,7 @@ class UserCtx {
         return await utilities.queryNeo4j(query, data);
     }
 
-
+    
     /* data = {
         username: [string],
         user_team_name: [string],
@@ -116,6 +116,7 @@ class UserCtx {
 
             MERGE (u)-[:HAS_SET]->(us)
             MERGE (ut)-[:HAS_SET {slot: $pokemon_slot}]->(us)
+            SET ut.updated_at: datetime()
 
             RETURN us
         `;

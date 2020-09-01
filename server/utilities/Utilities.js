@@ -4,19 +4,6 @@ const getDb = require("../db").getDb;
 
 class Utilities {
 
-    // let formattedRecords = records.map(r => {
-    //     return r._fields.map(f => {
-    //         if (f.labels) { return {
-    //             labels: f.labels,
-    //             properties: f.properties
-            
-    //         }} else if (f.type) { return {
-    //             type: f.type,
-    //             properties: f.properties    
-    //         }}
-    //     })
-    // })
-
     // extract only the properties of simple nodes (no relationships) from a list Neo4j records 
     formatNeo4jNodes(records) {
         if (!Array.isArray(records)) {

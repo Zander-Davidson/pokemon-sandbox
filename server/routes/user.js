@@ -23,7 +23,7 @@ router.get('/get-user/:name?', async (req, res, next) => {
 });
 
 router.post('/create-user', async (req, res, next) => {
-    let newUser = await userCtx.createUser(req.body.username);
+    let newUser = await userCtx.createUser(req.body.userData);
 
     if (newUser) {
         res.status(201).json({

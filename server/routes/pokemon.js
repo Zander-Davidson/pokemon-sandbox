@@ -66,15 +66,21 @@ router.post('/', async (req, res, next) => {
     }
 });
 
-router.post('/create-pokeapi-pokemons/:offset/:limit', async (req, res, next) => {
+router.post('/create-pokemons/:offset/:limit', async (req, res, next) => {
     res.status(201).json({
         message: 'Endpoint unavailable'//await pokemonCtx.createPokeapiPokemons(req.params.offset, req.params.limit)//
     });
 })
 
-router.post('/create-pokeapi-evolutions', async (req, res, next) => {
+router.post('/create-official-artwork/:offset/:limit', async (req, res, next) => {
     res.status(201).json({
-        message: await pokemonCtx.createPokeapiEvolutions()//'Endpoint unavailable'//
+        message: await pokemonCtx.createPokeapiOfficialArtwork(req.params.offset, req.params.limit)//'Endpoint unavailable'//
+    });
+})
+
+router.post('/create-evolutions', async (req, res, next) => {
+    res.status(201).json({
+        message: 'Endpoint unavailable'//await pokemonCtx.createPokeapiEvolutions()//
     });
 })
 

@@ -237,6 +237,50 @@ class PokemonCtx {
             .catch(err => console.log(err.message));
         }, Promise.resolve())
     }
+
+
+    /* data = {
+        name: <string>,
+        official_artwork_link: <string>
+    } */
+    async createOfficialArtwork(data) {
+        let query = `
+            MATCH (p:Pokemon {name: $name})
+            SET p.official_artwork_link = $official_artwork_link
+            RETURN p.official_artwork_link
+        `;
+        return await utilities.queryNeo4j(query, data, () => {});
+    }
+
+    async createPokeapiOfficialArtwork(offset, limit) {
+        const pokemonInitUrl = 'https://pokeapi.co/api/v2/pokemon?offset=' + offset + '&limit=' + limit; // 200 safe limit
+        let pokemonUrls = [];
+
+        pokemonUrls = await fetch(pokemonInitUrl)
+            .then(response => { return response.json() })
+            .then(json => { return json.results.map(p => {
+                    return p.url;
+                })
+            })
+            .catch(err => console.log(err.message));
+        
+        await pokemonUrls.reduce(async (promise, url, index) => {
+            await promise.then(
+                fetch(url) 
+                    .then(async response => { return await response.json() })
+                    .then(async json => {
+                        console.log(json.sprites.other['official-artwork'].front_default)
+
+                        let artworkData = {
+                            name: json.name,
+                            official_artwork_link: json.sprites.other['official-artwork'].front_default
+                        };
+                        return await this.createOfficialArtwork(await artworkData);
+                    })
+            )
+            .catch(err => console.log(err.message))
+        }, Promise.resolve())
+    }
 }
 
 module.exports = new PokemonCtx;

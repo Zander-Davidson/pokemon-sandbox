@@ -13,8 +13,6 @@ module.exports = {
             
             else if (str.charAt(i) === '-')
                 str = str.slice(0, i) + ' ' + str.charAt(i+1).toUpperCase() + str.slice(i+2)
-            
-            console.log(str)
         }
         return str
     }

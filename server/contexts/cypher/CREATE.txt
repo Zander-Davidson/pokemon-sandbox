@@ -120,11 +120,16 @@ CREATE INDEX ON :UserSet(name);
 
 
 
-// needs work
+// given a user, get list of teams including thumbnail sprite links of all sets
 MATCH (u:User {username: 'Zander'})-[:HAS_TEAM]->(t:UserTeam) WITH t
 OPTIONAL MATCH (t)-[hs:HAS_SET]->(s:UserSet)-[:IS_POKEMON]->(p:Pokemon) WITH t, s, hs, p
 ORDER BY t.updated_at DESC, hs.slot
-RETURN {guid: id(t), name: t.name, sets: collect({guid: id(s), slot: hs.slot, sprite_link: p.sprite_link})} 
+RETURN {
+    guid: id(t), 
+    name: t.name, 
+    sets: CASE WHEN s IS NOT NULL THEN collect({guid: id(s), slot: hs.slot, sprite_link: p.sprite_link})
+        ELSE [] END
+}
 
 
 // probably no good
