@@ -77,10 +77,10 @@ class PokemonCtx {
             UNWIND $moves AS mMap
 
             MATCH 
-            (s:Stat {name: sMap.name}),
-            (t:Type {name: tMap.name}),
-            (a:Ability {name: aMap.name}),
-            (m:Move {name: mMap.name})
+                (s:Stat {name: sMap.name}),
+                (t:Type {name: tMap.name}),
+                (a:Ability {name: aMap.name}),
+                (m:Move {name: mMap.name})
 
             MERGE (p:Pokemon {
                 game_id: $game_id,
@@ -117,7 +117,6 @@ class PokemonCtx {
                 fetch(url) 
                     .then(async response => { return await response.json() })
                     .then(async json => {
-                        console.log(index)
 
                         let pokemonData = {
                             game_id: json.id,
@@ -155,6 +154,87 @@ class PokemonCtx {
                     .then(async node => console.log(await node))
             )
             .catch(err => console.log(err.message))
+        }, Promise.resolve())
+    }
+
+
+    /* data = {[
+        {
+            name: <string>,
+            evolves_from: null OR {name: <string>},
+            evolves_to: null OR [{name: <string>}, ...]
+        }, ...
+    ]} */
+    async createPokemonEvolution(data) {
+        let query = ``;
+
+        // some pokemon don't evolve to/from anything
+        if (data.evolves_to && data.evolves_from) {
+            query = `
+                UNWIND $evolves_to AS etMap 
+                MATCH (p:Pokemon {name: $name}), (et:Pokemon {name: etMap.name}), (ef:Pokemon {name: $evolves_from.name})
+                MERGE (p)-[:EVOLVES_TO]->(et)
+                MERGE (p)-[:EVOLVES_FROM]->(ef)
+                RETURN p`;
+        } else if (data.evolves_to) {
+            query = `
+                UNWIND $evolves_to AS etMap 
+                MATCH (p:Pokemon {name: $name}), (et:Pokemon {name: etMap.name})
+                MERGE (p)-[:EVOLVES_TO]->(et)
+                RETURN p`;
+        } else if (data.evolves_from) {
+            query = `
+                MATCH (p:Pokemon {name: $name}), (ef:Pokemon {name: $evolves_from.name})
+                MERGE (p)-[:EVOLVES_FROM]->(ef)
+                RETURN p`;
+        } else { return null; }
+
+        return await utilities.queryNeo4j(query, data);
+    }
+
+    async createPokeapiEvolutions(offset, limit) {
+        const evolutionInitUrl = 'https://pokeapi.co/api/v2/evolution-chain?offset=0&limit=3000';
+        let evolutionUrls = [];
+
+        evolutionUrls = await fetch(evolutionInitUrl)
+            .then(response => { return response.json() })
+            .then(json => { return json.results.map(e => {
+                    return e.url;
+                })
+            })
+            .catch(err => console.log(err.message));
+        
+        await evolutionUrls.reduce(async (promise, url) => {
+            await promise.then(
+                fetch(url) 
+                    .then(async response => { return await response.json() })
+                    .then(async json => {
+                        var evoData = [];
+
+                        // collect data from nested evolution chain into a simple 2D array of evolutions by pokemon
+                        function traverseEvoChain(evoChain, evolvesFrom) {
+                            evoChain.forEach(e => {
+
+                                evoData.push({
+                                    name: e.species.name,
+                                    evolves_from: evolvesFrom ? {name: evolvesFrom} : null,
+                                    evolves_to: e.evolves_to.length > 0 ? e.evolves_to.map(et => {return {name: et.species.name}}) : null
+                                });
+
+                                traverseEvoChain(e.evolves_to, e.species.name);
+                            });
+                        };
+
+                        traverseEvoChain([json.chain]);
+                        return evoData;
+                    })
+                    .then(async evoData => {
+                        await evoData.reduce(async (promise, data) => {
+                            await promise.then(await this.createPokemonEvolution(data));
+                        }, Promise.resolve());
+                    })
+            )
+            .catch(err => console.log(err.message));
         }, Promise.resolve())
     }
 }

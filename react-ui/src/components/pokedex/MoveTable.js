@@ -18,8 +18,9 @@ export default function MoveTable(props) {
         sort: true
     }, {
         classes: 'col-style',
-        dataField: 'category',
-        text: 'Category',
+        dataField: 'damage_class',
+        formatter: damageClassFormatter,
+        text: 'Damage Class',
     }, {
         classes: 'col-style',
         dataField: 'power',
@@ -47,12 +48,14 @@ export default function MoveTable(props) {
     }]
 
     function typeFormatter(cell, row) {
-        return (
-            <>
-                {cell} <br />
-                <div className="type-icon" style={{ backgroundColor: row.type_color }}>{row.type}</div>
-            </>
-        )
+        return (<>
+            {title(cell)} <br />
+            <div className="type-icon" style={{ backgroundColor: row.type.color }}>{row.type.name}</div>
+        </>)
+    }
+
+    function damageClassFormatter(cell, row) {
+        return (<>{title(cell)}</>)
     }
 
     function numberFormatter(cell, row) {

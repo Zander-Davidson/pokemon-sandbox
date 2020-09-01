@@ -72,4 +72,10 @@ router.post('/create-pokeapi-pokemons/:offset/:limit', async (req, res, next) =>
     });
 })
 
+router.post('/create-pokeapi-evolutions', async (req, res, next) => {
+    res.status(201).json({
+        message: await pokemonCtx.createPokeapiEvolutions()//'Endpoint unavailable'//
+    });
+})
+
 module.exports = router;

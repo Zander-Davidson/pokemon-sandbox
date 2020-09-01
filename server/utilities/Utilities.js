@@ -36,7 +36,7 @@ class Utilities {
     async queryNeo4j(query, params, formatter) {
         var session = getDb().session();
         try {
-            let results = await session.run(query, params); 
+            let results = await session.run(query, params);
 
             if (await results.records.length === 0) {
                 return null;

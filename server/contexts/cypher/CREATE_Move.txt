@@ -1,0 +1,20 @@
+CREATE (m:Move {
+    name: '$name',
+    effect_chance: $effect_chance,
+    effect: '$effect',
+    accuracy: $accuracy,
+    power: $power,
+    priority: $priority,
+    pp: $pp
+}) 
+
+RETURN m
+
+
+
+MATCH(m:Move), (t:Type) WHERE m.type = t.name CREATE (m)-[:HAS_TYPE]->(t)
+MATCH(m:Move), (dc:DamageClass) WHERE m.damage_class = dc.name CREATE (m)-[:HAS_DAMAGE_CLASS]->(dc)
+
+
+
+

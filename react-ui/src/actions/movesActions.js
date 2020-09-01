@@ -1,6 +1,6 @@
 import { FETCH_MOVES, LOADING_MOVES } from './types'
 
-const fetchMovesUrl = "/api/getAllMoves"
+const fetchMovesUrl = "/api/move"
 
 export const fetchMoves = () => dispatch => {
     dispatch({
@@ -13,10 +13,10 @@ export const fetchMoves = () => dispatch => {
             throw new Error(`status ${res.status}`);
         return res.json();
     })
-    .then(moves => {
+    .then(json => {
         dispatch({
             type: FETCH_MOVES,
-            payload: moves.results
+            payload: json.move
         })
         dispatch({
             type: LOADING_MOVES,

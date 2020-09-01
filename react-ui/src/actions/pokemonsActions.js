@@ -3,7 +3,6 @@ import { FETCH_POKEMONS, LOADING_POKEMONS } from './types'
 const fetchPokemonUrl = "/api/pokemon"
 
 export const fetchPokemons = () => dispatch => {
-    console.log('pokemon action')
     dispatch({
         type: LOADING_POKEMONS,
         payload: true

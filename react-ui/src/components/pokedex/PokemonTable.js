@@ -77,7 +77,7 @@ export default function PokemonTable(props) {
 
     function speciesFormatter(cell, row) {
         return (<>
-            {cell} <br />
+            {title(cell)} <br />
             {row.types.map(t => {
                 return <div className="type-icon" style={{ backgroundColor: t.color }}>{t.name}</div>
             })}
@@ -86,12 +86,15 @@ export default function PokemonTable(props) {
 
     function abilityFormatter(cell, row) {
         return (row.abilities.map((a, index) => {
-            return <div style={{fontStyle: a.is_hidden ? "italic" : "normal"}}>{a.name + (index !== row.abilities.length-1 ? ', ' : '')}</div>
+            if (a.is_hidden) {
+                return <div style={{fontStyle: "italic"}}>{title(a.name)}</div>
+            } else {
+                return <span>{title(a.name + (index !== row.abilities.length-1 ? ', ' : ''))}</span>
+            }
         }))
     }
 
     function statsFormatter(cell, row, rowIndex, { statName }) {
-            
         return (<>
             {row.stats.filter(s => s.name === statName)[0].value}
         </>)

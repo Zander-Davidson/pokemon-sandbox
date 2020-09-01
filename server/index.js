@@ -39,6 +39,7 @@ if (!isDev && cluster.isMaster) {
     const moveRoutes = require('./routes/move');
     const pokemonRoutes = require('./routes/pokemon');
     const itemRoutes = require('./routes/item');
+    const userRoutes = require('./routes/user');
 
 
     app.use(morgan('dev'));
@@ -68,6 +69,7 @@ if (!isDev && cluster.isMaster) {
     app.use('/api/move', moveRoutes);
     app.use('/api/pokemon', pokemonRoutes);
     app.use('/api/item', itemRoutes);
+    app.use('/api/user', userRoutes);
 
     // All remaining requests return the React app, so it can handle routing.
     app.get('*', function (req, res) {
