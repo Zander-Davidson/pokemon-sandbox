@@ -110,6 +110,7 @@ class SetView extends Component {
                         {this.state.activeSetIndex !== null ?
                             <Set 
                                 set={sets[this.state.activeSetIndex]}
+                                activeTeam={this.props.activeTeam}
                                 editSet={this.handleEditSet}
                              /> : <LoadSpinner/>}
                     </div>
