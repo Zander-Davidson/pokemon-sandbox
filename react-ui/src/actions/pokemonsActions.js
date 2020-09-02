@@ -1,29 +1,29 @@
 import { FETCH_POKEMONS, LOADING_POKEMONS } from './types'
 
-const fetchPokemonUrl = "/api/pokemon"
+const endpoint = "/api/pokemon"
 
 export const fetchPokemons = () => dispatch => {
     dispatch({
         type: LOADING_POKEMONS,
         payload: true
     })
-    fetch(fetchPokemonUrl)
-    .then(res => {
-        if (!res.ok)
-            throw new Error(`status ${res.status}`);
-        return res.json();
-    })
-    .then(json => {
-        dispatch({
-            type: FETCH_POKEMONS,
-            payload: json.pokemon
+    fetch(endpoint)
+        .then(res => {
+            if (!res.ok)
+                throw new Error(`status ${res.status}`);
+            return res.json();
         })
-        dispatch({
-            type: LOADING_POKEMONS,
-            payload: false
+        .then(json => {
+            dispatch({
+                type: FETCH_POKEMONS,
+                payload: json.pokemon
+            })
+            dispatch({
+                type: LOADING_POKEMONS,
+                payload: false
+            })
         })
-    })
-    .catch(e => {
-        console.log(`API call failed: ${e}`);
-    })
+        .catch(e => {
+            console.log(`API call failed: ${e}`);
+        })
 }

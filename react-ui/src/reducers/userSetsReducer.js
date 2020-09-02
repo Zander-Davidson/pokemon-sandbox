@@ -1,8 +1,8 @@
-import { NEW_TEAM, DELETE_TEAM, EDIT_TEAM, FETCH_TEAMS, LOADING_TEAMS, SET_ACTIVE_TEAM } from '../actions/types'
+import { NEW_SET, DELETE_SET, EDIT_SET, FETCH_SETS, LOADING_SETS, SET_ACTIVE_SET } from '../actions/types'
 
 const initialState = {
     items: [],
-    activeTeam: {},
+    activeSet: {},
     fetching: false,
     fetched: false
 }
@@ -11,27 +11,30 @@ export default function(state = initialState, action) {
 
     switch(action.type) {
         // payload: ~true or false~
-        case LOADING_TEAMS:
+        case LOADING_SETS:
             return {
                 ...state,
                 fetching: action.payload
             }
-        // payload: teams
-        case FETCH_TEAMS:
+        // payload: userSets
+        case FETCH_SETS:
             return {
                 ...state,
                 items: action.payload,
-                activeTeam: action.payload === [] ? null : action.payload[0]
+                activeSet: action.payload === [] ? null : action.payload[0]
             }
-        // payload: teams
-        case NEW_TEAM:
+
+
+// needs lotta work
+        // payload: userSets
+        case NEW_SET:
             return {
                 ...state,
                 items: action.payload,
-                activeTeam: state.items[0]
+                activeSet: state.items[0]
             }
-        // payload: {teamId: teamId, newName: teamName}
-        case EDIT_TEAM:
+        // payload: {setGuid: setGuid, newName: setName}
+        case EDIT_SET:
             return {
                 ...state,
                 items: state.items.map(t => {
@@ -41,17 +44,12 @@ export default function(state = initialState, action) {
                 })
             }
         // payload: teamId
-        case DELETE_TEAM:
+        case DELETE_SET:
             return {
                 ...state,
                 items: state.items.filter(t => t.id != action.payload),
-                activeTeam: null,
+                activeSet: null,
             }            
-        case SET_ACTIVE_TEAM:
-            return {
-                ...state,
-                activeTeam: action.payload
-            }
         default:
             return state
     }

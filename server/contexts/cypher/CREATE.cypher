@@ -135,3 +135,31 @@ RETURN {
 
 MATCH (m:Move) WHERE m.accuracy = -1 SET m.accuracy = NULL
 MATCH (m:Move) WHERE m.power = -1 SET m.power = NULL
+
+
+
+
+MATCH (ut:UserTeam)-[hus:HAS_SET]->(us:UserSet) 
+    WHERE id(ut) = $teamguid AND ut.username = $username WITH us, hus ORDER BY hus.slot
+MATCH (us)-[:HAS_ABILITY]->(a:Ability) WITH us, hus, a
+MATCH (us)-[:HAS_ITEM]->(i:Item) WITH us, hus, a, i
+MATCH (us)-[:HAS_NATURE]->(n:Nature) WITH us, hus, a, i, n
+MATCH (us)-[ip:IS_POKEMON]->(p:Pokemon) WITH us, hus, a, i, n, ip, p
+MATCH (us)-[hs:HAS_STAT]->(s:Stat) WITH us, hus, a, i, n, ip, p, hs, s ORDER BY s.order
+WITH us, hus, a, i, n, ip, p, collect({stat_name: s.name, evs: hs.evs, ivs: hs.ivs}) AS stats
+MATCH (us)-[hm:HAS_MOVE]->(m:Move) WITH us, hus, a, i, n, ip, p, stats, hm, m ORDER BY hm.slot
+WITH us, hus, a, i, n, ip, p, stats, collect({move_name: m.name, move_slot: hm.slot}) AS moves
+
+RETURN {
+    set_name: us.name,
+    set_guid: id(us),
+    set_slot: hus.slot,
+    pokemon_name: p.name,
+    ability_name: a.name,
+    item_name: i.name,
+    nature_name: n.name,
+    is_shiny: ip.is_shiny,
+    pokemon_nickname: ip.nickname,
+    stats: stats,
+    moves: moves
+}

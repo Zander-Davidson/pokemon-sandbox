@@ -1,32 +1,34 @@
 import { NEW_TEAM, DELETE_TEAM, EDIT_TEAM, FETCH_TEAMS, LOADING_TEAMS, SET_ACTIVE_TEAM } from './types'
 
-const username = 'ana'
-const endpoint = '/api/userTeams/'
+// TODO: user authentication
 
-export const fetchTeams = () => dispatch => {
+const username = 'Zander';
+const endpoint = '/api/user/get-user-teams/' + username;
+
+export const fetchUserTeams = () => dispatch => {
     dispatch({
         type: LOADING_TEAMS,
         payload: true
     })
-    fetch(endpoint + '?username=' + username)
-    .then(res => {
-        if (!res.ok)
-            throw new Error(`status ${res.status}`);
-        return res.json();
-    })
-    .then(json => {
-        dispatch({
-            type: FETCH_TEAMS,
-            payload: json.results.teams
+    fetch(endpoint)
+        .then(res => {
+            if (!res.ok)
+                throw new Error(`status ${res.status}`);
+            return res.json();
         })
-        dispatch({
-            type: LOADING_TEAMS,
-            payload: false
+        .then(json => {
+            dispatch({
+                type: FETCH_TEAMS,
+                payload: json.user_teams
+            })
+            dispatch({
+                type: LOADING_TEAMS,
+                payload: false
+            })
         })
-    })
-    .catch(e => {
-        console.log(`API call failed: ${e}`);
-    })
+        .catch(e => {
+            console.log(`API call failed: ${e}`);
+        })
 }
 
 export const createTeam = (newTeamName) => dispatch => {

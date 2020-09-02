@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { fetchItems } from '../../actions/itemsActions'
 import { fetchNatures } from '../../actions/naturesActions'
 import { fetchAbilities } from '../../actions/abilitiesActions'
+import { fetchUserTeams } from '../../actions/userTeamsActions'
 import TeamView from './TeamView'
 import SetView from './SetView'
 import CalcView from './CalcView'
@@ -18,47 +19,50 @@ var axios = require('axios')
 
 class TeamBuilder extends Component {
     componentWillMount() {
-        if (!this.props.itemsFetched && !this.props.itemsFetching)
-            this.props.fetchItems()   
+        if (!this.props.userTeamsFetched && !this.props.userTeamsFetching)
+            this.props.fetchUserTeams();   
 
-        if (!this.props.naturesFetched && !this.props.naturesFetching)
-            this.props.fetchNatures()   
+        // if (!this.props.itemsFetched && !this.props.itemsFetching)
+        //     this.props.fetchItems();
+
+        // if (!this.props.naturesFetched && !this.props.naturesFetching)
+        //     this.props.fetchNatures();   
 
         // if (!this.props.abilitiesFetched && !this.props.abilitiesFetching)
-        //     this.props.fetchAbilities()   
+        //     this.props.fetchAbilities();
     }
 
     constructor(props) {
         super(props)
         this.state = {
-            isFetching: true,
+            //isFetching: true,
             teamNames: null,
             sets: null,
         }
     }
 
     componentDidMount() {
-        this.setState({isFetching: true})
-        this.fetchData()
+        //this.setState({isFetching: true})
+       // this.fetchData()
     }
 
     async fetchData() {
-        await Promise.all([
-            await fetch (getSetsEndpoint + username)
-                .then(response => response.json())
-                .then(json => {
-                    console.log(json)
-                    this.setState({
-                        teamNames: json.results.teamNames,
-                        sets: json.results.sets
-                    })
-                })
-        ])
-            .then(this.setState({isFetching: false})
-            )
-            .catch(err => {
-                console.log(err)
-            });
+        // await Promise.all([
+        //     await fetch (getSetsEndpoint + username)
+        //         .then(response => response.json())
+        //         .then(json => {
+        //             console.log(json)
+        //             this.setState({
+        //                 teamNames: json.results.teamNames,
+        //                 sets: json.results.sets
+        //             })
+        //         })
+        // ])
+        //     .then(this.setState({isFetching: false})
+        //     )
+        //     .catch(err => {
+        //         console.log(err)
+        //     });
     }
 
     saveChanges = async (newTeams, newSets, oldTeams, oldSets, deletedTeams, deletedSets) => {
@@ -81,18 +85,20 @@ class TeamBuilder extends Component {
     }
 
     render() {
-        let content =   this.props.itemsFetching || 
+        console.log(this.props.userTeams)
+        let content =   this.props.userTeamsFetching ||
+                        this.props.itemsFetching || 
                         this.props.abilitiesFetching ||
-                        this.props.naturesFetching || 
-                        this.state.isFetching ?
-                    <LoadSpinner/> :
+                        this.props.naturesFetching ?
+                    <LoadSpinner/> : 
                     <TeamView 
-                        sets={this.state.sets}
-                        teamNames={this.state.teamNames}
-                        abilities={this.props.abilities}
-                        natures={this.props.natures}
-                        items={this.props.items}
-                        handleSaveChanges={this.saveChanges}
+                        teams={this.props.userTeams}
+                        // sets={this.state.sets}
+                        // teamNames={this.state.teamNames}
+                        // abilities={this.props.abilities}
+                        // natures={this.props.natures}
+                        // items={this.props.items}
+                        // handleSaveChanges={this.saveChanges}
                     />
 
         return content 
@@ -100,6 +106,11 @@ class TeamBuilder extends Component {
 }
 
 TeamBuilder.propTypes = {
+    fetchUserTeams: PropTypes.func.isRequired,
+    userTeams: PropTypes.array.isRequired,
+    userTeamsFetching: PropTypes.bool.isRequired,
+    userTeamsFetched: PropTypes.bool.isRequired,
+
     fetchItems: PropTypes.func.isRequired,
     items: PropTypes.array.isRequired,
     itemsFetching: PropTypes.bool.isRequired,
@@ -117,6 +128,10 @@ TeamBuilder.propTypes = {
 }
 
 const mapStateToProps = state => ({
+    userTeams: state.userTeams.items,
+    userTeamsFetching: state.userTeams.fetching,
+    userTeamsFetched: state.userTeams.fetched,
+
     items: state.items.items,
     itemsFetching: state.items.fetching,
     itemsFetched: state.items.fetched,
@@ -130,4 +145,4 @@ const mapStateToProps = state => ({
     abilitiesFetched: state.abilities.fetched,
 })
 
-export default connect(mapStateToProps, { fetchItems, fetchAbilities, fetchNatures })(TeamBuilder)
+export default connect(mapStateToProps, { fetchUserTeams, fetchItems, fetchAbilities, fetchNatures })(TeamBuilder)

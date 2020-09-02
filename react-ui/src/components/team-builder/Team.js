@@ -4,8 +4,7 @@ import styles from './teambuilder-styles.css'
 export default function Team(props) {
 
     let name = props.name
-    let sprites = props.sets == null ? null :
-        props.sets.map(s => {
+    let sprites = props.sets.map(s => {
             return <img className='team-sprite' src={s.sprite_link}/>
         })
 

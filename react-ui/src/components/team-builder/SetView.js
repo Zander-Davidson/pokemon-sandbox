@@ -1,12 +1,13 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { editTeam } from '../../actions/userteamsActions'
+import { fetchUserSets } from '../../actions/userSetsActions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import Set from './Set'
 import styles from './teambuilder-styles.css'
 import NewSetForm from './NewSetForm'
+import LoadSpinner from '../tools/LoadSpinner'
 
 const brightGhost = '#f0e9f7'
 
@@ -14,10 +15,9 @@ class SetView extends Component {
 
     constructor(props) {
         super(props)
-        console.log(props.activeTeam)
         this.state = {
-            teamName: props.activeTeam.name,
-            sets: props.sets,
+            //teamName: props.activeTeam.name,
+            //sets: props.sets,
             pickerTabs: ['Pokemon', 'Moves', 'Abilities', 'Stats'],
             activeSetIndex: null,
             activePickerIndex: 0,
@@ -28,32 +28,37 @@ class SetView extends Component {
         this.speciesInput = React.createRef();
     }
 
+    componentWillMount() {
+        if (!this.props.userSetsFetched && !this.props.userSetsFetching)
+            this.props.fetchUserSets(this.props.activeTeam.guid);
+    }
+
     componentWillReceiveProps(nextProps) {
         this.setState({
-            teamName: nextProps.activeTeam.name,
             disableNewSetBtn: nextProps.activeTeam.sets.length >= 6
         })
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps != this.props) {
-            if (this.props.sets.length > 0) {
+            if (this.props.userSets.length > 0) {
                 this.setState({
-                    activeSetIndex: 0,
-                    sets: this.props.sets,
+                    activeSetIndex: 0
                 })
             } else {
                 this.setState({
-                    activeSetIndex: null,
-                    sets: this.props.sets
+                    activeSetIndex: null
                 })
             }
         }
     }
 
     render() {
+        let sets = this.props.userSets;
+        let disableNewSetBtn = this.state.disableNewSetBtn;
 
-        let disableNewSetBtn = this.state.disableNewSetBtn
+        console.log('user sets: ' + this.props.userSets)
+        console.log('active team: ' + this.props.activeTeam)
 
         return (
             <span className='setview'>
@@ -62,7 +67,7 @@ class SetView extends Component {
                     
                     <button onClick={this.handleNewSet} disabled={disableNewSetBtn} className='btn-newset' style={disableNewSetBtn ? {opacity: '0.5'} : null}><FontAwesomeIcon icon={faPlusCircle} /></button>
                     {this.state.activeSetIndex != null ?
-                        this.state.sets.map((s, index) => {
+                        sets.map((s, index) => {
                             return (
                                 <div
                                     className='set-tab'
@@ -84,7 +89,7 @@ class SetView extends Component {
                     <div className='picker-header-wrapper'>
                         <div className='set-field-area' style={{ justifyContent: 'left', width: 'fit-content' }}>
                             <div style={{ fontWeight: 'bold' }}>Team</div>
-                            <input name='teamName' type='text' value={this.state.teamName} onChange={this.handleTeamNameChange} className='set-field' />
+                            <input name='teamName' type='text' value={this.props.activeTeam.name} onChange={this.handleTeamNameChange} className='set-field' />
                         </div>
                         <div className='picker-tabs-wrapper'>
                             {this.state.pickerTabs.map((p, index) => {
@@ -102,11 +107,11 @@ class SetView extends Component {
                     </div>
 
                     <div className='picker-content-wrapper'>
-                        {this.state.activeSetIndex != null ?
+                        {this.state.activeSetIndex !== null ?
                             <Set 
-                                set={this.state.sets[this.state.activeSetIndex]}
+                                set={sets[this.state.activeSetIndex]}
                                 editSet={this.handleEditSet}
-                             /> : null}
+                             /> : <LoadSpinner/>}
                     </div>
                 </div>
 
@@ -116,9 +121,6 @@ class SetView extends Component {
 
     handleTeamNameChange = (event) => {
         let newName = event.target.value
-        this.setState({
-            teamName: newName
-        })
         // this.props.editTeam(newName)
     }
  
@@ -229,14 +231,20 @@ class SetView extends Component {
 }
 
 SetView.propTypes = {
-    editTeam: PropTypes.func.isRequired,
-    teams: PropTypes.array.isRequired,
+    fetchUserSets: PropTypes.func.isRequired,
+    userSets: PropTypes.array.isRequired,
+    userSetsFetching: PropTypes.bool.isRequired,
+    userSetsFetched: PropTypes.bool.isRequired,
+    
     activeTeam: PropTypes.object.isRequired,
 }
 
 const mapStateToProps = state => ({
-    activeTeam: state.userteams.activeTeam,
-    teams: state.userteams.items
+    userSets: state.userSets.items,
+    userSetsFetching: state.userSets.fetching,
+    userSetsFetched: state.userSets.fetched,
+
+    activeTeam: state.userTeams.activeTeam 
 })
 
-export default connect(mapStateToProps, { editTeam })(SetView)
+export default connect(mapStateToProps, { fetchUserSets })(SetView)

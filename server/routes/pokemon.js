@@ -74,7 +74,7 @@ router.post('/create-pokemons/:offset/:limit', async (req, res, next) => {
 
 router.post('/create-official-artwork/:offset/:limit', async (req, res, next) => {
     res.status(201).json({
-        message: await pokemonCtx.createPokeapiOfficialArtwork(req.params.offset, req.params.limit)//'Endpoint unavailable'//
+        message: 'Endpoint unavailable'//await pokemonCtx.createPokeapiOfficialArtwork(req.params.offset, req.params.limit)//
     });
 })
 

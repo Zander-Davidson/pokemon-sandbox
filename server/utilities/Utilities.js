@@ -5,7 +5,7 @@ const getDb = require("../db").getDb;
 class Utilities {
 
     // extract only the properties of simple nodes (no relationships) from a list Neo4j records 
-    formatNeo4jNodes(records) {
+    formatNeo4jNodes = (records) => {
         if (!Array.isArray(records)) {
             return null;
         } else {
@@ -19,6 +19,14 @@ class Utilities {
             return formattedRecords.length === 1 ? formattedRecords[0] : formattedRecords;
         }
     }
+
+    // returns the results of cypher queries that return a json object
+    jsonReturnFormatter = (records) => {
+        let formattedRecords = records.map(r => {
+            return r._fields[0];
+        });
+        return formattedRecords.length > 1 ? formattedRecords : formattedRecords[0];
+    };
 
     async queryNeo4j(query, params, formatter) {
         var session = getDb().session();

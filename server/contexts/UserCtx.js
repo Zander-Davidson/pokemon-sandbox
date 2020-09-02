@@ -3,10 +3,10 @@ const fetch = require("node-fetch");
 
 class UserCtx {
      // return specified User (or return all Users if no name supplied)
-     async getUser(name) {
-        if (name) {
-            let query = 'MATCH (u:User {name: $name}) RETURN u';
-            let params = {name: name};
+     async getUser(username) {
+        if (username) {
+            let query = 'MATCH (u:User {username: $username}) RETURN u';
+            let params = {username: username};
             let user = await utilities.queryNeo4j(query, params);
 
             if (Array.isArray(user) && user.length === 0) {
@@ -21,13 +21,55 @@ class UserCtx {
 
 
     async getUserTeams(username) {
-        if (name) {
-            let query = `MATCH (u:User {name: $username})-[:HAS_TEAM]->(t:Team) RETURN t`;
+        if (username) {
+            let query = `
+                MATCH (u:User {username: $username})-[:HAS_TEAM]->(t:UserTeam) WITH t
+                OPTIONAL MATCH (t)-[hs:HAS_SET]->(s:UserSet)-[:IS_POKEMON]->(p:Pokemon) WITH t, s, hs, p
+                ORDER BY t.updated_at DESC, hs.slot
+                RETURN {
+                    guid: id(t), 
+                    name: t.name, 
+                    sets: CASE WHEN s IS NOT NULL THEN collect({guid: id(s), slot: hs.slot, sprite_link: p.sprite_link})
+                        ELSE [] END
+                }`;
             let params = {username: username};
-            return await utilities.queryNeo4j(query, params);
+            return await utilities.queryNeo4j(query, params, utilities.jsonReturnFormatter);
         } else {
             return null;
         }
+    }
+
+
+    async getUserSetsByTeam(userTeamData) {
+        let query = `
+            MATCH (ut:UserTeam)-[hus:HAS_SET]->(us:UserSet) 
+                WHERE id(ut) = $teamguid WITH us, hus ORDER BY hus.slot
+            MATCH (us)-[:HAS_ABILITY]->(a:Ability) WITH us, hus, a
+            MATCH (us)-[:HAS_ITEM]->(i:Item) WITH us, hus, a, i
+            MATCH (us)-[:HAS_NATURE]->(n:Nature) WITH us, hus, a, i, n
+            MATCH (us)-[ip:IS_POKEMON]->(p:Pokemon) WITH us, hus, a, i, n, ip, p
+            MATCH (us)-[hs:HAS_STAT]->(s:Stat) WITH us, hus, a, i, n, ip, p, hs, s ORDER BY s.order
+            WITH us, hus, a, i, n, ip, p, collect({stat_name: s.name, evs: hs.evs, ivs: hs.ivs}) AS stats
+            MATCH (us)-[hm:HAS_MOVE]->(m:Move) WITH us, hus, a, i, n, ip, p, stats, hm, m ORDER BY hm.slot
+            WITH us, hus, a, i, n, ip, p, stats, collect({move_name: m.name, move_slot: hm.slot}) AS moves
+            
+            RETURN collect({
+                set_name: us.name,
+                set_guid: id(us),
+                set_slot: hus.slot,
+                pokemon_name: p.name,
+                ability_name: a.name,
+                item_name: i.name,
+                nature_name: n.name,
+                level: ip.level,
+                is_shiny: ip.is_shiny,
+                pokemon_nickname: ip.nickname,
+                stats: stats,
+                moves: moves,
+                sprite_link: p.sprite_link,
+                official_artwork_link: p.official_artwork_link
+            })`;
+        return await utilities.queryNeo4j(query, userTeamData, utilities.jsonReturnFormatter)
     }
 
 
@@ -107,7 +149,7 @@ class UserCtx {
                 (ut:UserTeam {name: $user_team_name})
             
             MERGE (us:UserSet {name: $set_name, created_at: datetime(), updated_at: datetime()})
-            MERGE (us)-[:IS_POKEMON {nickname: $nickname, is_shiny: $is_shiny}]->(p)
+            MERGE (us)-[:IS_POKEMON {nickname: $nickname, is_shiny: $is_shiny, level: $level}]->(p)
             MERGE (us)-[:HAS_ITEM]->(i)
             MERGE (us)-[:HAS_ABILITY]->(a)
             MERGE (us)-[:HAS_NATURE]->(n)

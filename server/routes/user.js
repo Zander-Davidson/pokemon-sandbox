@@ -2,18 +2,17 @@ const express = require('express');
 const userCtx = require("../contexts/UserCtx");
 const router = express.Router();
 
-router.get('/get-user/:name?', async (req, res, next) => {
-    let name = req.params.name ? req.params.name : null;
-    let user = await userCtx.getUser(name);
+router.get('/get-user/:username', async (req, res, next) => {   
+    let user = await userCtx.getUser(req.params.username);
 
     if (user) {
         res.status(200).json({
-            message: 'Returned ' + num + ' user(s)',
+            message: 'Returned user',
             user: user
         });
     } else if (user === null) {
         res.status(400).json({
-            message: 'That user could not be found, or there was an error with the db query '
+            message: 'That user could not be found'
         });
     } else {
         res.status(500).json({
@@ -21,6 +20,46 @@ router.get('/get-user/:name?', async (req, res, next) => {
         });
     }
 });
+
+router.get('/get-user-teams/:username', async (req, res, next) => {
+    let userTeams = await userCtx.getUserTeams(req.params.username);
+    
+    if (userTeams) {
+        res.status(200).json({
+            message: 'Returned ' + userTeams.length + ' user team(s)',
+            user_teams: userTeams
+        }); 
+    } else if (userTeams === null) {
+        res.status(400).json({
+            message: 'That user could not be found'
+        });
+    } else {
+        res.status(500).json({
+            message: 'An error occurred while trying to query the database (check the db logs for more details)'
+        });
+    }
+})
+
+router.get('/get-user-sets-by-team/:teamguid', async (req, res, next) => {
+    let userTeamData = {teamguid: Number(req.params.teamguid)};
+    let userSets = await userCtx.getUserSetsByTeam(userTeamData);
+    
+    if (userSets) {
+        res.status(200).json({
+            message: 'Returned ' + userSets.length + ' user set(s)',
+            user_sets: userSets
+        }); 
+    } else if (userSets === null) {
+        res.status(400).json({
+            message: 'That team could not be found'
+        });
+    } else {
+        res.status(500).json({
+            message: 'An error occurred while trying to query the database (check the db logs for more details)'
+        });
+    }
+})
+
 
 router.post('/create-user', async (req, res, next) => {
     let newUser = await userCtx.createUser(req.body.userData);
@@ -44,7 +83,7 @@ router.post('/create-user-team', async (req, res, next) => {
     if (newUserTeam) {
         res.status(201).json({
             message: 'User team created',
-            userTeam: newUserTeam 
+            user_team: newUserTeam 
         });
     } else {
         res.status(500).json({
@@ -59,7 +98,7 @@ router.post('/create-user-set', async (req, res, next) => {
     if (newUserSet) {
         res.status(201).json({
             message: 'User set created',
-            userSet: newUserSet 
+            user_set: newUserSet 
         });
     } else {
         res.status(500).json({

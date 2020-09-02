@@ -1,3 +1,7 @@
+// this file lets me access the singleton db driver on demand. when accessed,
+// create a new session to make queries, and REMEMBER TO CLOSE THE SESSION AFFTER.
+// the method ./utilities/Utilities.queryNeo4j automates this further
+
 const assert = require("assert");
 const neo4j = require('neo4j-driver');
 
@@ -29,7 +33,12 @@ function initDb() {
     }
     
     try {
-        _db = neo4j.driver(graphenedbURL, neo4j.auth.basic(graphenedbUser, graphenedbPass), {encrypted: graphenedbEncryption});
+        _db = neo4j.driver(
+            graphenedbURL, 
+            neo4j.auth.basic(graphenedbUser, graphenedbPass),
+            // without disableLosslessIntegers, neo4j identity numbers are returned as {high: ###, low: ###}
+            {encrypted: graphenedbEncryption, disableLosslessIntegers: true},
+        );
     }
     catch(err) {
         console.log("Error while trying to create instance of NeO4j driver: " + err.message);

@@ -21,7 +21,6 @@ export default class TeamView extends Component {
         this.state = {
             activeTeamIndex: 0, // index of team we are currently editing
             activeSetIndex: null,
-            teams: [],
             showNewTeamBtn: true,
             showNewTeam: false,
             showNewSetBtn: true,
@@ -31,31 +30,11 @@ export default class TeamView extends Component {
         this.handleNewTeam = this.handleNewTeam.bind(this)
     }
 
-    componentDidMount() {
-        this.processSets(this.props.sets, this.props.teamNames)
-    }
-
-    processSets(sets, teamNames) {
-        let teams = []
-        let currTeamName = sets[0].team
-        let j = 0
-        let currTeamId = teamNames[j].id
-        let currTeam = { id: currTeamId, name: currTeamName, sets: [] }
-
-        teamNames.forEach(t => {
-            teams.push({
-                id: t.id,
-                name: t.name,
-                sets: sets.filter(s => {
-                    return s.team_id === t.id
-                })
-            })
-        })
-
-        this.setState({ teams: teams })
-    }
+    componentDidMount() {}
 
     render() {
+        let teams = this.props.teams;
+
         return (
             <div>
                 {/* <button className='button btn-savechanges' onClick={this.handleSaveChanges}>Save Changes</button> */}
@@ -63,7 +42,7 @@ export default class TeamView extends Component {
                     <span className='teamview'>
                         {this.state.showNewTeamBtn ? <div><button onClick={() => this.handleNewTeam()} className='button btn-newteam'>New Team</button></div> : null}
                         {this.state.showNewTeam ? <NewTeamForm handleNewTeamEnter={this.handleNewTeamEnter} handleNewTeamBlur={this.handleNewTeamBlur} /> : null}
-                        {this.state.teams.map((t, index) => {
+                        {teams.map((t, index) => {
                             return <Team
                                 name={t.name} sets={t.sets}
                                 handleClick={() => this.handleTeamClick(index)}
@@ -73,29 +52,8 @@ export default class TeamView extends Component {
                         })}
                     </span>
 
-                    {/* <span className='setview'>
-                            {this.state.showNewSetBtn && this.state.activeTeamIndex != null && this.state.teams[this.state.activeTeamIndex].sets.length <= 5 ?
-                                <div><button onClick={() => this.handleNewSet()} className='button btn-newteam'>New Set</button></div> : null}
-                            {this.state.showNewSet ? <NewSetForm handleNewSetEnter={this.handleNewSetEnter} handleNewSetBlur={this.handleNewSetBlur} /> : null}
-                            {this.state.activeTeamIndex != null ?
-                                this.state.teams[this.state.activeTeamIndex].sets != null ?
-                                    this.state.teams[this.state.activeTeamIndex].sets.map((s, index) => {
-                                        return <Set
-                                            key={s.set_id}
-                                            set={s}
-                                            handleClick={() => this.handleSetClick(index)}
-                                            handleDelete={() => this.handleDeleteSet(index)}
-                                            editSet={(newSet) => this.editSet(index, newSet)}
-                                            isActive={index == this.state.activeSetIndex ? true : false}
-                                            moves={this.state.moves}
-                                        />
-               
-                                    }) : null
-                                : null}
-                    </span> */}
-                    {this.state.activeTeamIndex != null && this.state.teams[this.state.activeTeamIndex] != null ?
-                        <SetView sets={this.state.teams[this.state.activeTeamIndex].sets}/>
-                        : null}
+                    {this.state.activeTeamIndex != null && teams[this.state.activeTeamIndex] != null ?
+                        <SetView sets={teams[this.state.activeTeamIndex].sets}/> : null}
                 </div>
             </div>
         )
@@ -191,7 +149,6 @@ export default class TeamView extends Component {
         if (event.key === 'Enter') {
             event.preventDefault();
             event.stopPropagation();
-            console.log('enter');
             let newName = event.target.value
 
             this.setState(prevState => {
