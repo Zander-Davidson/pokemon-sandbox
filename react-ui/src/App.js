@@ -1,12 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React from 'react';
 import store from './store'
 import { Provider } from 'react-redux'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
-
 import Header from './components/Header'
 import logo from './logo.svg';
 import './App.css';
-import FetchPokedexData from './components/FetchPokedexData'
 import Home from './components/Home'
 import TeamBuilder from './components/team-builder/TeamBuilder'
 import DamageCalculator from './components/DamageCalculator';

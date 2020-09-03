@@ -111,20 +111,20 @@ TeamBuilder.propTypes = {
     userTeamsFetching: PropTypes.bool.isRequired,
     userTeamsFetched: PropTypes.bool.isRequired,
 
-    fetchItems: PropTypes.func.isRequired,
-    items: PropTypes.array.isRequired,
-    itemsFetching: PropTypes.bool.isRequired,
-    itemsFetched: PropTypes.bool.isRequired,
+    // fetchItems: PropTypes.func.isRequired,
+    // items: PropTypes.array.isRequired,
+    // itemsFetching: PropTypes.bool.isRequired,
+    // itemsFetched: PropTypes.bool.isRequired,
 
-    fetchNatures: PropTypes.func.isRequired,
-    natures: PropTypes.array.isRequired,
-    naturesFetching: PropTypes.bool.isRequired,
-    naturesFetched: PropTypes.bool.isRequired,
+    // fetchNatures: PropTypes.func.isRequired,
+    // natures: PropTypes.array.isRequired,
+    // naturesFetching: PropTypes.bool.isRequired,
+    // naturesFetched: PropTypes.bool.isRequired,
 
-    fetchAbilities: PropTypes.func.isRequired,
-    abilities: PropTypes.array.isRequired,
-    abilitiesFetching: PropTypes.bool.isRequired,
-    abilitiesFetched: PropTypes.bool.isRequired,
+    // fetchAbilities: PropTypes.func.isRequired,
+    // abilities: PropTypes.array.isRequired,
+    // abilitiesFetching: PropTypes.bool.isRequired,
+    // abilitiesFetched: PropTypes.bool.isRequired,
 }
 
 const mapStateToProps = state => ({
@@ -132,17 +132,17 @@ const mapStateToProps = state => ({
     userTeamsFetching: state.userTeams.fetching,
     userTeamsFetched: state.userTeams.fetched,
 
-    items: state.items.items,
-    itemsFetching: state.items.fetching,
-    itemsFetched: state.items.fetched,
+    // items: state.items.items,
+    // itemsFetching: state.items.fetching,
+    // itemsFetched: state.items.fetched,
 
-    natures: state.natures.items,
-    movesFetching: state.natures.fetching,
-    naturesFetched: state.natures.fetched,
+    // natures: state.natures.items,
+    // movesFetching: state.natures.fetching,
+    // naturesFetched: state.natures.fetched,
 
-    abilities: state.abilities.items,
-    abilitiesFetching: state.abilities.fetching,
-    abilitiesFetched: state.abilities.fetched,
+    // abilities: state.abilities.items,
+    // abilitiesFetching: state.abilities.fetching,
+    // abilitiesFetched: state.abilities.fetched,
 })
 
 export default connect(mapStateToProps, { fetchUserTeams, fetchItems, fetchAbilities, fetchNatures })(TeamBuilder)

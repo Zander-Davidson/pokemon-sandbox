@@ -51,9 +51,8 @@ export default class Set extends Component {
     }
 
     componentDidUpdate(prevProps) {        
-        if (prevProps != this.props) {
+        if (prevProps !== this.props) {
             let set = this.props.set;
-            let activeTeam = this.props.activeTeam;
     
             let move_names = {};
             let stat_evs = {};

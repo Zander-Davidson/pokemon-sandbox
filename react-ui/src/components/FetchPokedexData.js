@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from 'react-bootstrap'
 
 const axios = require('axios')
@@ -169,11 +169,11 @@ export default function FetchPokedexData() {
                 let h_ab = null
 
                 p.abilities.forEach(ab => {
-                    if (ab.is_hidden == true)
+                    if (ab.is_hidden === true)
                         h_ab = ab.ability.name
-                    else if (ab_1 == null)
+                    else if (ab_1 === null)
                         ab_1 = ab.ability.name
-                    else if (ab_2 == null)
+                    else if (ab_2 === null)
                         ab_2 = ab.ability.name
                 })
 
