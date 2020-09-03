@@ -27,7 +27,7 @@ export const fetchUserTeams = () => dispatch => {
             })
         })
         .catch(e => {
-            console.log(`API call failed: ${e}`);
+            console.log(`API call failed (userTeamsActions.fetchUserTeams): ${e}`);
         })
 }
 
@@ -52,7 +52,7 @@ export const createTeam = (newTeamName) => dispatch => {
         payload: json.results.teams
     }))
     .catch(e => {
-        console.log(`API call failed: ${e}`);
+        console.log(`API call failed (userTeamsActions.createUserTeam): ${e}`);
     })
 }
 
@@ -78,7 +78,7 @@ export const deleteTeam = (teamId) => dispatch => {
         })
     })
     .catch(e => {
-        console.log(`API call failed: ${e}`);
+        console.log(`API call failed (userTeamsActions.deleteUserTeam): ${e}`);
     })
 }
 
@@ -106,7 +106,7 @@ export const editTeam = (teamId, newName) => dispatch => {
         })
     })
     .catch(e => {
-        console.log(`API call failed: ${e}`);
+        console.log(`API call failed (userTeamsActions.editUserTeam): ${e}`);
     })
 }
 
