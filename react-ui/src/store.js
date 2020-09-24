@@ -10,8 +10,8 @@ const store = createStore(
     compose(
         applyMiddleware(...middleware),
         // currently creating fatal build error in production. update redux dev tools
-        //window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+        // window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
     )
-)
+);
 
-export default store
+export default store;

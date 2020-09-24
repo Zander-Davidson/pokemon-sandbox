@@ -1,10 +1,10 @@
 import React from 'react';
-import BootstrapTable from 'react-bootstrap-table-next'
+import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import paginationFactory from 'react-bootstrap-table2-paginator';
-import { Button } from 'react-bootstrap'
-import { titleFormatter as title } from '../Utilities'
-import styles from './pokedexstyles.css'
+import { Button } from 'react-bootstrap';
+import styles from './pokedexstyles.css';
+import { titleFormatter } from '../../utilities/utilities';
 
 export default function PokemonTable(props) {
     const tableRef = React.createRef();
@@ -77,7 +77,7 @@ export default function PokemonTable(props) {
 
     function speciesFormatter(cell, row) {
         return (<>
-            {title(cell)} <br />
+            {titleFormatter(cell)} <br />
             {row.types.map(t => {
                 return <div className="type-icon" style={{ backgroundColor: t.color }}>{t.name}</div>
             })}
@@ -87,9 +87,9 @@ export default function PokemonTable(props) {
     function abilityFormatter(cell, row) {
         return (row.abilities.map((a, index) => {
             if (a.is_hidden) {
-                return <div style={{fontStyle: "italic"}}>{title(a.name)}</div>
+                return <div style={{ fontStyle: "italic" }}>{titleFormatter(a.name)}</div>
             } else {
-                return <span>{title(a.name + (index !== row.abilities.length-1 ? ', ' : ''))}</span>
+                return <span>{titleFormatter(a.name + (index !== row.abilities.length - 1 ? ', ' : ''))}</span>
             }
         }))
     }
@@ -99,38 +99,38 @@ export default function PokemonTable(props) {
             {row.stats.filter(s => s.name === statName)[0].value}
         </>)
     }
-    
+
     const customTotal = (from, to, size) => (
         <span className="react-bootstrap-table-pagination-total">
-            Showing { from } to { to } of { size } Results
+            Showing { from} to { to} of { size} Results
         </span>
     );
-    
+
     const options = {
-    paginationSize: 4,
-    pageStartIndex: 0,
-    // alwaysShowAllBtns: true, // Always show next and previous button
-    // withFirstAndLast: false, // Hide the going to First and Last page button
-    // hideSizePerPage: true, // Hide the sizePerPage dropdown always
-    // hidePageListOnlyOnePage: true, // Hide the pagination list when only one page
-    firstPageText: 'First',
-    prePageText: 'Back',
-    nextPageText: 'Next',
-    lastPageText: 'Last',
-    nextPageTitle: 'First page',
-    prePageTitle: 'Pre page',
-    firstPageTitle: 'Next page',
-    lastPageTitle: 'Last page',
-    showTotal: true,
-    paginationTotalRenderer: customTotal,
-    disablePageTitle: true,
-    sizePerPageList: [{
-        text: '75', value: 75
-    }, {
-        text: '200', value: 200
-    }, {
-        text: 'All', value: props.pokemon.length
-    }] // A numeric array is also available. the purpose of above example is custom the text
+        paginationSize: 4,
+        pageStartIndex: 0,
+        // alwaysShowAllBtns: true, // Always show next and previous button
+        // withFirstAndLast: false, // Hide the going to First and Last page button
+        // hideSizePerPage: true, // Hide the sizePerPage dropdown always
+        // hidePageListOnlyOnePage: true, // Hide the pagination list when only one page
+        firstPageText: 'First',
+        prePageText: 'Back',
+        nextPageText: 'Next',
+        lastPageText: 'Last',
+        nextPageTitle: 'First page',
+        prePageTitle: 'Pre page',
+        firstPageTitle: 'Next page',
+        lastPageTitle: 'Last page',
+        showTotal: true,
+        paginationTotalRenderer: customTotal,
+        disablePageTitle: true,
+        sizePerPageList: [{
+            text: '75', value: 75
+        }, {
+            text: '200', value: 200
+        }, {
+            text: 'All', value: props.pokemon.length
+        }] // A numeric array is also available. the purpose of above example is custom the text
     };
 
     return (
@@ -141,7 +141,7 @@ export default function PokemonTable(props) {
                     data={props.pokemon}
                     columns={columns}
                     search
-                    >
+                >
                     {props => (
                         <React.Fragment>
                             <br />
@@ -153,8 +153,8 @@ export default function PokemonTable(props) {
                                 striped
                                 bordered={false}
                                 columnStyle="col-style"
-                                headerStyle={{position: 'fixed'}}
-                                pagination={ paginationFactory(options) }
+                                headerStyle={{ position: 'fixed' }}
+                                pagination={paginationFactory(options)}
 
                             />
                         </React.Fragment>

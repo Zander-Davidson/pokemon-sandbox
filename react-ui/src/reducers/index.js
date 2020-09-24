@@ -6,7 +6,7 @@ import itemsReducer from "./itemsReducer";
 import abilitiesReducer from "./abilitiesReducer";
 import naturesReducer from "./naturesReducer";
 import userTeamsReducer from "./userTeamsReducer"
-import userSetsReducer from "./userSetsReducer";
+// import userSetsReducer from "./userSetsReducer";
 
 export default combineReducers({
     posts: postReducer,
@@ -16,5 +16,5 @@ export default combineReducers({
     abilities: abilitiesReducer,
     natures: naturesReducer,
     userTeams: userTeamsReducer,
-    userSets: userSetsReducer,
+    // userSets: userSetsReducer,
 })

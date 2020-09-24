@@ -8,22 +8,22 @@ export const fetchAbilities = () => dispatch => {
         payload: true
     })
     fetch(fetchAbilitiesUrl)
-    .then(res => {
-        if (!res.ok)
-            throw new Error(`status ${res.status}`);
-        return res.json();
-    })
-    .then(abilities => {
-        dispatch({
-            type: FETCH_ABILITIES,
-            payload: abilities.results
+        .then(res => {
+            if (!res.ok)
+                throw new Error(`status ${res.status}`);
+            return res.json();
         })
-        dispatch({
-            type: LOADING_ABILITIES,
-            payload: false
+        .then(abilities => {
+            dispatch({
+                type: FETCH_ABILITIES,
+                payload: abilities.results
+            })
+            dispatch({
+                type: LOADING_ABILITIES,
+                payload: false
+            })
         })
-    })
-    .catch(e => {
-        console.log(`API call failed: ${e}`);
-    })
+        .catch(e => {
+            console.log(`API call failed: ${e}`);
+        })
 }

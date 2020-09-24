@@ -5,8 +5,8 @@ export default function Team(props) {
 
     let name = props.name
     let sprites = props.sets.map(s => {
-            return <img className='team-sprite' src={s.sprite_link}/>
-        })
+        return <img className='team-sprite' src={s.sprite_link}/>
+    })
 
     return (
         <div
