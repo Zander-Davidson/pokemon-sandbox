@@ -1,4 +1,4 @@
-const pokemonCtx = require("../contexts/PokemonCtx");
+const pokemonCtx = require("../contexts/pokemonCtx");
 
 exports.getPokemon = async (req, res) => {
     let params = { name: req.params.name ? req.params.name.toLowerCase() : null };
