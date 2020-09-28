@@ -1,16 +1,16 @@
 import { NEW_TEAM, DELETE_TEAM, EDIT_TEAM, FETCH_TEAMS, LOADING_TEAMS, SET_ACTIVE_TEAM, FETCH_SETS, LOADING_SETS, CACHE_USER_SETS, NEW_SET, SET_ACTIVE_SET } from './types';
 // normally this isn't recommended, but redux has no builtin solution for caching.
 // fun fact: the creator of react-redux says caching is an acceptable reason to use the global state in actions
-import store from '../store';
-import { getCacheItemByGuid, cachePush, cacheSearchAndSplice } from '../utilities/cache';
+import { store } from '../store';
+import { getCacheItemByGuid, cachePush, cacheSearchAndSplice } from '../../utilities/cache';
 
 
 // TODO: user authentication
 
 const username = 'Zander';
 
-const fetchTeamsEndpoint = '/api/user/get-user-teams/' + username;
-const fetchSetsEndpoint = '/api/user/get-user-sets-by-team/';
+const fetchTeamsEndpoint = '/api/auth/get-teams/' + username;
+const fetchSetsEndpoint = '/api/auth/get-sets-by-team/';
 
 
 export const setActiveUserSet = (userTeamGuid, userSetGuid) => dispatch => {

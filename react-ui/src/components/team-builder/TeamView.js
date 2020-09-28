@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { fetchUserSets, setActiveUserTeam } from '../../actions/userTeamsActions'
+import { fetchUserSets, setActiveUserTeam } from '../../redux/actions/userTeamsActions'
 import Team from './Team'
 import { Button } from 'react-bootstrap'
 import NewTeamForm from './NewTeamForm'

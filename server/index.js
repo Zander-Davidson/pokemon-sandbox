@@ -1,13 +1,14 @@
 /* this file spins up an Express application that makes handling requests easier for us */
 
-//import sslRedirect from 'heroku-ssl-redirect';
-
 const express = require('express');
 const path = require('path');
+const cors = require('cors');
 // a logger middleware. morgan will use the 'next' method (passed to api functions) 
 // in order to log api requests in the console without interfering
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+
+// for hosting api AND react app in one Heroku app
 const cluster = require('cluster');
 const numCPUs = require('os').cpus().length;
 
@@ -34,18 +35,22 @@ if (!isDev && cluster.isMaster) {
     
 } else {
     const app = express(); // start the express application which lets us use utility methods, etc.   
+
+    var corsOptions = {
+        origin: "http://localhost:8081"
+    };
     
-    //app.use(sslRedirect()); // enable heroku ssl redirect
+    app.use(cors(corsOptions));
     app.use(morgan('dev'));
-    app.use(bodyParser.urlencoded({extended: false}));
     app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({extended: true}));
 
     // ensures the api can handle different-origin requests (requests from urls other than here) AKA handles CORS errors
     app.use((req, res, next) => {
         res.header('Access-Control-Allow-Origin', '*');
         res.header(
             'Access-Control-Allow-Headers',
-            'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+            'x-access-token, Origin, X-Requested-With, Content-Type, Accept, Authorization'
         );
         if (req.method === 'OPTIONS') {
             res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET') // UPDATE?
@@ -64,6 +69,7 @@ if (!isDev && cluster.isMaster) {
     const pokemonRoutes = require('./routes/pokemon');
     const itemRoutes = require('./routes/item');
     const userRoutes = require('./routes/user');
+    const authRoutes = require('./routes/auth');
 
     // .use() sets up some middleware. an incoming request (and its body) must go through .use() 
     app.use('/api/type', typeRoutes);
@@ -72,6 +78,7 @@ if (!isDev && cluster.isMaster) {
     app.use('/api/pokemon', pokemonRoutes);
     app.use('/api/item', itemRoutes);
     app.use('/api/user', userRoutes);
+    app.use('/api/auth', authRoutes);
 
     // All remaining requests return the React app, so it can handle routing.
     app.get('*', function (req, res) {

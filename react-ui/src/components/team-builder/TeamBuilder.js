@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { fetchUserTeams, fetchUserSets } from '../../actions/userTeamsActions'
+import { fetchUserTeams, fetchUserSets } from '../../redux/actions/userTeamsActions'
 import TeamView from './TeamView'
 import SetView from './SetView'
 import CalcView from './CalcView'

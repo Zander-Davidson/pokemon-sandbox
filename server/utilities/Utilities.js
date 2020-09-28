@@ -1,52 +1,61 @@
 const getDb = require("../db").getDb;
 
-class Utilities {
 
-    // extract only the properties of simple nodes (no relationships) from a list Neo4j records 
-    formatNeo4jNodes = (records) => {
-        if (!Array.isArray(records)) {
-            return null;
-        } else {
-            // return first element of inner array (removes unnecessary 2D arrays)
-            var formattedRecords = records.map(r => {
-                return r._fields.map(f => {
-                    return f.properties;
-                })[0];
-            });
-
-            return formattedRecords.length === 1 ? formattedRecords[0] : formattedRecords;
-        }
-    }
-
-    // returns the results of cypher queries that return a json object
-    jsonReturnFormatter = (records) => {
-        let formattedRecords = records.map(r => {
-            return r._fields[0];
+// extract only the properties of simple nodes (no relationships) from a list Neo4j records 
+const lazyNodeFormatter = (records) => {
+    if (!Array.isArray(records)) {
+        return null;
+    } else {
+        // return first element of inner array (removes unnecessary 2D arrays)
+        var formattedRecords = records.map(r => {
+            return r._fields.map(f => {
+                return f.properties;
+            })[0];
         });
-        return formattedRecords.length > 1 ? formattedRecords : formattedRecords[0];
-    };
 
-    async queryNeo4j(query, params, formatter) {
-        var session = getDb().session();
-        try {
-            let results = await session.run(query, params);
-
-            if (await results.records.length === 0) {
-                return null;
-            } else if (formatter) {
-                return await formatter(await results.records);
-            } else {
-                return await this.formatNeo4jNodes(await results.records);
-            }
-             
-        } catch(err) {
-            console.log(err);
-            return undefined;
-
-        } finally {
-            await session.close();
-        }
+        return formattedRecords.length === 1 ? formattedRecords[0] : formattedRecords;
     }
 }
 
-module.exports = new Utilities;
+// returns the results of cypher queries that return a json object
+let jsonReturnFormatter = (records) => {
+    let formattedRecords = records.map(r => {
+        return r._fields[0];
+    });
+    return formattedRecords;
+};    let formatter = (records) => {
+    let formattedRecords = records.map(r => {
+        return r._fields[0];
+    });
+    return formattedRecords;
+};
+
+const queryNeo4j = async (query, params, formatter) => {
+    var session = getDb().session();
+    try {
+        let results = await session.run(query, params);
+
+        if (await results.records.length === 0) {
+            return null;
+        } else if (formatter) {
+            return await formatter(await results.records);
+        } else {
+            return await jsonReturnFormatter(await results.records);
+        }
+            
+    } catch(err) {
+        console.log(err);
+        return undefined;
+
+    } finally {
+        await session.close();
+    }
+}
+
+const utilities = {
+    queryNeo4j: queryNeo4j,
+    jsonReturnFormatter: jsonReturnFormatter,
+    lazyNodeFormatter: lazyNodeFormatter
+}
+
+module.exports = utilities;

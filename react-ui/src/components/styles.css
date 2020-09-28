@@ -7,6 +7,15 @@ img {
     margin-bottom: 3px;
 }
 
+.header .btn {
+    margin: 5px
+}
+
+.header .icon {
+    max-height: 2rem;
+    max-width: 2rem;
+}
+
 .header {
     background-color: #73638F;
     padding: 0px 0px 0px 0px;

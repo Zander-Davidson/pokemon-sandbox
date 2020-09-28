@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { fetchMoves } from '../../actions/movesActions'
+import { fetchMoves } from '../../redux/actions/movesActions'
 import LoadSpinner from '../tools/LoadSpinner'
 
 class MovePicker extends Component {

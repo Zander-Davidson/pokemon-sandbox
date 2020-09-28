@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { fetchUserSets, setActiveUserSet } from '../../actions/userTeamsActions'
+import { fetchUserSets, setActiveUserSet } from '../../redux/actions/userTeamsActions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import Set from './Set'
