@@ -1,20 +1,24 @@
 import { combineReducers } from "redux";
-import postReducer from './postReducer'
-import pokemonsReducer from "./pokemonsReducer";
+import authReducer from './authReducer';
+import messageReducer from './messageReducer';
+import postReducer from './postReducer';
+import pokemonReducer from "./pokemonReducer";
 import moveReducer from "./moveReducer";
 import itemsReducer from "./itemsReducer";
 import abilitiesReducer from "./abilitiesReducer";
 import naturesReducer from "./naturesReducer";
-import userTeamsReducer from "./userTeamsReducer"
-import userSetsReducer from "./userSetsReducer";
+import userTeamsReducer from "./userTeamsReducer";
+// import userSetsReducer from "./userSetsReducer";
 
 export default combineReducers({
+    auth: authReducer,
+    message: messageReducer,
     posts: postReducer,
-    pokemons: pokemonsReducer,
+    pokemon: pokemonReducer,
     moves: moveReducer,
     items: itemsReducer,
     abilities: abilitiesReducer,
     natures: naturesReducer,
     userTeams: userTeamsReducer,
-    userSets: userSetsReducer,
+    // userSets: userSetsReducer,
 })

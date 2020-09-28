@@ -1,10 +1,10 @@
 import React from 'react';
-import BootstrapTable from 'react-bootstrap-table-next'
+import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import paginationFactory from 'react-bootstrap-table2-paginator';
-import { Button } from 'react-bootstrap'
-import { titleFormatter as title } from '../Utilities'
-import styles from './pokedexstyles.css'
+import { Button } from 'react-bootstrap';
+import styles from './pokedexstyles.css';
+import { titleFormatter } from '../../utilities/utilities';
 
 export default function MoveTable(props) {
     const tableRef = React.createRef();
@@ -49,13 +49,13 @@ export default function MoveTable(props) {
 
     function typeFormatter(cell, row) {
         return (<>
-            {title(cell)} <br />
+            {titleFormatter(cell)} <br />
             <div className="type-icon" style={{ backgroundColor: row.type.color }}>{row.type.name}</div>
         </>)
     }
 
     function damageClassFormatter(cell, row) {
-        return (<>{title(cell)}</>)
+        return (<>{titleFormatter(cell)}</>)
     }
 
     function numberFormatter(cell, row) {

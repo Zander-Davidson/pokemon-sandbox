@@ -1,25 +1,25 @@
-import { FETCH_POKEMONS, LOADING_POKEMONS } from './types'
+import { FETCH_ABILITIES, LOADING_ABILITIES } from './types'
 
-const endpoint = "/api/pokemon"
+const fetchAbilitiesUrl = "/api/getAllAbilities"
 
-export const fetchPokemons = () => dispatch => {
+export const fetchAbilities = () => dispatch => {
     dispatch({
-        type: LOADING_POKEMONS,
+        type: LOADING_ABILITIES,
         payload: true
     })
-    fetch(endpoint)
+    fetch(fetchAbilitiesUrl)
         .then(res => {
             if (!res.ok)
                 throw new Error(`status ${res.status}`);
             return res.json();
         })
-        .then(json => {
+        .then(abilities => {
             dispatch({
-                type: FETCH_POKEMONS,
-                payload: json.pokemon
+                type: FETCH_ABILITIES,
+                payload: abilities.results
             })
             dispatch({
-                type: LOADING_POKEMONS,
+                type: LOADING_ABILITIES,
                 payload: false
             })
         })

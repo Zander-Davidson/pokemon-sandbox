@@ -1,172 +1,160 @@
-const utilities = require("../utilities/Utilities");
-const fetch = require("node-fetch");
+const { queryNeo4j } = require("../utilities/utilities");
 
-class UserCtx {
-     // return specified User (or return all Users if no name supplied)
-     async getUser(username) {
-        if (username) {
-            let query = 'MATCH (u:User {username: $username}) RETURN u';
-            let params = {username: username};
-            let user = await utilities.queryNeo4j(query, params);
+/* params = {
+    ser_id: <number>
+    name: <string>
+} */
+const createTeam = async (params) => {
+    let query = `
+        MATCH (u:User) WHERE id(u) = $user_id
 
-            if (Array.isArray(user) && user.length === 0) {
-                return null;
-            }
-            
-            return user;
-        } else {
-            return null;
-        }
-    }
+        MERGE (ut:UserTeam {
+            created_at: datetime(),
+            updated_at: datetime(),
+            name: $name
+        })
 
+        MERGE (u)-[:HAS_TEAM]->(ut)
 
-    async getUserTeams(username) {
-        if (username) {
-            let query = `
-                MATCH (u:User {username: $username})-[:HAS_TEAM]->(t:UserTeam) WITH t
-                OPTIONAL MATCH (t)-[hs:HAS_SET]->(s:UserSet)-[:IS_POKEMON]->(p:Pokemon) WITH t, s, hs, p
-                ORDER BY t.updated_at DESC, hs.slot
-                RETURN {
-                    guid: id(t), 
-                    name: t.name, 
-                    sets: CASE WHEN s IS NOT NULL THEN collect({guid: id(s), slot: hs.slot, sprite_link: p.sprite_link})
-                        ELSE [] END
-                }`;
-            let params = {username: username};
-            return await utilities.queryNeo4j(query, params, utilities.jsonReturnFormatter);
-        } else {
-            return null;
-        }
-    }
+        RETURN ut
+    `;
+    return await queryNeo4j(query, params);
+};
 
+/* params: {
+    user_id: <number>,
+    team_id: <number>
+} */
+const updateTeam = async (params) => { };
 
-    async getUserSetsByTeam(userTeamData) {
-        let query = `
-            MATCH (ut:UserTeam)-[hus:HAS_SET]->(us:UserSet) 
-                WHERE id(ut) = $teamguid WITH us, hus ORDER BY hus.slot
-            MATCH (us)-[:HAS_ABILITY]->(a:Ability) WITH us, hus, a
-            MATCH (us)-[:HAS_ITEM]->(i:Item) WITH us, hus, a, i
-            MATCH (us)-[:HAS_NATURE]->(n:Nature) WITH us, hus, a, i, n
-            MATCH (us)-[ip:IS_POKEMON]->(p:Pokemon)-[ht:HAS_TYPE]->(pt:Type) WITH us, hus, a, i, n, ip, p, ht, pt ORDER BY ht.slot
-            WITH us, hus, a, i, n, ip, p, collect({type_slot: ht.slot, type_name: pt.name, type_color: pt.color}) AS pokemon_types
-            MATCH (us)-[hs:HAS_STAT]->(s:Stat) WITH us, hus, a, i, n, ip, p, pokemon_types, hs, s ORDER BY s.order
-            WITH us, hus, a, i, n, ip, p, pokemon_types, collect({stat_name: s.name, evs: hs.evs, ivs: hs.ivs}) AS stats
-            MATCH (us)-[hm:HAS_MOVE]->(m:Move)-[:HAS_TYPE]->(mt:Type) WITH us, hus, a, i, n, ip, p, stats, pokemon_types, hm, m, mt ORDER BY hm.slot
-            WITH us, hus, a, i, n, ip, p, pokemon_types, stats, collect({move_name: m.name, move_slot: hm.slot, type_name: mt.name, type_color: mt.color}) AS moves
-            
-            RETURN collect({
-                set_name: us.name,
-                set_guid: id(us),
-                set_slot: hus.slot,
-                pokemon_name: p.name,
-                pokemon_types: pokemon_types,
-                ability_name: a.name,
-                item_name: i.name,
-                nature_name: n.name,
-                level: ip.level,
-                is_shiny: ip.is_shiny,
-                gender: ip.gender,
-                pokemon_nickname: ip.nickname,
-                stats: stats,
-                moves: moves,
-                sprite_link: p.sprite_link,
-                official_artwork_link: p.official_artwork_link
-            })`;
-        return await utilities.queryNeo4j(query, userTeamData, utilities.jsonReturnFormatter)
-    }
+/* params: {
+    user_id: <number>,
+    team_id: <number>
+} */
+const deleteTeam = async (params) => { };
 
+/* data = {
+    user_id: [number],
+    team_id: [string],
+    set_name: [string],
+    pokemon_slot: [number 1-6],
+    pokemon_name: [string],
+    nickname: [string],
+    item_name: [string],
+    level: [number],
+    gender: [string],
+    is_shiny: [boolean],
+    ability_name: [string],
+    nature_name: [string],
+    stats: [{
+        stat_name: [string],
+        ivs: [number 0-31],
+        evs: [number 0-252]
+    }, ...],
+    moves: [{
+        move_slot: [number 1-4],
+        move_name: [string]
+    }, ...]
+}*/
+const createSet = async (params) => {
+    // TODO: verify fields
 
-    /* data = {
-        username: [string]
-    }*/
-    async createUser(data) {
-        let query = `
-            MERGE(u:User {
-                username: $username,
-                created_at: datetime()
-            }) RETURN u
-        `;
-        return await utilities.queryNeo4j(query, data);
-    }
-
-
-    /* data = {
-        name: [string]
-    } */
-    async createUserTeam(data) {
-        let query = `
-            MATCH (u:User {username: $username})
-
-            MERGE (ut:UserTeam {
-                created_at: datetime(),
-                updated_at: datetime(),
-                name: $name
-            })
-
-            MERGE (u)-[:HAS_TEAM]->(ut)
-
-            RETURN ut
-        `;
-        return await utilities.queryNeo4j(query, data);
-    }
-
-    
-    /* data = {
-        username: [string],
-        user_team_name: [string],
-        set_name: [string],
-        pokemon_slot: [number 1-6],
-        pokemon_name: [string],
-        nickname: [string],
-        item_name: [string],
-        level: [number],
-        gender: [string],
-        is_shiny: [boolean],
-        ability_name: [string],
-        nature_name: [string],
-        stats: [{
-            stat_name: [string],
-            ivs: [number 0-31],
-            evs: [number 0-252]
-        }, ...],
-        moves: [{
-            move_slot: [number 1-4],
-            move_name: [string]
-        }, ...]
-    }*/
-    async createUserSet(data) {
-        // TODO: verify fields
+    let query = `
+        UNWIND $stats AS sMap
+        UNWIND $moves AS mMap
+        MATCH
+            (p:Pokemon {name: $pokemon_name}),
+            (i:Item {name: $item_name}),
+            (p)-[:HAS_ABILITY]->(a:Ability {name: $ability_name}),
+            (n:Nature {name: $nature_name}),
+            (s:Stat {name: sMap.stat_name}),
+            (p)-[:EVOLVES_FROM|HAS_MOVE*]->(m:Move {name: mMap.move_name}),
+            (u:User),
+            (ut:UserTeam)
+        WHERE id(u) = $user_id AND id(ut) = $team_id
         
-        let query = `
-            UNWIND $stats AS sMap
-            UNWIND $moves AS mMap
+        MERGE (us:UserSet {name: $set_name, created_at: datetime(), updated_at: datetime()})
+        MERGE (us)-[:IS_POKEMON {nickname: $nickname, is_shiny: $is_shiny, level: $level, gender: $gender}]->(p)
+        MERGE (us)-[:HAS_ITEM]->(i)
+        MERGE (us)-[:HAS_ABILITY]->(a)
+        MERGE (us)-[:HAS_NATURE]->(n)
+        MERGE (us)-[:HAS_MOVE {slot: mMap.move_slot}]->(m)
+        MERGE (us)-[:HAS_STAT {evs: sMap.evs, ivs: sMap.ivs}]->(s)
+        MERGE (u)-[:HAS_SET]->(us)
+        MERGE (ut)-[:HAS_SET {slot: $pokemon_slot}]->(us)
+        SET ut.updated_at: datetime()
+        RETURN us
+    `;
+    return await queryNeo4j(query, data);
+};
 
-            MATCH
-                (p:Pokemon {name: $pokemon_name}),
-                (i:Item {name: $item_name}),
-                (p)-[:HAS_ABILITY]->(a:Ability {name: $ability_name}),
-                (n:Nature {name: $nature_name}),
-                (s:Stat {name: sMap.stat_name}),
-                (p)-[:EVOLVES_FROM|HAS_MOVE*]->(m:Move {name: mMap.move_name}),
-                (u:User {username: $username}),
-                (ut:UserTeam {name: $user_team_name})
-            
-            MERGE (us:UserSet {name: $set_name, created_at: datetime(), updated_at: datetime()})
-            MERGE (us)-[:IS_POKEMON {nickname: $nickname, is_shiny: $is_shiny, level: $level, gender: $gender}]->(p)
-            MERGE (us)-[:HAS_ITEM]->(i)
-            MERGE (us)-[:HAS_ABILITY]->(a)
-            MERGE (us)-[:HAS_NATURE]->(n)
-            MERGE (us)-[:HAS_MOVE {slot: mMap.move_slot}]->(m)
-            MERGE (us)-[:HAS_STAT {evs: sMap.evs, ivs: sMap.ivs}]->(s)
+const updateSet = async (params) => { };
 
-            MERGE (u)-[:HAS_SET]->(us)
-            MERGE (ut)-[:HAS_SET {slot: $pokemon_slot}]->(us)
-            SET ut.updated_at: datetime()
+const deleteSet = async (params) => { };
 
-            RETURN us
-        `;
-        return await utilities.queryNeo4j(query, data);
-    }
-}
+// TODO: make this consistent with the others and change signature to getTeamPreviews
+const getTeamPreviews = async (params) => {
+    let query = `
+        MATCH (u:User)-[:HAS_TEAM]->(t:UserTeam) WHERE id(u) = $user_id WITH t
+        OPTIONAL MATCH (t)-[hs:HAS_SET]->(s:UserSet)-[:IS_POKEMON]->(p:Pokemon) WITH t, s, hs, p
+        ORDER BY t.updated_at DESC, hs.slot
+        RETURN {
+            team_id: id(t), 
+            name: t.name, 
+            sets: CASE WHEN s IS NOT NULL THEN collect({set_id: id(s), slot: hs.slot, sprite_link: p.sprite_link})
+                ELSE [] END
+        }`;
+    return await queryNeo4j(query, params);
+};
 
-module.exports = new UserCtx;
+/* data = {
+    user_id: <number>,
+    team_id: <number>
+}*/
+const getSetsByTeam = async (params) => {
+    let query = `
+        MATCH (u:User)-[:HAS_TEAM]->(ut:UserTeam)-[hus:HAS_SET]->(us:UserSet) 
+            WHERE id(u) = $user_id AND id(ut) = $team_id WITH us, hus ORDER BY hus.slot
+        MATCH (us)-[:HAS_ABILITY]->(a:Ability) WITH us, hus, a
+        MATCH (us)-[:HAS_ITEM]->(i:Item) WITH us, hus, a, i
+        MATCH (us)-[:HAS_NATURE]->(n:Nature) WITH us, hus, a, i, n
+        MATCH (us)-[ip:IS_POKEMON]->(p:Pokemon)-[ht:HAS_TYPE]->(pt:Type) WITH us, hus, a, i, n, ip, p, ht, pt ORDER BY ht.slot
+        WITH us, hus, a, i, n, ip, p, collect({type_slot: ht.slot, type_name: pt.name, type_color: pt.color}) AS pokemon_types
+        MATCH (us)-[hs:HAS_STAT]->(s:Stat) WITH us, hus, a, i, n, ip, p, pokemon_types, hs, s ORDER BY s.order
+        WITH us, hus, a, i, n, ip, p, pokemon_types, collect({stat_name: s.name, evs: hs.evs, ivs: hs.ivs}) AS stats
+        MATCH (us)-[hm:HAS_MOVE]->(m:Move)-[:HAS_TYPE]->(mt:Type) WITH us, hus, a, i, n, ip, p, stats, pokemon_types, hm, m, mt ORDER BY hm.slot
+        WITH us, hus, a, i, n, ip, p, pokemon_types, stats, collect({move_name: m.name, move_slot: hm.slot, type_name: mt.name, type_color: mt.color}) AS moves
+        
+        RETURN {
+            set_name: us.name,
+            set_id: id(us),
+            set_slot: hus.slot,
+            pokemon_name: p.name,
+            pokemon_types: pokemon_types,
+            ability_name: a.name,
+            item_name: i.name,
+            nature_name: n.name,
+            level: ip.level,
+            is_shiny: ip.is_shiny,
+            gender: ip.gender,
+            pokemon_nickname: ip.nickname,
+            stats: stats,
+            moves: moves,
+            sprite_link: p.sprite_link,
+            official_artwork_link: p.official_artwork_link
+        }`;
+    return await queryNeo4j(query, params);
+};
+
+const userCtx = {
+    createTeam: createTeam,
+    updateTeam: updateTeam,
+    deleteTeam: deleteTeam,
+    createSet: createSet,
+    updateSet: updateSet,
+    deleteSet: deleteSet,
+    getTeamPreviews: getTeamPreviews,
+    getSetsByTeam: getSetsByTeam
+};
+
+module.exports = userCtx;

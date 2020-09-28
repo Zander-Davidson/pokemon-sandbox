@@ -1,36 +1,23 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { fetchPokemons } from '../../actions/pokemonsActions'
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from "react-redux";
+import { fetchPokemon } from '../../redux/actions/pokemonActions'
 import LoadSpinner from '../tools/LoadSpinner'
 import PokemonTable from './PokemonTable';
 
-class Pokedex extends Component {
-    componentWillMount() {
-        if (!this.props.fetched && !this.props.fetching)
-            this.props.fetchPokemons()
-    }
+export default function Pokedex() {
+    const dispatch = useDispatch();
+    const { pokemonFetched } = useSelector(state => state.pokemon);
+    const { fetchingPokemon } = useSelector(state => state.pokemon);
+    const { items } = useSelector(state => state.pokemon);
 
-    render() {
-        let content = this.props.fetching ?
-            <LoadSpinner/> :
-            <PokemonTable pokemon={this.props.pokemons}/>
+    useEffect(() => {
+        if (!pokemonFetched && !fetchingPokemon)
+            dispatch(fetchPokemon());
+    })
 
-        return content
-    } 
+    return (
+        <LoadSpinner isLoading={!pokemonFetched || fetchingPokemon}>
+            <PokemonTable pokemon={items} />
+        </LoadSpinner>
+    )
 }
-
-Pokedex.propTypes = {
-    fetchPokemons: PropTypes.func.isRequired,
-    pokemons: PropTypes.array.isRequired,
-    fetching: PropTypes.bool.isRequired,
-    fetched: PropTypes.bool.isRequired
-}
-
-const mapStateToProps = state => ({
-    pokemons: state.pokemons.items,
-    fetching: state.pokemons.fetching,
-    fetched: state.pokemons.fetched
-})
-
-export default connect(mapStateToProps, { fetchPokemons })(Pokedex)

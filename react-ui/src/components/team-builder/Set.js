@@ -1,5 +1,4 @@
 import React, { Component, useState, useEffect } from 'react'
-import { titleFormatter as title } from '../Utilities'
 // import Typeahead from 'react-typeahead'
 
 var Typeahead = require('react-typeahead').Typeahead;
@@ -51,7 +50,7 @@ export default class Set extends Component {
     }
 
     componentDidUpdate(prevProps) {        
-        if (prevProps !== this.props) {
+        if (prevProps.set !== this.props.set) {
             let set = this.props.set;
     
             let move_names = {};

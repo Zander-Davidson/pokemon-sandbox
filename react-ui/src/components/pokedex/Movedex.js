@@ -1,36 +1,23 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { fetchMoves } from '../../actions/movesActions'
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from "react-redux";
+import { fetchMoves } from '../../redux/actions/movesActions'
 import LoadSpinner from '../tools/LoadSpinner'
 import MoveTable from './MoveTable';
 
-class Movedex extends Component {
-    componentWillMount() {
-        if (!this.props.fetched && !this.props.fetching)
-            this.props.fetchMoves()
-    }
+export default function Movedex() {
+    const dispatch = useDispatch();
+    const { movesFetched } = useSelector(state => state.moves);
+    const { fetchingMoves } = useSelector(state => state.moves);
+    const { items } = useSelector(state => state.moves);
 
-    render() {
-        let content = this.props.fetching ?
-            <LoadSpinner/> :
-            <MoveTable moves={this.props.moves}/>
+    useEffect(() => {
+        if (!movesFetched && !fetchingMoves)
+            dispatch(fetchMoves());
+    })
 
-        return content
-    } 
+    return (
+        <LoadSpinner isLoading={!movesFetched || fetchingMoves}>
+            <MoveTable moves={items} />
+        </LoadSpinner>
+    )
 }
-
-Movedex.propTypes = {
-    fetchMoves: PropTypes.func.isRequired,
-    moves: PropTypes.array.isRequired,
-    fetching: PropTypes.bool.isRequired,
-    fetched: PropTypes.bool.isRequired
-}
-
-const mapStateToProps = state => ({
-    moves: state.moves.items,
-    fetching: state.moves.fetching,
-    fetched: state.moves.fetched
-})
-
-export default connect(mapStateToProps, { fetchMoves })(Movedex)
