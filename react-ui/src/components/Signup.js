@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchIcons } from "../redux/actions/iconsActions";
 import { signup } from "../redux/actions/authActions";
+import { useHistory } from 'react-router-dom';
 
 import { Dropdown } from 'react-bootstrap';
 import Form from "react-validation/build/form";
@@ -35,7 +36,7 @@ const vusername = (value) => {
     if (value.length < 3 || value.length > 20) {
         return (
             <div className="alert alert-danger" role="alert">
-                Username must be between 3 and 20 characters.
+                Username must be between 5 and 20 characters.
             </div>
         );
     }
@@ -52,6 +53,8 @@ const vpassword = (value) => {
 };
 
 const Signup = () => {
+    let history = useHistory();
+
     const form = useRef();
     const checkBtn = useRef();
 
@@ -117,9 +120,9 @@ const Signup = () => {
         e.preventDefault();
 
         setSuccessful(false);
-        
+
         form.current.validateAll();
-        
+
         if (checkBtn.current.context._errors.length === 0 && iconPick) {
             dispatch(signup(username, email, iconPick.name, password))
                 .then(() => {
@@ -138,17 +141,22 @@ const Signup = () => {
                 <Form onSubmit={handleSignup} ref={form}>
                     {!successful && (
                         <div>
-                            <div className="form-group">
-                                <Dropdown>
-                                    <Dropdown.Toggle variant="light" id="dropdown-basic">
-                                        {iconPick ? iconPick.element : "Choose Icon"}
-                                    </Dropdown.Toggle>
+                            <Dropdown>
+                                <Dropdown.Toggle style={{background:"LightGrey", color:"black", border:"LightGrey"}} id="dropdown-basic">
+                                    {iconPick ? iconPick.element : "Choose Icon"}
+                                </Dropdown.Toggle>
 
-                                    <Dropdown.Menu>
-                                        {icons}
-                                    </Dropdown.Menu>
-                                </Dropdown>
-                            </div>
+                                <Dropdown.Menu>
+                                    {icons}
+                                </Dropdown.Menu>
+                            </Dropdown>
+                            <Input
+                                type="hidden"
+                                style={{ visibility: "hidden" }}
+                                name="icon_name"
+                                value={iconPick}
+                                validations={[required]}
+                            />
 
                             <div className="form-group">
                                 <label htmlFor="username">Username</label>
@@ -187,7 +195,7 @@ const Signup = () => {
                             </div>
 
                             <div className="form-group">
-                                <button className="btn btn-primary btn-block">Sign Up</button>
+                                <button className="btn btn-info btn-block">Sign Up</button>
                             </div>
                         </div>
                     )}
@@ -197,6 +205,7 @@ const Signup = () => {
                             <div className={successful ? "alert alert-success" : "alert alert-danger"} role="alert">
                                 {message}
                             </div>
+                            {successful ? <button onClick={() => {history.push("/login"); window.location.reload();}} className="btn btn-info btn-block">To Login</button> : ''}
                         </div>
                     )}
                     <CheckButton style={{ display: "none" }} ref={checkBtn} />
