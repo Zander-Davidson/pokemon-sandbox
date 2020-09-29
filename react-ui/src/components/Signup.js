@@ -1,21 +1,21 @@
 import styles from './auth.css'
-import React, { useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { fetchIcons } from "../redux/actions/iconsActions";
+import { signup } from "../redux/actions/authActions";
 
+import { Dropdown } from 'react-bootstrap';
 import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
 import { isEmail } from "validator";
 
-// import PropTypes from 'prop-types';
-// import { connect } from 'react-redux';
-import { signup } from "../redux/actions/authActions";
 
 const required = (value) => {
     if (!value) {
         return (
             <div className="alert alert-danger" role="alert">
-                This field is required!
+                This field is required.
             </div>
         );
     }
@@ -35,17 +35,17 @@ const vusername = (value) => {
     if (value.length < 3 || value.length > 20) {
         return (
             <div className="alert alert-danger" role="alert">
-                The username must be between 3 and 20 characters.
+                Username must be between 3 and 20 characters.
             </div>
         );
     }
 };
 
 const vpassword = (value) => {
-    if (value.length < 6 || value.length > 40) {
+    if (value.length < 8 || value.length > 40) {
         return (
             <div className="alert alert-danger" role="alert">
-                The password must be between 6 and 40 characters.
+                Password must be between 8 and 40 characters.
             </div>
         );
     }
@@ -59,9 +59,44 @@ const Signup = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [successful, setSuccessful] = useState(false);
+    const [iconPick, setIconPick] = useState(null);
+    const [icons, setIcons] = useState(null);
+
+    const iconData = useSelector(state => state.icons).items;
+    const fetchingIcons = useSelector(state => state.icons).fetching;
+    const iconsFetched = useSelector(state => state.icons).fetched;
 
     const { message } = useSelector(state => state.message);
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        if (!iconsFetched && !fetchingIcons)
+            dispatch(fetchIcons());
+    });
+
+    useEffect(() => {
+        setIcons(iconData.map(i => {
+            return (
+                <Dropdown.Item value={i.name} onClick={() => handleIconClick(i)}>
+                    <img className="icon" src={i.image_url} />
+                    {i.name + ' '}
+                </Dropdown.Item>
+            )
+        }))
+    }, [iconData]);
+
+    const handleIconClick = (icon) => {
+        setIconPick({
+            name: icon.name,
+            image_url: icon.image_url,
+            element: (
+                <>
+                    <img className="icon" src={icon.image_url} />
+                    {icon.name + ' '}
+                </>
+            )
+        });
+    };
 
     const onChangeUsername = (e) => {
         const username = e.target.value;
@@ -78,15 +113,15 @@ const Signup = () => {
         setPassword(password);
     };
 
-    const handleRegister = (e) => {
+    const handleSignup = (e) => {
         e.preventDefault();
 
         setSuccessful(false);
-
+        
         form.current.validateAll();
-
-        if (checkBtn.current.context._errors.length === 0) {
-            dispatch(signup(username, email, password))
+        
+        if (checkBtn.current.context._errors.length === 0 && iconPick) {
+            dispatch(signup(username, email, iconPick.name, password))
                 .then(() => {
                     setSuccessful(true);
                 })
@@ -99,15 +134,22 @@ const Signup = () => {
     return (
         <div className="col-md-12">
             <div className="card card-container">
-                <img
-                    src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
-                    alt="profile-img"
-                    className="profile-img-card"
-                />
 
-                <Form onSubmit={handleRegister} ref={form}>
+                <Form onSubmit={handleSignup} ref={form}>
                     {!successful && (
                         <div>
+                            <div className="form-group">
+                                <Dropdown>
+                                    <Dropdown.Toggle variant="light" id="dropdown-basic">
+                                        {iconPick ? iconPick.element : "Choose Icon"}
+                                    </Dropdown.Toggle>
+
+                                    <Dropdown.Menu>
+                                        {icons}
+                                    </Dropdown.Menu>
+                                </Dropdown>
+                            </div>
+
                             <div className="form-group">
                                 <label htmlFor="username">Username</label>
                                 <Input

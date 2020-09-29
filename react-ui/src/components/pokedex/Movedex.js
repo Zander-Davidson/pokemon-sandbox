@@ -6,17 +6,17 @@ import MoveTable from './MoveTable';
 
 export default function Movedex() {
     const dispatch = useDispatch();
-    const { movesFetched } = useSelector(state => state.moves);
-    const { fetchingMoves } = useSelector(state => state.moves);
+    const { fetched } = useSelector(state => state.moves);
+    const { fetching } = useSelector(state => state.moves);
     const { items } = useSelector(state => state.moves);
 
     useEffect(() => {
-        if (!movesFetched && !fetchingMoves)
+        if (!fetched && !fetching)
             dispatch(fetchMoves());
-    })
+    });
 
     return (
-        <LoadSpinner isLoading={!movesFetched || fetchingMoves}>
+        <LoadSpinner isLoading={!fetched || fetching}>
             <MoveTable moves={items} />
         </LoadSpinner>
     )

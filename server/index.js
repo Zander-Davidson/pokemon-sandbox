@@ -69,6 +69,7 @@ if (!isDev && cluster.isMaster) {
     const pokemonRoutes = require('./routes/pokemon');
     const itemRoutes = require('./routes/item');
     const userRoutes = require('./routes/user');
+    const iconRoutes = require('./routes/icon');
     const authRoutes = require('./routes/auth');
 
     // .use() sets up some middleware. an incoming request (and its body) must go through .use() 
@@ -78,6 +79,7 @@ if (!isDev && cluster.isMaster) {
     app.use('/api/pokemon', pokemonRoutes);
     app.use('/api/item', itemRoutes);
     app.use('/api/user', userRoutes);
+    app.use('/api/icon', iconRoutes);
     app.use('/api/auth', authRoutes);
 
     // All remaining requests return the React app, so it can handle routing.

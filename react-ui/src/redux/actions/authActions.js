@@ -41,12 +41,12 @@ export const checkLoggedIn = () => (dispatch) => {
     }
 }
 
-export const signup = (username, email, password) => (dispatch) => {
+export const signup = (username, email, icon_name, password) => (dispatch) => {
     dispatch({
         type: SIGNUP_REQUEST
     });
 
-    return authService.signup(username, email, password).then(
+    return authService.signup(username, email, icon_name, password).then(
         (response) => {
             dispatch({
                 type: SIGNUP_SUCCESS,
