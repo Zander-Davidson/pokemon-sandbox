@@ -4,19 +4,51 @@ const fetch = require("node-fetch");
 
 // return specified Pokemon (or return all Pokemons if no name supplied)
 const getPokemon = async (params) => {
+    let sortOrder = '';
+    if (params.sortOrder && params.sortOrder === "desc") { sortOrder = " DESC "; }
+    else if (params.sortOrder && params.sortOrder === "asc") { sortOrder = " ASC "; }
+
+    if (params.sortStat) {
+        let index = '';
+        switch(params.sortStat) {
+            case 'hp': index = 0; break;
+            case 'atk': index = 1; break;
+            case 'def': index = 2; break;
+            case 'spa': index = 3; break;
+            case 'spd': index = 4; break;    
+            case 'spe': index = 5; break;                   
+            default: index = 0; break;
+        }
+        var sortStat = ` ORDER BY stats[${index}].value ` + sortOrder;
+    }
+
     let model = pokemonModel(['p.', 'types', 'moves', 'abilities', 'stats']);
     let query = `
-            MATCH (p:Pokemon) ${params.name ? 'WHERE p.name = $name' : ''}
-            WITH p 
-            MATCH (p)-[ht:HAS_TYPE]->(t) WITH p, ht, t ORDER BY ht.slot
+            ${params.filterNames ? 'UNWIND $filterNames AS filterNames' : ' '}
+            MATCH (p:Pokemon) ${params.filterNames ? "WHERE p.name = filterNames.name" : ''}
+            WITH p
+            ${params.filterTypes ? 'UNWIND $filterTypes AS filterTypes' : ' '}
+            MATCH (p)-[ht:HAS_TYPE]->(t) ${params.filterTypes ? "WHERE t.name = filterTypes.name" : ''}
+            WITH p, ht, t ORDER BY ht.slot
             WITH p, COLLECT({slot: ht.slot, name: t.name, color: t.color}) AS types
-            MATCH (p)-[ha:HAS_ABILITY]->(a) WITH p, types, ha, a ORDER BY ha.slot
+            ${params.filterAbilities ? 'UNWIND $filterAbilities AS filterAbilities' : ' '}
+            MATCH (p)-[ha:HAS_ABILITY]->(a) ${params.filterAbilities ? "WHERE a.name = filterAbilities.name" : ''}
+            WITH p, types, ha, a ORDER BY ha.slot
             WITH p, types, COLLECT({slot: ha.slot, name: a.name, is_hidden: ha.is_hidden}) AS abilities
             MATCH (p)-[hs:HAS_STAT]->(s) WITH p, types, abilities, hs, s ORDER BY s.order
             WITH p, types, abilities, COLLECT({name: s.name, value: hs.value}) AS stats
-            MATCH (p)-[hm:HAS_MOVE]->(m) WITH m, p, types, abilities, stats ORDER BY m.name
+            ${params.filterMoves ? 'UNWIND $filterMoves AS filterMoves' : ' '}
+            MATCH (p)-[hm:HAS_MOVE]->(m) ${params.filterMoves ? "WHERE m.name = filterMoves.name" : ''}
+            WITH m, p, types, abilities, stats ORDER BY m.name
             WITH p, types, abilities, stats, COLLECT({name: m.name}) AS moves ORDER BY p.game_id
-            RETURN ${model}`;
+            RETURN ${model}            
+            ${params.sortName ? ' ORDER BY p.name ' + sortOrder : ''}
+            ${params.sortDexNo ? ' ORDER BY p.game_id ' + sortOrder : ''}
+            ${params.sortStat ? sortStat : ''}
+            SKIP ${params.offset}
+            LIMIT ${params.limit}
+    `;
+    
     return await queryNeo4j(query, params);
 };
 

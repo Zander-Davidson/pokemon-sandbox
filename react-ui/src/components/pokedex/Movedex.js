@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchMoves } from '../../redux/actions/movesActions'
 import LoadSpinner from '../tools/LoadSpinner'
 import MoveTable from './MoveTable';
+import styles from '../../styling/master.scss';
 
 export default function Movedex() {
     const dispatch = useDispatch();
@@ -16,8 +17,10 @@ export default function Movedex() {
     });
 
     return (
-        <LoadSpinner isLoading={!fetched || fetching}>
-            <MoveTable moves={items} />
-        </LoadSpinner>
+        <div className="page">
+            <LoadSpinner isLoading={!fetched || fetching}>
+                <MoveTable moves={items} />
+            </LoadSpinner>
+        </div>
     )
 }

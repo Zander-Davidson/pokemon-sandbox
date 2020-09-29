@@ -2,7 +2,7 @@ import React  from 'react'
 import { Navbar, Nav, Button, Form, FormControl } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import sandygast from '../sandygast.png'
-import styles from './styles.css'
+import styles from '../styling/master.scss'
 import { logout } from "../redux/actions/authActions";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from 'react-router-dom';
@@ -22,6 +22,7 @@ export default function Header() {
         if (isLoggedIn) {
             dispatch(logout());
             history.push("/home");
+            window.location.reload();
         } else {
             history.push("/login");
             window.location.reload();

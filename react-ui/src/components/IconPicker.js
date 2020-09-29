@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import styles from './styles.css'
+import styles from '../styling/master.scss'
 
 export default function IconPicker(props) {
     const [icon, setIcon] = useState(null);

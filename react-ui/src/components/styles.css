@@ -7,6 +7,11 @@ img {
     margin-bottom: 3px;
 }
 
+.header {
+    width: -webkit-fill-available;
+    position: fixed;
+}
+
 .header .btn {
     margin: 5px
 }

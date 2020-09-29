@@ -1,4 +1,4 @@
-import styles from './auth.css'
+import styles from '../styling/master.scss';
 import React, { useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Redirect } from 'react-router-dom';
@@ -68,7 +68,7 @@ const Login = (props) => {
     }
 
     return (
-        <div className="col-md-12">
+        <div className="page">
             <div className="card card-container">
 
                 <Form onSubmit={handleLogin} ref={form}>
@@ -120,23 +120,3 @@ const Login = (props) => {
 };
 
 export default Login;
-
-// const mapStateToProps = state => ({
-//     signingUp: state.account.signingUp,
-//     loggingIn: state.account.loggingIn,
-//     isLoggedIn: state.account.isLoggedIn
-// });
-
-// // tell redux what actions we want to use (the same ones we imported at the top)
-// const mapDispatchToProps = {
-//     login
-// };
-
-// Login.PropTypes = {
-//     signingUp: PropTypes.bool.isRequired,
-//     loggingIn: PropTypes.bool.isRequired,
-//     isLoggedIn: PropTypes.bool.isRequired,
-//     login: PropTypes.func.isRequired
-// };
-
-// export default connect(mapStateToProps, mapDispatchToProps)(Login);

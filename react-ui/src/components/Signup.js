@@ -1,4 +1,4 @@
-import styles from './auth.css'
+import styles from '../styling/master.scss';
 import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchIcons } from "../redux/actions/iconsActions";
@@ -33,7 +33,7 @@ const validEmail = (value) => {
 };
 
 const vusername = (value) => {
-    if (value.length < 3 || value.length > 20) {
+    if (value.length < 5 || value.length > 20) {
         return (
             <div className="alert alert-danger" role="alert">
                 Username must be between 5 and 20 characters.
@@ -135,7 +135,7 @@ const Signup = () => {
     };
 
     return (
-        <div className="col-md-12">
+        <div className="page">
             <div className="card card-container">
 
                 <Form onSubmit={handleSignup} ref={form}>
@@ -216,23 +216,3 @@ const Signup = () => {
 };
 
 export default Signup;
-
-// const mapStateToProps = state => ({
-//     signingUp: state.account.signingUp,
-//     loggingIn: state.account.loggingIn,
-//     isLoggedIn: state.account.isLoggedIn
-// });
-
-// // tell redux what actions we want to use (the same ones we imported at the top)
-// const mapDispatchToProps = {
-//     signup
-// }
-
-// Signup.PropTypes = {
-//     signingUp: PropTypes.bool.isRequired,
-//     loggingIn: PropTypes.bool.isRequired,
-//     isLoggedIn: PropTypes.bool.isRequired,
-//     signup: PropTypes.func.isRequired
-// };
-
-// export default connect(mapStateToProps, mapDispatchToProps)(Signup);

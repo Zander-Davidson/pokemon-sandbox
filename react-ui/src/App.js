@@ -6,8 +6,8 @@ import { useDispatch } from "react-redux";
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import Header from './components/Header'
 import logo from './logo.svg';
-import './App.css';
-import Home from './components/Home'
+import styles from './styling/master.scss';
+import Home from './components/Home';
 import TeamBuilder from './components/team-builder/TeamBuilder'
 import DamageCalculator from './components/DamageCalculator';
 import Pokedex from './components/pokedex/Pokedex';
@@ -37,18 +37,18 @@ export default function App() {
     <div className="App">
       <Router history={history}>
         <Header />
-        <Switch>
-          <Route exact path='/' component={Home} />
-          <Route path='/home' component={Home} />
-          <Route path='/pokedex' component={Pokedex} />
-          <Route path='/movedex' component={Movedex} />
-          <ProtectedRoute path='/teambuilder' component={TeamBuilder} />
-          <Route path='/login' component={Login} />
-          <Route path='/signup' component={Signup} />
+          <Switch>
+            <Route exact path='/' component={Home} />
+            <Route path='/home' component={Home} />
+            <Route path='/pokedex' component={Pokedex} />
+            <Route path='/movedex' component={Movedex} />
+            <ProtectedRoute path='/teambuilder' component={TeamBuilder} />
+            <Route path='/login' component={Login} />
+            <Route path='/signup' component={Signup} />
 
-          {/* <Route path='/damage-calculator' component={DamageCalculator} /> */}
-          {/* <Route path='/insertPokedexData' component={FetchPokedexData} /> */}
-        </Switch>
+            {/* <Route path='/damage-calculator' component={DamageCalculator} /> */}
+            {/* <Route path='/insertPokedexData' component={FetchPokedexData} /> */}
+          </Switch>
       </Router>
     </div >
   );

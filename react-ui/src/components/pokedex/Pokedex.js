@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchPokemon } from '../../redux/actions/pokemonActions'
 import LoadSpinner from '../tools/LoadSpinner'
 import PokemonTable from './PokemonTable';
+import styles from '../../styling/master.scss';
 
 export default function Pokedex() {
     const dispatch = useDispatch();
@@ -16,8 +17,10 @@ export default function Pokedex() {
     })
 
     return (
-        <LoadSpinner isLoading={!fetched || fetching}>
-            <PokemonTable pokemon={items} />
-        </LoadSpinner>
+        <div className="page">
+            <LoadSpinner isLoading={!fetched || fetching}>
+                <PokemonTable pokemon={items} />
+            </LoadSpinner>
+        </div>
     )
 }

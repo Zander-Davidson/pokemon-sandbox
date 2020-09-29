@@ -3,7 +3,7 @@ const router = express.Router();
 const pokemonController = require("../controllers/pokemonController");
 
 router.get(
-    '/:name?',
+    '/:offset/:limit',
     pokemonController.getPokemon
 );
 
@@ -12,3 +12,12 @@ router.get(
 // );
 
 module.exports = router;
+
+// "sortOrder":
+// "sortDexNo":
+// "sortName":
+// "sortStat":
+// "filterNames":
+// "filterMoves":
+// "filterTypes":
+// "filterAbilities":
