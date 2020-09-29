@@ -1,4 +1,4 @@
-const typeCtx = require("../contexts/TypeCtx");
+const typeCtx = require("../contexts/typeCtx");
 
 exports.getType = async (req, res) => {
     let params = { 

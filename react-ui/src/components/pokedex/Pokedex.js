@@ -6,17 +6,17 @@ import PokemonTable from './PokemonTable';
 
 export default function Pokedex() {
     const dispatch = useDispatch();
-    const { pokemonFetched } = useSelector(state => state.pokemon);
-    const { fetchingPokemon } = useSelector(state => state.pokemon);
+    const { fetched } = useSelector(state => state.pokemon);
+    const { fetching } = useSelector(state => state.pokemon);
     const { items } = useSelector(state => state.pokemon);
 
     useEffect(() => {
-        if (!pokemonFetched && !fetchingPokemon)
+        if (!fetched && !fetching)
             dispatch(fetchPokemon());
     })
 
     return (
-        <LoadSpinner isLoading={!pokemonFetched || fetchingPokemon}>
+        <LoadSpinner isLoading={!fetched || fetching}>
             <PokemonTable pokemon={items} />
         </LoadSpinner>
     )

@@ -3,8 +3,8 @@ import { FETCH_MOVES, FETCH_MOVES_FAILURE, FETCH_MOVES_SUCCESS } from '../action
 const initialState = {
     items: [],
     item: {},
-    fetchingMoves: false,
-    movesFetched: false
+    fetching: false,
+    fetched: false
 }
 
 export default function(state = initialState, action) {
@@ -13,22 +13,22 @@ export default function(state = initialState, action) {
         case FETCH_MOVES:
             return {
                 ...state,
-                fetchingMoves: true
+                fetching: true
             }
 
         case FETCH_MOVES_SUCCESS:
             return {
                 ...state,
                 items: action.payload,
-                movesFetched: true,
-                fetchingMoves: false
+                fetched: true,
+                fetching: false
             }
 
         case FETCH_MOVES_FAILURE:
             return {
                 ...state,
-                fetchingMoves: false,
-                movesFetched: false
+                fetching: false,
+                fetched: false
             }
 
         default:

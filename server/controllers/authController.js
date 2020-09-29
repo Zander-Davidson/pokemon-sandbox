@@ -4,6 +4,8 @@ var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 
 exports.signup = async (req, res) => {
+    console.log(req.body)
+
     let signupData = {
         username: req.body.username,
         email: req.body.email,

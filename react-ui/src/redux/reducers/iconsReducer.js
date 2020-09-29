@@ -1,4 +1,4 @@
-import { FETCH_POKEMON, FETCH_POKEMON_FAILURE, FETCH_POKEMON_SUCCESS } from '../actions/types'
+import { FETCH_ICONS, FETCH_ICONS_SUCCESS, FETCH_ICONS_FAILURE } from '../actions/types'
 
 const initialState = {
     items: [],
@@ -9,13 +9,14 @@ const initialState = {
 
 export default function(state = initialState, action) {
     switch(action.type) {
-        case FETCH_POKEMON:
+
+        case FETCH_ICONS:
             return {
                 ...state,
                 fetching: true
             }
 
-        case FETCH_POKEMON_SUCCESS:
+        case FETCH_ICONS_SUCCESS:
             return {
                 ...state,
                 items: action.payload,
@@ -23,14 +24,14 @@ export default function(state = initialState, action) {
                 fetching: false
             }
 
-        case FETCH_POKEMON_FAILURE:
+        case FETCH_ICONS_FAILURE:
             return {
                 ...state,
-                fetching: false,
-                fetched: false
+                fetched: false,
+                fetching: false
             }
 
         default:
             return state
-    }            
+    }
 }
