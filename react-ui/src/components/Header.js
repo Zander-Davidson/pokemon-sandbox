@@ -22,9 +22,9 @@ export default function Header() {
         if (isLoggedIn) {
             dispatch(logout());
             history.push("/home");
-            window.location.reload();
         } else {
             history.push("/login");
+            window.location.reload();
         }
     }
 

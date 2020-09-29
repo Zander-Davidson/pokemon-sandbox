@@ -20,6 +20,7 @@ const required = (value) => {
 };
 
 const Login = (props) => {
+
     const form = useRef();
     const checkBtn = useRef();
 
@@ -53,7 +54,6 @@ const Login = (props) => {
             dispatch(login(username, password))
                 .then(() => {
                     props.history.push("/movedex");
-                    window.location.reload();
                 })
                 .catch(() => {
                     setLoading(false);
@@ -97,11 +97,11 @@ const Login = (props) => {
                     </div>
 
                     <div className="form-group">
-                        <button className="btn btn-primary btn-block" disabled={loading}>
+                        <button className="btn btn-info btn-block" disabled={loading}>
                             {loading && (
                                 <span className="spinner-border spinner-border-sm"></span>
                             )}
-                            <span>Login</span>
+                            <span>Log in</span>
                         </button>
                     </div>
 
