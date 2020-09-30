@@ -5,7 +5,7 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import { Button } from 'react-bootstrap';
 import styles from './pokedexstyles.css';
 import { titleFormatter } from '../../utilities/utilities';
-
+ 
 export default function PokemonTable(props) {
     const tableRef = React.createRef();
 

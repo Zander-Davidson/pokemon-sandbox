@@ -3,7 +3,7 @@ const router = express.Router();
 const pokemonController = require("../controllers/pokemonController");
 
 router.get(
-    '/:offset/:limit',
+    '/',
     pokemonController.getPokemon
 );
 

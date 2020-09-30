@@ -2,11 +2,15 @@ import { FETCH_POKEMON, FETCH_POKEMON_SUCCESS, FETCH_POKEMON_FAILURE } from './t
 
 const API_URL = "/api/pokemon"
 
-export const fetchPokemon = () => dispatch => {
+
+export const fetchPokemon = (searchParams) => dispatch => {
     dispatch({
         type: FETCH_POKEMON
     })
-    fetch(API_URL)
+    fetch(API_URL, {
+        method: 'GET',
+        body: searchParams
+    })
         .then(res => {
             if (!res.ok) {
                 dispatch({

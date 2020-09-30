@@ -33,6 +33,7 @@ let jsonReturnFormatter = (records) => {
 const queryNeo4j = async (query, params, formatter) => {
     var session = getDb().session();
     try {
+        await session.run(query, params);
         let results = await session.run(query, params);
 
         if (await results.records.length === 0) {

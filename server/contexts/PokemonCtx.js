@@ -2,54 +2,152 @@ const { queryNeo4j } = require("../utilities/utilities");
 const { pokemonModel } = require("./models/returnModels");
 const fetch = require("node-fetch");
 
-// return specified Pokemon (or return all Pokemons if no name supplied)
+// Returns a list of pokemon and their attributes (stats, all moves learned, abilities, types, etc.).
+// no params are required, and all null params are handled. If all params are null, return the first
+// 50 pokemon sorted by game_id ASC.
+// TODO: filter by mono/dual type
+/* params: {
+    offset: <number>,  
+    limit: <number>,   
+    sortOrder: <string>,       ('asc' or 'desc')
+    sortBy: <string>,          ('game_id', 'name', 'hp', 'atk', 'def', 'spa', 'spd', 'spe')
+    hasNames: [<string>],       (include Pokemon with ANY name in this list)
+    hasTypes: [<string>],       (include Pokemon with types in this list)
+    strictTypes: <boolean>     (if true, include Pokemon having ALL types in hasTypes. false by default)
+    hasAbilities: [<string>],  (include Pokemon with ANY ability in this list)
+    hasMoves: [<string>],      (include Pokemon that learn moves in this list)
+    strictMoves: <boolean>     (if true, include Pokemon having ALL moves in includemoves. true by default)
+} */
 const getPokemon = async (params) => {
-    let sortOrder = '';
-    if (params.sortOrder && params.sortOrder === "desc") { sortOrder = " DESC "; }
-    else if (params.sortOrder && params.sortOrder === "asc") { sortOrder = " ASC "; }
+    let offset = params.offset ? params.offset : 0;
+    let limit = params.limit ? params.limit : 50;
 
-    if (params.sortStat) {
-        let index = '';
-        switch(params.sortStat) {
-            case 'hp': index = 0; break;
-            case 'atk': index = 1; break;
-            case 'def': index = 2; break;
-            case 'spa': index = 3; break;
-            case 'spd': index = 4; break;    
-            case 'spe': index = 5; break;                   
-            default: index = 0; break;
-        }
-        var sortStat = ` ORDER BY stats[${index}].value ` + sortOrder;
+    let strictTypes = params.strictTypes !== undefined ? params.strictTypes : false;
+    let strictMoves = params.strictMoves !== undefined ? params.strictMoves : true;
+
+    let monotype = params.monotype !== undefined ? params.monotype : undefined;
+
+    // determine sorting order ASC (default) or DESC
+    let sortOrder = '';
+    if (!params.sortOrder || params.sortOrder === "asc") { sortOrder = " ASC "; }
+    else { sortOrder = " DESC "; }
+
+    // determine any criteria to sort by
+    let sortBy = '';
+    switch (params.sortBy) {
+        case 'name': sortBy = ` ORDER BY p.name `; break;
+        case 'hp': sortBy = ` ORDER BY stats[0].value `; break;
+        case 'atk': sortBy = ` ORDER BY stats[1].value `; break;
+        case 'def': sortBy = ` ORDER BY stats[2].value `; break;
+        case 'spa': sortBy = ` ORDER BY stats[3].value `; break;
+        case 'spd': sortBy = ` ORDER BY stats[4].value `; break;
+        case 'spe': sortBy = ` ORDER BY stats[5].value `; break;
+        default: sortBy = ` ORDER BY p.game_id `; break;
     }
 
-    let model = pokemonModel(['p.', 'types', 'moves', 'abilities', 'stats']);
-    let query = `
-            ${params.filterNames ? 'UNWIND $filterNames AS filterNames' : ' '}
-            MATCH (p:Pokemon) ${params.filterNames ? "WHERE p.name = filterNames.name" : ''}
+    sortBy += sortOrder;
+
+    // this query filters out pokemon by the parameters supplied. it returns the number of matches 
+    // (total) and the names of the pokemon that matched (names). These will be fed to the data 
+    // query so that it can focus on aggregating moves/types/abilities instead of filtering
+    let filterQuery = `
+            MATCH (p:Pokemon)
+            ${params.hasNames ? 'WHERE p.name IN $hasNames' : ' '}
             WITH p
-            ${params.filterTypes ? 'UNWIND $filterTypes AS filterTypes' : ' '}
-            MATCH (p)-[ht:HAS_TYPE]->(t) ${params.filterTypes ? "WHERE t.name = filterTypes.name" : ''}
+
+            ${params.hasTypes ? `
+                ${strictTypes ? `
+                    MATCH (p)-[ht:HAS_TYPE]->(t:Type)
+                    WHERE t.name in $hasTypes
+                    WITH p, size($hasTypes) AS inputCnt, COUNT(DISTINCT t) AS cnt  //, COUNT(distinct ht) AS typeCnt
+                    WHERE cnt = inputCnt //${monotype !== undefined ? `${monotype ? ' AND cnt = 1' : ' AND cnt = 2'}` : ''}
+                    WITH p
+                ` : `
+                    MATCH (p)-[ht:HAS_TYPE]->(t:Type)
+                    WITH p, t   //, COUNT(distinct t) AS cnt, COUNT(distinct ht) as hcnt
+                    WHERE t.name IN $hasTypes //${monotype !== undefined ? `${monotype ? ' AND cnt = 1' : ' AND cnt = 2'}` : ''}
+                    WITH p
+                `}
+            ` : ''}
+
+            ${params.hasAbilities ? `
+                MATCH (p)-[:HAS_ABILITY]->(a:Ability)
+                WHERE a.name IN $hasAbilities
+                WITH p
+            ` : ' '}
+
+            ${params.hasMoves ? `
+                ${strictMoves ? `
+                    MATCH (p)-[:HAS_MOVE]->(m:Move)
+                    WHERE m.name in $hasMoves
+                    WITH p, size($hasMoves) AS inputCnt, COUNT(DISTINCT m) AS cnt
+                    WHERE cnt = inputCnt
+                    WITH p
+                ` : `
+                    MATCH (p)-[:HAS_MOVE]->(m:Move)
+                    WHERE m.name IN $hasMoves
+                    WITH p
+                `}
+            ` : ''}
+            
+            RETURN {
+                total: COUNT(DISTINCT p),
+                pokemonNames: COLLECT(DISTINCT p.name)
+            }
+    `;
+
+    // this query aggregates the types, abilites, moves, and stats of the pokemon found in 
+    // the previous query. I first tried combining filtering and aggregating, but was having
+    // problems with intersection: getPokemon() needs to return a list of pokemon who learn
+    // ALL of the moves provided in the params, but need only satisfy have one match from each 
+    // of ability and type.
+    let dataQuery = `
+            MATCH (p:Pokemon)
+            WHERE p.name IN $pokemonNames
+            WITH p
+
+            MATCH (p)-[ht:HAS_TYPE]->(t)
             WITH p, ht, t ORDER BY ht.slot
             WITH p, COLLECT({slot: ht.slot, name: t.name, color: t.color}) AS types
-            ${params.filterAbilities ? 'UNWIND $filterAbilities AS filterAbilities' : ' '}
-            MATCH (p)-[ha:HAS_ABILITY]->(a) ${params.filterAbilities ? "WHERE a.name = filterAbilities.name" : ''}
+
+            MATCH (p)-[ha:HAS_ABILITY]->(a)
             WITH p, types, ha, a ORDER BY ha.slot
             WITH p, types, COLLECT({slot: ha.slot, name: a.name, is_hidden: ha.is_hidden}) AS abilities
+
             MATCH (p)-[hs:HAS_STAT]->(s) WITH p, types, abilities, hs, s ORDER BY s.order
             WITH p, types, abilities, COLLECT({name: s.name, value: hs.value}) AS stats
-            ${params.filterMoves ? 'UNWIND $filterMoves AS filterMoves' : ' '}
-            MATCH (p)-[hm:HAS_MOVE]->(m) ${params.filterMoves ? "WHERE m.name = filterMoves.name" : ''}
-            WITH m, p, types, abilities, stats ORDER BY m.name
-            WITH p, types, abilities, stats, COLLECT({name: m.name}) AS moves ORDER BY p.game_id
-            RETURN ${model}            
-            ${params.sortName ? ' ORDER BY p.name ' + sortOrder : ''}
-            ${params.sortDexNo ? ' ORDER BY p.game_id ' + sortOrder : ''}
-            ${params.sortStat ? sortStat : ''}
-            SKIP ${params.offset}
-            LIMIT ${params.limit}
+
+            MATCH (p)-[hm:HAS_MOVE]->(m) 
+            WITH m, p, types, abilities, stats 
+            WITH p, types, abilities, stats, COLLECT(m.name) AS moves
+
+            ${sortBy}
+            SKIP ${offset}
+            LIMIT ${limit}
+
+            RETURN {
+                game_id: p.game_id,
+                name: p.name,
+                sprite_link: p.sprite_link,
+                height: p.height,
+                weight: p.weight,
+                types: types,
+                moves: moves,
+                abilities: abilities,
+                stats: stats
+            };
     `;
-    
-    return await queryNeo4j(query, params);
+
+    let filterResults = await queryNeo4j(filterQuery, params);
+    let pokemonResults = await queryNeo4j(dataQuery, filterResults[0]);
+
+    return {
+        offset: offset,
+        limit: limit,
+        total: filterResults[0].total,
+        names: filterResults[0].pokemonNames,
+        pokemon: pokemonResults
+    };
 };
 
 // async getPokemonByType(params) {
@@ -291,10 +389,10 @@ const createPokeapiOfficialArtwork = async (offset, limit) => {
 };
 
 const pokemonCtx = {
-    getPokemon: getPokemon,
-    createPokemon: createPokemon,
-    createOfficialArtwork: createOfficialArtwork,
-    createPokemonEvolution: createPokemonEvolution 
+    getPokemon,
+    createPokemon,
+    createOfficialArtwork,
+    createPokemonEvolution
 };
 
 module.exports = pokemonCtx;
