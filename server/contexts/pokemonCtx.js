@@ -117,9 +117,9 @@ const getPokemon = async (params) => {
             MATCH (p)-[hs:HAS_STAT]->(s) WITH p, types, abilities, hs, s ORDER BY s.order
             WITH p, types, abilities, COLLECT({name: s.name, value: hs.value}) AS stats
 
-            MATCH (p)-[hm:HAS_MOVE]->(m) 
-            WITH m, p, types, abilities, stats 
-            WITH p, types, abilities, stats, COLLECT(m.name) AS moves
+            // MATCH (p)-[hm:HAS_MOVE]->(m) 
+            // WITH m, p, types, abilities, stats 
+            // WITH p, types, abilities, stats, COLLECT(m.name) AS moves
 
             ${sortBy}
             SKIP ${offset}
@@ -132,7 +132,7 @@ const getPokemon = async (params) => {
                 height: p.height,
                 weight: p.weight,
                 types: types,
-                moves: moves,
+                // moves: moves,
                 abilities: abilities,
                 stats: stats
             };
