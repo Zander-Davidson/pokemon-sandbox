@@ -3,7 +3,7 @@ const router = express.Router();
 const moveController = require("../controllers/moveController");
 
 router.get(
-    '/:name?',
+    '/',
     moveController.getMove
 );
 

@@ -1,9 +1,8 @@
 const pokemonCtx = require("../contexts/pokemonCtx");
 
 exports.getPokemon = async (req, res) => {
-    // all are optional. if no sort/filter specifed, return first 50 pokemon sorted by game_id ASC
+    // all sort/filter params are optional. if no sort/filter specifed, return first 50 pokemon sorted by game_id ASC
     let params = req.body;
-
     let { offset, limit, total, names, pokemon } = await pokemonCtx.getPokemon(params);
 
     if (pokemon && Array.isArray(pokemon)) {
@@ -17,7 +16,7 @@ exports.getPokemon = async (req, res) => {
         });
     } else if (!pokemon) {
         res.status(400).json({
-            message: 'That pokemon could not be found.'
+            message: 'There are no Pokemon that match your search.'
         });
     } else {
         res.status(500).json({

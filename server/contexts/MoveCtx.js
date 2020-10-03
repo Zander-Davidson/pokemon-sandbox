@@ -2,20 +2,121 @@ const { queryNeo4j } = require("../utilities/utilities");
 const { moveModel } = require("./models/returnModels");
 const fetch = require("node-fetch");
 
-// TODO: figure out if I want to use models for moves
-// return specified Move (or return all Moves if no name supplied)
-const getMove = async (params) => {
-    let model = moveModel(['m.', 't.', 'dc.']);
-    let query = `
-            MATCH (m:Move) ${params.name ? 'WHERE m.name = $name' : ''}
+// for more details see pokemonCtx.getPokemon()
+/* params: {
+    offset: <number>,  
+    limit: <number>,   
+    sortOrder: <string>,         ('asc' or 'desc')
+    sortBy: <string>,            ('game_id', 'name', 'power', 'accuracy', 'priority', 'pp')
+    hasNames: [<string>],        (include Moves with ANY name in this list)
+    hasTypes: [<string>],        (include Moves with ANY type in this list)
+    hasDamageClass: [<string>],  (include Moves with ANY dc in this list)
+    hasPokemon: [<string>],      (include only moves learned by Pokemon in this list)
+    strictPokemon: <boolean>     (if true, include only the common Moves learned by the Pokemon in this list)
+} */
+const getMoves = async (params) => {
+    let offset = params.offset ? params.offset : 0;
+    let limit = params.limit ? params.limit : 50;
+
+    let strictPokemon = params.strictPokemon !== undefined ? params.strictPokemon : false;
+
+    // determine sorting order ASC (default) or DESC
+    let sortOrder = '';
+    if (!params.sortOrder || params.sortOrder === "desc") { sortOrder = " DESC "; }
+    else { sortOrder = " ASC "; }
+
+    // determine any criteria to sort by
+    let sortBy = '';
+    switch (params.sortBy) {
+        case 'name': sortBy = ` ORDER BY m.name `; break;
+        case 'power': sortBy = ` ORDER BY m.power IS NOT NULL DESC, m.power `; break;
+        case 'accuracy': sortBy = ` ORDER BY m.accuracy IS NOT NULL DESC, m.accuracy `; break;
+        case 'priority': sortBy = ` ORDER BY m.priority IS NOT NULL DESC, m.priority `; break;
+        case 'pp': sortBy = ` ORDER BY m.pp IS NOT NULL DESC, m.pp `; break;
+        default: sortBy = ` ORDER BY m.game_id `; break;
+    }
+
+    sortBy += sortOrder;
+
+    let filterQuery = `
+            MATCH (m:Move) 
+            ${params.hasNames ? 'WHERE m.name IN $hasNames' : ''}
             WITH m
-            MATCH (m)-[ht:HAS_TYPE]->(t) 
+
+            ${params.hasDamageClass ? `
+                MATCH (m)-[hdc:HAS_DAMAGE_CLASS]->(dc)
+                WHERE dc.name IN $hasDamageClass
+                WITH m
+            ` : ''}
+
+            ${params.hasTypes ? `
+                MATCH (m)-[ht:HAS_TYPE]->(t:Type)
+                WHERE t.name IN $hasTypes
+                WITH m
+            `: ''}
+
+            ${params.hasPokemon ? `
+                ${strictPokemon ? `
+                    MATCH (m)<-[:HAS_MOVE]-(p:Pokemon)
+                    WHERE p.name in $hasPokemon
+                    WITH m, size($hasPokemon) AS inputCnt, COUNT(DISTINCT p) AS cnt
+                    WHERE cnt = inputCnt
+                    WITH m
+                ` : `
+                    MATCH (m)<-[:HAS_MOVE]-(p:Pokemon)
+                    WHERE p.name IN $hasPokemon
+                    WITH m
+                `}
+            ` : ''}
+            
+            RETURN {
+                total: COUNT(DISTINCT m),
+                moveNames: COLLECT(DISTINCT m.name)
+            }
+    `;
+
+    let model = moveModel(['m.', 't.', 'dc.']);
+    let dataQuery = `
+            MATCH (m:Move)
+            WHERE m.name IN $moveNames
+            WITH m
+            MATCH (m)-[ht:HAS_TYPE]->(t)
             WITH m, {name: t.name, color: t.color} AS t
             MATCH (m)-[hdc:HAS_DAMAGE_CLASS]->(dc)
             WITH m, t, dc
-            RETURN ${model}
+
+            ${sortBy}
+            SKIP ${offset}
+            LIMIT ${limit}
+
+            RETURN {
+                game_id: m.game_id,
+                name: m.name,
+                effect_chance: m.effect_chance,
+                effect: m.effect,
+                accuracy: m.accuracy,
+                power: m.power,
+                priority: m.priority,
+                pp: m.pp,
+                target: m.target,
+                type: {
+                    name: t.name,
+                    color: t.color
+                },
+                damage_class: dc.name
+            }
         `;
-    return await queryNeo4j(query, params);
+
+    let filterResults = await queryNeo4j(filterQuery, params);
+    let moveResults = await queryNeo4j(dataQuery, filterResults[0]);
+
+    return {
+        offset: offset,
+        limit: limit,
+        total: filterResults[0].total,
+        names: filterResults[0].moveNames,
+        moves: moveResults
+    };
 };
 
 const getMovesByType = async (params) => {
@@ -85,7 +186,7 @@ const createPokeapiMoves = async () => {
 };
 
 const moveCtx = {
-    getMove: getMove,
+    getMoves: getMoves,
     getMovesByType: getMovesByType,
     createMove: createMove
 };

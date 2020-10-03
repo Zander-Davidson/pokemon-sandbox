@@ -11,8 +11,8 @@ const fetch = require("node-fetch");
     limit: <number>,   
     sortOrder: <string>,       ('asc' or 'desc')
     sortBy: <string>,          ('game_id', 'name', 'hp', 'atk', 'def', 'spa', 'spd', 'spe')
-    hasNames: [<string>],       (include Pokemon with ANY name in this list)
-    hasTypes: [<string>],       (include Pokemon with types in this list)
+    hasNames: [<string>],      (include Pokemon with ANY name in this list)
+    hasTypes: [<string>],      (include Pokemon with types in this list)
     strictTypes: <boolean>     (if true, include Pokemon having ALL types in hasTypes. false by default)
     hasAbilities: [<string>],  (include Pokemon with ANY ability in this list)
     hasMoves: [<string>],      (include Pokemon that learn moves in this list)
