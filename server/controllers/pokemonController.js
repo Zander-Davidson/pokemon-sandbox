@@ -16,7 +16,6 @@ exports.getPokemonNames = async (req, res) => {
 }
 
 exports.getPokemon = async (req, res) => {
-    console.log(req.body)
     // all sort/filter params are optional. if no sort/filter specifed, return first 50 pokemon sorted by game_id ASC
     let params = req.body;
     let { offset, limit, total, names, pokemon } = await pokemonCtx.getPokemon(params);

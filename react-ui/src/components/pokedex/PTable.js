@@ -84,7 +84,7 @@ export default function PokemonTable(props) {
             <ButtonToolbar style={{display: "flex row", justifyContent: "space-around"}} variant="light" size="sm">
                 <h5>Pokedex</h5>
                 {total > 0 ? 
-                    <span>Showing {offset + 1} to {total > offset + limit ? offset + limit : total} of {total} Pokemon</span>
+                    <span>Showing {offset + 1}-{total > offset + limit ? offset + limit : total} of {total} Pokemon</span>
                     : <span>0 Pokemon matched your search</span>
                 }
                 <ButtonGroup variant="light" size="sm" style={{padding: "0px 20px 0px 20px"}}>

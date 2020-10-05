@@ -38,6 +38,7 @@
     "react-select": "^3.1.0",
     "react-sticky-table": "^5.1.7",
     "react-tabs": "^3.1.0",
+    "react-tooltip": "^4.2.10",
     "react-typeahead": "^2.0.0-alpha.8",
     "react-validation": "^3.0.7",
     "redux": "^4.0.5",

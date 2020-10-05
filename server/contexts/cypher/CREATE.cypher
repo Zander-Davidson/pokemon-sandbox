@@ -163,3 +163,57 @@ RETURN {
     stats: stats,
     moves: moves
 }
+
+
+// create previous evo move relationships
+MATCH(p:Pokemon)-[:EVOLVES_FROM*]-(f:Pokemon)
+WHERE (p)-[]->(p)
+RETURN p, m
+ORDER BY p.game_id ASC
+LIMIT 3
+
+
+MATCH
+	(p:Pokemon {name: 'venusaur'})-[:EVOLVES_FROM]-(q:Pokemon)
+    (q)-[:HAS_MOVE]->(n:Move),
+    (p)-[:HAS_MOVE]->(m:Move)
+WITH p, q, COLLECT(n.name) as preEvo, COLLECT(m.name) as postEvo
+RETURN preEvo, postEvo
+
+
+MATCH
+	(p:Pokemon {name: 'venusaur'})-[:EVOLVES_FROM]->(q:Pokemon),
+    (q)-[:HAS_MOVE]->(n:Move),
+     (p)-[:HAS_MOVE]->(m:Move)
+WITH n ORDER BY n.name  
+, p, q, COLLECT(distinct n.name) as preEvo, COLLECT(distinct m.name) as postEvo
+
+RETURN {
+	preEvo: preEvo, 
+    postEvo: postEvo
+}
+
+
+MATCH
+	(p:Pokemon)-[:EVOLVES_FROM*]->(q:Pokemon)
+WITH p, q ORDER BY p.game_id LIMIT 3
+MATCH (q)-[:HAS_MOVE]->(n:Move)
+WITH p, q, n ORDER BY n.name
+WITH p, q, COLLECT(n.name) as preEvo
+MATCH (p)-[:HAS_MOVE]->(m:Move)
+WITH p, q, preEvo, m ORDER BY m.name  
+WITH p, q, preEvo, COLLECT(distinct m.name) as postEvo
+return [x in preEvo WHERE not(x in postEvo)] as z, p, q
+
+MATCH
+	(p:Pokemon)-[:EVOLVES_FROM*]->(q:Pokemon)
+WITH p, q ORDER BY p.game_id
+MATCH (q)-[:HAS_MOVE]->(n:Move)
+WITH p, q, n ORDER BY n.name
+WITH p, q, COLLECT(n.name) as preEvo
+MATCH (p)-[:HAS_MOVE]->(m:Move)
+WITH p, q, preEvo, m ORDER BY m.name  
+WITH p, q, preEvo, COLLECT(distinct m.name) as postEvo
+WITH p, q, [x in preEvo WHERE not(x in postEvo)] as missingMoves
+MATCH (l:Move) WHERE l.name IN missingMoves
+MERGE(p)-[:HAS_MOVE]->(l)
