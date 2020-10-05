@@ -1,26 +1,36 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPokemon } from '../../redux/actions/pokemonActions'
-import LoadSpinner from '../tools/LoadSpinner'
-import PokemonTable from './PokemonTable';
+import { fetchPokemonNames } from '../../redux/actions/pokemonActions';
+import { fetchMoveNames } from '../../redux/actions/movesActions';
+import { fetchAbilityNames } from '../../redux/actions/abilitiesActions';
+import { fetchTypes } from '../../redux/actions/typesActions';
+import PokemonTable from './PTable';
+import PokemonSearchPanel from './PokemonSearchPanel';
 import styles from '../../styling/master.scss';
 
 export default function Pokedex() {
     const dispatch = useDispatch();
-    const { fetched } = useSelector(state => state.pokemon);
-    const { fetching } = useSelector(state => state.pokemon);
-    const { items } = useSelector(state => state.pokemon);
+    const { typeData } = useSelector(state => state.types);
+    const { pokemonNames } = useSelector(state => state.pokemon);
+    const { abilityNames } = useSelector(state => state.abilities);
+    const { moveNames } = useSelector(state => state.moves);
 
     useEffect(() => {
-        if (!fetched && !fetching)
-            dispatch(fetchPokemon());
-    })
+        dispatch(fetchPokemonNames());
+        dispatch(fetchTypes());
+        dispatch(fetchMoveNames());
+        dispatch(fetchAbilityNames());
+    }, []);
 
     return (
-        <div className="page">
-            <LoadSpinner isLoading={!fetched || fetching}>
-                <PokemonTable pokemon={items} />
-            </LoadSpinner>
+        <div className="pokedex-wrapper">
+            <PokemonSearchPanel
+                pokemonNames={pokemonNames}
+                typeData={typeData}
+                moveNames={moveNames}
+                abilityNames={abilityNames}
+            />
+            <PokemonTable/>
         </div>
     )
 }

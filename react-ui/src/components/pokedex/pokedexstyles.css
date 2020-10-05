@@ -15,7 +15,7 @@
 .table-wrapper {
     width: 100%
 }
-
+/* 
 .type-icon {
     display: inline-block;
     width: 60px;
@@ -31,5 +31,5 @@
     text-shadow: 0px 0px 4px rgba(0,0,0,0.7);
     text-transform: uppercase;
     transition: opacity .4s;
-}
+} */
 

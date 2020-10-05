@@ -1,6 +1,22 @@
 const pokemonCtx = require("../contexts/pokemonCtx");
 
+exports.getPokemonNames = async (req, res) => {
+    let pokemonNames = await pokemonCtx.getPokemonNames();
+
+    if (pokemonNames && Array.isArray(pokemonNames)) {
+        res.status(200).json({
+            message: `Returned ${pokemonNames.length} pokemon names.`,
+            pokemonNames: pokemonNames
+        });
+    }  else {
+        res.status(500).json({
+            message: 'An unexpected internal error occurred.'
+        });
+    }
+}
+
 exports.getPokemon = async (req, res) => {
+    console.log(req.body)
     // all sort/filter params are optional. if no sort/filter specifed, return first 50 pokemon sorted by game_id ASC
     let params = req.body;
     let { offset, limit, total, names, pokemon } = await pokemonCtx.getPokemon(params);

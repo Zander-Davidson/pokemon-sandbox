@@ -2,6 +2,13 @@ const { queryNeo4j } = require("../utilities/utilities");
 const { pokemonModel } = require("./models/returnModels");
 const fetch = require("node-fetch");
 
+// return array of all pokemon names
+const getPokemonNames = async () => {
+    let query = `MATCH(p:Pokemon) RETURN collect(p.name)`;
+    let pokemonNames = await queryNeo4j(query);
+    return pokemonNames[0];
+}
+
 // Returns a list of pokemon and their attributes (stats, all moves learned, abilities, types, etc.).
 // no params are required, and all null params are handled. If all params are null, return the first
 // 50 pokemon sorted by game_id ASC.
@@ -52,10 +59,10 @@ const getPokemon = async (params) => {
     // query so that it can focus on aggregating moves/types/abilities instead of filtering
     let filterQuery = `
             MATCH (p:Pokemon)
-            ${params.hasNames ? 'WHERE p.name IN $hasNames' : ' '}
+            ${params.hasNames && params.hasNames.length > 0 ? 'WHERE p.name IN $hasNames' : ' '}
             WITH p
 
-            ${params.hasTypes ? `
+            ${params.hasTypes && params.hasTypes.length > 0 ? `
                 ${strictTypes ? `
                     MATCH (p)-[ht:HAS_TYPE]->(t:Type)
                     WHERE t.name in $hasTypes
@@ -70,13 +77,13 @@ const getPokemon = async (params) => {
                 `}
             ` : ''}
 
-            ${params.hasAbilities ? `
+            ${params.hasAbilities && params.hasAbilities.length > 0 ? `
                 MATCH (p)-[:HAS_ABILITY]->(a:Ability)
                 WHERE a.name IN $hasAbilities
                 WITH p
             ` : ' '}
 
-            ${params.hasMoves ? `
+            ${params.hasMoves && params.hasMoves.length > 0 ? `
                 ${strictMoves ? `
                     MATCH (p)-[:HAS_MOVE]->(m:Move)
                     WHERE m.name in $hasMoves
@@ -149,27 +156,6 @@ const getPokemon = async (params) => {
         pokemon: pokemonResults
     };
 };
-
-// async getPokemonByType(params) {
-//     let model = pokemonModel(['p.', 'types', 'moves', 'abilities', 'stats']);
-//     let query = `
-//         MATCH (p:Pokemon)-[ht:HAS_TYPE]->(t:Type)
-//         WHERE             
-//         ${params.type2Name ? 
-//             't.name = $type1Name OR t.name = $type2Name'
-//             : 't.name = $type1Name '}
-//         WITH p, ht, t ORDER BY ht.slot
-//         WITH p, COLLECT({slot: ht.slot, name: t.name, color: t.color}) AS types
-//         MATCH (p)-[ha:HAS_ABILITY]->(a) WITH p, types, ha, a ORDER BY ha.slot
-//         WITH p, types, COLLECT({slot: ha.slot, name: a.name, is_hidden: ha.is_hidden}) AS abilities
-//         MATCH (p)-[hs:HAS_STAT]->(s) WITH p, types, abilities, hs, s ORDER BY s.order
-//         WITH p, types, abilities, COLLECT({name: s.name, value: hs.value}) AS stats
-//         MATCH (p)-[hm:HAS_MOVE]->(m) WITH m, p, types, abilities, stats ORDER BY m.name
-//         WITH p, types, abilities, stats, COLLECT({name: m.name}) AS moves
-//         RETURN ${model}`;
-//     return await queryNeo4j(query, params);
-// }
-
 
 const createPokemon = async (params) => {
     let model = pokemonModel(['p.', null, null, null, null]);
@@ -389,6 +375,7 @@ const createPokeapiOfficialArtwork = async (offset, limit) => {
 };
 
 const pokemonCtx = {
+    getPokemonNames,
     getPokemon,
     createPokemon,
     createOfficialArtwork,
