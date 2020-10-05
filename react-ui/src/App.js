@@ -42,7 +42,7 @@ export default function App() {
             <Route path='/home' component={Home} />
             <Route path='/pokedex' component={Pokedex} />
             <Route path='/movedex' component={Movedex} />
-            <ProtectedRoute path='/teambuilder' component={TeamBuilder} />
+            <Route path='/teambuilder' component={TeamBuilder} />
             <Route path='/login' component={Login} />
             <Route path='/signup' component={Signup} />
 

@@ -1,22 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPokemon, setPokemonSearch, setPokemonOffset } from '../../redux/actions/pokemonActions';
+import { fetchMoves, setMoveSearch, setMoveOffset } from '../../redux/actions/movesActions';
 import { Form, Button, Col, Row, InputGroup } from 'react-bootstrap';
 import { Typeahead } from 'react-bootstrap-typeahead';
 import styles from '../../styling/master.scss'
 
-export default function PokemonSearchPanel(props) {
+export default function MoveSearchPanel(props) {
     const [sortOrder, setSortOrder] = useState('asc');
     const [sortBy, setSortBy] = useState('');
     const [hasNames, setHasNames] = useState([]);
     const [types, setTypes] = useState([]);
     const [hasTypes, setHasTypes] = useState([]);
-    const [strictTypes, setStrictTypes] = useState(false);
-    const [hasAbilities, setHasAbilities] = useState([]);
-    const [hasMoves, setHasMoves] = useState([]);
-    const [strictMoves, setStrictMoves] = useState(true);
+    const [hasDamageClass, setHasDamageClass] = useState([]);
+    const [hasPokemon, setHasPokemon] = useState([]);
+    const [strictPokemon, setStrictPokemon] = useState(true);
 
-    const { offset, limit } = useSelector(state => state.pokemon)
+    const { offset, limit } = useSelector(state => state.moves)
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -41,20 +40,16 @@ export default function PokemonSearchPanel(props) {
         setHasTypes(event)
     }
 
-    const handleChangeStrictTypes = (event) => {
-        setStrictTypes(event.target.value === "true")
+    const handleChangeHasDamageClass = (event) => {
+        setHasDamageClass(event)
     }
 
-    const handleChangeHasAbilities = (event) => {
-        setHasAbilities(event)
+    const handleChangeHasPokemon = (event) => {
+        setHasPokemon(event)
     }
 
-    const handleChangeHasMoves = (event) => {
-        setHasMoves(event)
-    }
-
-    const handleChangeStrictMoves = (event) => {
-        setStrictMoves(event.target.value === "true")
+    const handleChangeStrictPokemon = (event) => {
+        setStrictPokemon(event.target.value === "true")
     }
 
     const handleSubmit = (event) => {
@@ -64,14 +59,13 @@ export default function PokemonSearchPanel(props) {
             sortBy: sortBy,
             hasNames: hasNames,
             hasTypes: hasTypes,
-            strictTypes: strictTypes,
-            hasAbilities: hasAbilities,
-            hasMoves: hasMoves,
-            strictMoves: strictMoves,
+            hasDamageClass: hasDamageClass,
+            hasPokemon: hasPokemon,
+            strictPokemon: strictPokemon,
         };
-        dispatch(setPokemonOffset(0))
-        dispatch(setPokemonSearch(searchParams))
-        dispatch(fetchPokemon({
+        dispatch(setMoveOffset(0))
+        dispatch(setMoveSearch(searchParams))
+        dispatch(fetchMoves({
             offset: 0,
             limit: limit,
             ...searchParams
@@ -82,19 +76,17 @@ export default function PokemonSearchPanel(props) {
         setSortOrder('asc');
         setSortBy('');
         setHasNames([]);
-        setTypes([]);
         setHasTypes([]);
-        setStrictTypes(false);
-        setHasAbilities([]);
-        setHasMoves([]);
-        setStrictMoves(true);
+        setHasDamageClass([]);
+        setHasPokemon([]);
+        setStrictPokemon(true);
     }
 
     return (
         <div className="card" style={{ height: '85vh' }}>
             <div className="pokemon-search-panel-wrapper">
-                <h5>Custom Pokemon Search</h5>
-                <div style={{ margin: "15px 15px 15px 15px"}}>
+                <h5>Custom Move Search</h5>
+                <div style={{ margin: "15px 15px 15px 15px" }}>
                     <Form onSubmit={handleSubmit}>
 
                         {/* <Form.Row>
@@ -109,14 +101,12 @@ export default function PokemonSearchPanel(props) {
                                         <InputGroup.Text>Sort by</InputGroup.Text>
                                     </InputGroup.Prepend>
                                     <Form.Control size="sm" as="select" onChange={handleChangeSortBy}>
-                                        <option value="game_id">Pokedex #</option>
+                                        <option value="game_id">Game #</option>
                                         <option value="name">Name</option>
-                                        <option value="hp">HP</option>
-                                        <option value="atk">Attack</option>
-                                        <option value="def">Defense</option>
-                                        <option value="spa">Sp. Attack</option>
-                                        <option value="spd">Sp. Defense</option>
-                                        <option value="spe">Speed</option>
+                                        <option value="power">Power</option>
+                                        <option value="accuracy">Accuracy</option>
+                                        <option value="priority">Priority</option>
+                                        <option value="pp">PP</option>
                                     </Form.Control>
                                 </InputGroup>
                             </Col>
@@ -135,15 +125,15 @@ export default function PokemonSearchPanel(props) {
 
                         <InputGroup size="sm" className="mb-3">
                             <InputGroup.Prepend>
-                                <InputGroup.Text>Pokemon</InputGroup.Text>
+                                <InputGroup.Text>Moves</InputGroup.Text>
                             </InputGroup.Prepend>
                             <Typeahead
-                                id="hasPokemon"
+                                id="hasMoves"
                                 placeholder="Choose or start typing..."
                                 size="small"
                                 multiple
                                 clearButton
-                                options={props.pokemonNames}
+                                options={props.moveNames}
                                 selected={hasNames}
                                 onChange={handleChangeHasNames}
                             />
@@ -163,31 +153,25 @@ export default function PokemonSearchPanel(props) {
                                 selected={hasTypes}
                                 onChange={handleChangeHasTypes}
                             />
-                            <InputGroup.Append>
-                                <Form.Control size="sm" as="select" onChange={handleChangeStrictTypes}>
-                                    <option value={false}>Lax</option>
-                                    <option value={true}>Strict</option>
-                                </Form.Control>
-                            </InputGroup.Append>
                         </InputGroup>
 
 
                         <InputGroup size="sm" className="mb-3">
                             <InputGroup.Prepend>
-                                <InputGroup.Text>Moves</InputGroup.Text>
+                                <InputGroup.Text>Pokemon</InputGroup.Text>
                             </InputGroup.Prepend>
                             <Typeahead
-                                id="hasMoves"
+                                id="hasPokemon"
                                 placeholder="Choose or start typing..."
                                 size="small"
                                 multiple
                                 clearButton
-                                options={props.moveNames}
-                                selected={hasMoves}
-                                onChange={handleChangeHasMoves}
+                                options={props.pokemonNames}
+                                selected={hasPokemon}
+                                onChange={handleChangeHasPokemon}
                             />
                             <InputGroup.Append>
-                                <Form.Control size="sm" as="select" onChange={handleChangeStrictMoves}>
+                                <Form.Control size="sm" as="select" onChange={handleChangeStrictPokemon}>
                                     <option value={true}>Strict</option>
                                     <option value={false}>Lax</option>
                                 </Form.Control>
@@ -196,17 +180,17 @@ export default function PokemonSearchPanel(props) {
 
                         <InputGroup size="sm" className="mb-3">
                             <InputGroup.Prepend>
-                                <InputGroup.Text>Abilities</InputGroup.Text>
+                                <InputGroup.Text>Damage Class</InputGroup.Text>
                             </InputGroup.Prepend>
                             <Typeahead
-                                id="hasAbilities"
+                                id="hasDamageClass"
                                 placeholder="Choose or start typing..."
                                 size="small"
                                 multiple
                                 clearButton
-                                options={props.abilityNames}
-                                selected={hasAbilities}
-                                onChange={handleChangeHasAbilities}
+                                options={props.damageClassNames}
+                                selected={hasDamageClass}
+                                onChange={handleChangeHasDamageClass}
                             />
                         </InputGroup>
 
