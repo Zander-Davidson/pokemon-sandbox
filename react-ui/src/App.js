@@ -29,14 +29,14 @@ export default function App() {
   //     window.location.reload();
   //   });
   // }, [dispatch]);
-  
+
   dispatch(checkLoggedIn());
 
   // standard react-router-dom site layout
   return (
     <div className="App">
-      <Router history={history}>
-        <Header />
+        <Router history={history}>
+          <Header />
           <Switch>
             <Route exact path='/' component={Home} />
             <Route path='/home' component={Home} />
@@ -49,7 +49,7 @@ export default function App() {
             {/* <Route path='/damage-calculator' component={DamageCalculator} /> */}
             {/* <Route path='/insertPokedexData' component={FetchPokedexData} /> */}
           </Switch>
-      </Router>
-    </div >
+        </Router>
+      </div>
   );
 }

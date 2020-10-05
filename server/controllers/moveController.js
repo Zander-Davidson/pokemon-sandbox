@@ -1,5 +1,20 @@
 const moveCtx = require("../contexts/moveCtx");
 
+exports.getMoveNames = async (req, res) => {
+    let moveNames = await moveCtx.getMoveNames();
+
+    if (moveNames && Array.isArray(moveNames)) {
+        res.status(200).json({
+            message: `Returned ${moveNames.length} move names.`,
+            moveNames: moveNames
+        });
+    }  else {
+        res.status(500).json({
+            message: 'An unexpected internal error occurred.'
+        });
+    }
+}
+
 exports.getMove = async (req, res) => {
     // all sort/filter params are optional. if no sort/filter specifed, return first 50 moves sorted by game_id ASC
     let params = req.body;

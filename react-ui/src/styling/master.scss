@@ -1,14 +1,17 @@
 @import "~bootstrap/scss/bootstrap";
+@import '~react-bootstrap-typeahead/css/Typeahead.css';
 @import 'colors';
 @import 'fonts';
 @import 'config';
 
 $header-height: 56px;
+$table-row-height: 45px;
 
 .App {
     text-align: center;
     display: flex;
     flex-direction: column;
+    height: 100%;
 }
   
 .App-logo {
@@ -39,14 +42,115 @@ $header-height: 56px;
         transform: rotate(360deg);
     }
 }
-  
-.page {
+
+.home-page-wrapper {
+    top: 70px;
     position: relative;
-    top: $header-height !important;
-    // display: flex;
-    // flex-direction: column;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
     height: 100%;
-    max-height: 100vh;
+}
+
+.home-card-wrapper {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    position: relative;
+    top: 60px;
+}
+
+.home-card {
+    width: 300px;
+}
+
+.pokedex-wrapper {
+    display: flex;
+    justify-content: space-evenly;
+    // top: $header-height;
+}
+
+.pokemon-search-panel-wrapper {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 100%;
+    top: 0;
+}
+
+
+::-webkit-scrollbar { 
+    width: 10px; 
+} 
+
+/* Track */ 
+::-webkit-scrollbar-track { 
+    background: whitesmoke; 
+    border-radius: 5px; 
+} 
+
+/* Handle */ 
+::-webkit-scrollbar-thumb { 
+    background: grey; 
+    border-radius: 5px;
+} 
+
+/* Handle on hover */ 
+::-webkit-scrollbar-thumb:hover { 
+    background: #555; 
+} 
+
+.pokemon-table-wrapper {
+    // position: relative;
+    width: 100%;
+    height: 89vh;
+    // display: flex column;
+}
+
+.pokemon-table-header {
+    width: 100%;
+    height: $table-row-height;
+    border: solid black;
+}
+
+.sticky-table-header {
+    font-weight: bold;
+}
+
+.sticky-table-cell {
+    display: table-cell;
+    border: 1px solid #e5e5e5;
+    padding: 3px 10px 3px 10px !important;
+    vertical-align: middle;
+    font-size: 13px;
+    // height: 40px;
+    // max-height: 40px !important;
+}
+
+.table-pokemon-icon {
+    max-height: 50px;
+    max-width: 50px;
+    margin-right: 5px;
+    margin-left: -12px;
+    margin-top: -10px;
+    margin-bottom: -10px;
+}
+
+.type-icon {
+    display: inline-block;
+    width: 50px;
+    // margin-bottom: 2px;
+    border: 1px solid #a3a3a3;
+    border-radius: 5px;
+    border: 1px solid rgba(0,0,0,0.2);
+    color: #fff;
+    font-size: .6rem;
+    font-weight: normal;
+    line-height: 1rem;
+    text-align: center;
+    text-shadow: 0px 0px 4px rgba(0,0,0,0.7);
+    text-transform: uppercase;
+    transition: opacity .4s;
 }
 
 img {
@@ -64,10 +168,11 @@ img {
 }
 
 .header {
+    margin: auto;
     background-color: #73638F;
     padding: 0px 0px 0px 0px;
     width: -webkit-fill-available;
-    position: fixed;
+    position: sticky;
     top: 0px;
     z-index: 1000;
 
@@ -101,11 +206,11 @@ label {
 }
   
 .card {
+    display: flex column;
     position: relative;
     background-color: #f7f7f7;
-    padding: 20px 25px 30px;
-    margin: 0 auto 25px;
-    margin-top: 25px;
+    padding: 10px;
+    margin: 10px;
     -moz-border-radius: 2px;
     -webkit-border-radius: 2px;
     border-radius: 2px;

@@ -2,6 +2,13 @@ const { queryNeo4j } = require("../utilities/utilities");
 const { moveModel } = require("./models/returnModels");
 const fetch = require("node-fetch");
 
+// return array of all move names
+const getMoveNames = async () => {
+    let query = `MATCH(m:Move) RETURN collect(m.name)`;
+    let moveNames = await queryNeo4j(query);
+    return moveNames[0];
+}
+
 // for more details see pokemonCtx.getPokemon()
 /* params: {
     offset: <number>,  
@@ -186,9 +193,10 @@ const createPokeapiMoves = async () => {
 };
 
 const moveCtx = {
-    getMoves: getMoves,
-    getMovesByType: getMovesByType,
-    createMove: createMove
+    getMoveNames,
+    getMoves,
+    getMovesByType,
+    createMove
 };
 
 module.exports = moveCtx;
