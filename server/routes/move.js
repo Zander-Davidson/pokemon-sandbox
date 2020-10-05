@@ -2,14 +2,7 @@ const express = require('express');
 const router = express.Router();
 const moveController = require("../controllers/moveController");
 
-router.get(
-    '/',
-    moveController.getMove
-);
-
-router.get(
-    '/bytype/:typeName',
-    moveController.getMovesByType
-);
+router.get('/names', moveController.getMoveNames);
+router.post('/', moveController.getMove);
 
 module.exports = router;

@@ -2,6 +2,13 @@ const { queryNeo4j } = require("../utilities/utilities");
 const { abilityModel } = require("./models/returnModels");
 const fetch = require("node-fetch");
 
+// return array of all ability names
+const getAbilityNames = async () => {
+    let query = `MATCH(a:Ability) RETURN collect(a.name)`;
+    let abilityNames = await queryNeo4j(query);
+    return abilityNames[0];
+}
+
 // return specified Ability (or return all Abilitys if no name supplied)
 /* params = {
     name: <string>
@@ -50,8 +57,9 @@ const createPokeapiAbilities = async () => {
 
 
 const abilityCtx = {
-    getAbility: getAbility,
-    createAbility: createAbility
+    getAbilityNames,
+    getAbility,
+    createAbility
 };
 
 module.exports = abilityCtx;

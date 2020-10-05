@@ -3,6 +3,7 @@ import authReducer from './authReducer';
 import messageReducer from './messageReducer';
 import postReducer from './postReducer';
 import pokemonReducer from "./pokemonReducer";
+import typesReducer from "./typesReducer";
 import moveReducer from "./moveReducer";
 import itemsReducer from "./itemsReducer";
 import abilitiesReducer from "./abilitiesReducer";
@@ -17,6 +18,7 @@ export default combineReducers({
     message: messageReducer,
     posts: postReducer,
     pokemon: pokemonReducer,
+    types: typesReducer,
     moves: moveReducer,
     items: itemsReducer,
     abilities: abilitiesReducer,

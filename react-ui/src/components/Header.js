@@ -35,7 +35,7 @@ export default function Header() {
     }
 
     let signupButton = !isLoggedIn ? 
-        <Button className="btn" onClick={handleSignup} variant="info">Sign up</Button> 
+        <Button className="btn" onClick={handleSignup} variant="success">Sign up</Button> 
         : <span style={{color:'white', margin:'5px'}}><img className="icon" src={icon_url}/>{username}</span>;
 
     let loginButton = <Button className="btn" onClick={handleLogin} variant="light" disabled={loggingIn}>{isLoggedIn ? "Log out" : "Log in"}</Button>;

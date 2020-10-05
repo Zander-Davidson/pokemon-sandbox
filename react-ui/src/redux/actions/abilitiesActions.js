@@ -1,29 +1,66 @@
-import { FETCH_ABILITIES, LOADING_ABILITIES } from './types'
+import { FETCH_ABILITIES, FETCH_ABILITIES_SUCCESS, FETCH_ABILITIES_FAILURE,
+    FETCH_ABILITY_NAMES, FETCH_ABILITY_NAMES_FAILURE, FETCH_ABILITY_NAMES_SUCCESS
+} from './types'
 
-const fetchAbilitiesUrl = "/api/getAllAbilities"
+const API_URL_DATA = "/api/ability";
+const API_URL_NAMES = "/api/ability/names";
 
-export const fetchAbilities = () => dispatch => {
-    dispatch({
-        type: LOADING_ABILITIES,
-        payload: true
+export const fetchAbilityNames = () => dispatch => {
+dispatch({
+    type: FETCH_ABILITY_NAMES
+})
+fetch(API_URL_NAMES)
+    .then(res => {
+        if (!res.ok) {
+            dispatch({
+                type: FETCH_ABILITY_NAMES_FAILURE
+            })
+            throw new Error(`status ${res.status}`);
+        }
+        return res.json();
     })
-    fetch(fetchAbilitiesUrl)
-        .then(res => {
-            if (!res.ok)
-                throw new Error(`status ${res.status}`);
-            return res.json();
+    .then(json => {
+        dispatch({
+            type: FETCH_ABILITY_NAMES_SUCCESS,
+            payload: json.abilityNames
         })
-        .then(abilities => {
+    })
+    .catch(e => {
+        dispatch({
+            type: FETCH_ABILITY_NAMES_FAILURE
+        })
+        console.log(`API call failed: ${e}`);
+    })
+}
+
+
+export const fetchAbilities = (searchParams) => dispatch => {
+dispatch({
+    type: FETCH_ABILITIES
+})
+fetch(API_URL_DATA, {
+    method: 'GET',
+    body: searchParams
+})
+    .then(res => {
+        if (!res.ok) {
             dispatch({
-                type: FETCH_ABILITIES,
-                payload: abilities.results
+                type: FETCH_ABILITIES_FAILURE
             })
-            dispatch({
-                type: LOADING_ABILITIES,
-                payload: false
-            })
+            throw new Error(`status ${res.status}`);
+        }
+        return res.json();
+    })
+    .then(json => {
+        dispatch({
+            type: FETCH_ABILITIES_SUCCESS,
+            payload: json.abilities
         })
-        .catch(e => {
-            console.log(`API call failed: ${e}`);
+    })
+    .catch(e => {
+        dispatch({
+            type: FETCH_ABILITIES_FAILURE
         })
+        console.log(`API call failed: ${e}`);
+    })
 }
