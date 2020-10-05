@@ -15,7 +15,23 @@ exports.getMoveNames = async (req, res) => {
     }
 }
 
+exports.getDamageClassNames = async (req, res) => {
+    let dcNames = await moveCtx.getDamageClassNames();
+
+    if (dcNames && Array.isArray(dcNames)) {
+        res.status(200).json({
+            message: `Returned ${dcNames.length} damage class names.`,
+            damageClassNames: dcNames
+        });
+    }  else {
+        res.status(500).json({
+            message: 'An unexpected internal error occurred.'
+        });
+    }
+}
+
 exports.getMove = async (req, res) => {
+    console.log(req.body)
     // all sort/filter params are optional. if no sort/filter specifed, return first 50 moves sorted by game_id ASC
     let params = req.body;
     let { offset, limit, total, names, moves } = await moveCtx.getMoves(params);

@@ -16,10 +16,13 @@ export default function Pokedex() {
     const { moveNames } = useSelector(state => state.moves);
 
     useEffect(() => {
-        dispatch(fetchPokemonNames());
-        dispatch(fetchTypes());
-        dispatch(fetchMoveNames());
-        dispatch(fetchAbilityNames());
+        if (pokemonNames.length === 0 || typeData.length === 0 
+            || abilityNames.length === 0 || moveNames.length === 0) {
+            dispatch(fetchPokemonNames());
+            dispatch(fetchTypes());
+            dispatch(fetchMoveNames());
+            dispatch(fetchAbilityNames());
+        }
     }, []);
 
     return (

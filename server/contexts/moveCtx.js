@@ -9,6 +9,13 @@ const getMoveNames = async () => {
     return moveNames[0];
 }
 
+// return array of all damage class names
+const getDamageClassNames = async () => {
+    let query = `MATCH(dc:DamageClass) RETURN collect(dc.name)`;
+    let damageClassNames = await queryNeo4j(query);
+    return damageClassNames[0];
+}
+
 // for more details see pokemonCtx.getPokemon()
 /* params: {
     offset: <number>,  
@@ -22,6 +29,7 @@ const getMoveNames = async () => {
     strictPokemon: <boolean>     (if true, include only the common Moves learned by the Pokemon in this list)
 } */
 const getMoves = async (params) => {
+    console.log(params)
     let offset = params.offset ? params.offset : 0;
     let limit = params.limit ? params.limit : 50;
 
@@ -29,8 +37,8 @@ const getMoves = async (params) => {
 
     // determine sorting order ASC (default) or DESC
     let sortOrder = '';
-    if (!params.sortOrder || params.sortOrder === "desc") { sortOrder = " DESC "; }
-    else { sortOrder = " ASC "; }
+    if (!params.sortOrder || params.sortOrder === "asc") { sortOrder = " ASC "; }
+    else { sortOrder = " DESC "; }
 
     // determine any criteria to sort by
     let sortBy = '';
@@ -47,22 +55,22 @@ const getMoves = async (params) => {
 
     let filterQuery = `
             MATCH (m:Move) 
-            ${params.hasNames ? 'WHERE m.name IN $hasNames' : ''}
+            ${params.hasNames && params.hasNames.length > 0 ? 'WHERE m.name IN $hasNames' : ''}
             WITH m
 
-            ${params.hasDamageClass ? `
+            ${params.hasDamageClass && params.hasDamageClass.length > 0 ? `
                 MATCH (m)-[hdc:HAS_DAMAGE_CLASS]->(dc)
                 WHERE dc.name IN $hasDamageClass
                 WITH m
             ` : ''}
 
-            ${params.hasTypes ? `
+            ${params.hasTypes && params.hasTypes.length > 0 ? `
                 MATCH (m)-[ht:HAS_TYPE]->(t:Type)
                 WHERE t.name IN $hasTypes
                 WITH m
             `: ''}
 
-            ${params.hasPokemon ? `
+            ${params.hasPokemon && params.hasPokemon.length > 0 ? `
                 ${strictPokemon ? `
                     MATCH (m)<-[:HAS_MOVE]-(p:Pokemon)
                     WHERE p.name in $hasPokemon
@@ -82,7 +90,6 @@ const getMoves = async (params) => {
             }
     `;
 
-    let model = moveModel(['m.', 't.', 'dc.']);
     let dataQuery = `
             MATCH (m:Move)
             WHERE m.name IN $moveNames
@@ -193,6 +200,7 @@ const createPokeapiMoves = async () => {
 };
 
 const moveCtx = {
+    getDamageClassNames,
     getMoveNames,
     getMoves,
     getMovesByType,

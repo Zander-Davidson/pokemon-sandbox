@@ -24,7 +24,9 @@ class TeamBuilder extends Component {
                 <TeamView/>
                 <SetView/>
             </div>
-        return content 
+
+        let comingSoon = <h5>Team builder coming soon!</h5>
+        return comingSoon 
     }
 }
 
