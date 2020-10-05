@@ -67,7 +67,8 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 fetchingPokemon: false,
-                fetchedPokemon: false
+                fetchedPokemon: false,
+                total: 0
             }
         
         case SET_POKEMON_OFFSET:

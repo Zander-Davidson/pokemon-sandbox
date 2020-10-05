@@ -32,7 +32,10 @@ exports.getPokemon = async (req, res) => {
         });
     } else if (!pokemon) {
         res.status(400).json({
-            message: 'There are no Pokemon that match your search.'
+            message: 'There are no Pokemon that match your search.',
+            offset: 0,
+            limit: limit,
+            total: 0
         });
     } else {
         res.status(500).json({

@@ -83,7 +83,10 @@ export default function PokemonTable(props) {
         setPaginator(
             <ButtonToolbar style={{display: "flex row", justifyContent: "space-around"}} variant="light" size="sm">
                 <h5>Pokedex</h5>
-                <span>Showing {offset + 1} to {total > offset + limit ? offset + limit : total} of {total} Pokemon</span>
+                {total > 0 ? 
+                    <span>Showing {offset + 1} to {total > offset + limit ? offset + limit : total} of {total} Pokemon</span>
+                    : <span>0 Pokemon matched your search</span>
+                }
                 <ButtonGroup variant="light" size="sm" style={{padding: "0px 20px 0px 20px"}}>
                     <Button variant="light" size="sm" value={"dec"} onClick={(e) => handlePageClick(e.target.value)}>{'<'}</Button>
                     {leadingButtons}
@@ -96,7 +99,7 @@ export default function PokemonTable(props) {
                     <Button variant="light" size="sm" value={"inc"} onClick={(e) => handlePageClick(e.target.value)}>{'>'}</Button>
                 </ButtonGroup>
             </ButtonToolbar>)
-    }, [total, offset, limit, searchParams]);
+    }, [total, offset, limit, searchParams, pokemonData]);
 
     useEffect(() => {
         setRows(pokemonData.map(p => {
@@ -152,7 +155,7 @@ export default function PokemonTable(props) {
         <div className="card" style={{ height: '85vh', minWidth: "63%" }}>
             {paginator}
             <div style={tableStyle}>
-                    <LoadSpinner isLoading={!fetchedPokemon || fetchingPokemon}>
+                    <LoadSpinner isLoading={fetchingPokemon}>
                 <StickyTable>
                     {header}
                         {rows}
