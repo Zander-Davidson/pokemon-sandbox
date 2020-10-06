@@ -84,8 +84,8 @@ export default function PokemonTable(props) {
             <ButtonToolbar style={{display: "flex row", justifyContent: "space-around"}} variant="light" size="sm">
                 <h5>Movedex</h5>
                 {total > 0 ? 
-                    <span>Showing {offset + 1}-{total > offset + limit ? offset + limit : total} of {total} moves</span>
-                    : <span>0 moves matched your search</span>
+                    <span>{offset + 1}-{total > offset + limit ? offset + limit : total} of {total} moves</span>
+                    : <span>0 results</span>
                 }
                 <ButtonGroup variant="light" size="sm" style={{padding: "0px 20px 0px 20px"}}>
                     <Button variant="light" size="sm" value={"dec"} onClick={(e) => handlePageClick(e.target.value)}>{'<'}</Button>
@@ -148,10 +148,10 @@ export default function PokemonTable(props) {
             <Cell className="sticky-table-header">Move</Cell>
             <Cell className="sticky-table-header">Type</Cell>
             <Cell className="sticky-table-header">Class</Cell>
-            <Cell className="sticky-table-header">power</Cell>
-            <Cell className="sticky-table-header">accuracy</Cell>
-            <Cell className="sticky-table-header">priority</Cell>
-            <Cell className="sticky-table-header">pp</Cell>
+            <Cell className="sticky-table-header">Power</Cell>
+            <Cell className="sticky-table-header">Accuracy</Cell>
+            <Cell className="sticky-table-header">Priority</Cell>
+            <Cell className="sticky-table-header">PP</Cell>
         </Row>
     );
 

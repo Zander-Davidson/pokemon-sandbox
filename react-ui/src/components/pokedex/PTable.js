@@ -1,26 +1,58 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPokemon, setPokemonOffset } from '../../redux/actions/pokemonActions'
+import { fetchPokemon, setPokemonOffset, addPokemonPin, removePokemonPin, clearPokemonPins } from '../../redux/actions/pokemonActions'
 import LoadSpinner from '../tools/LoadSpinner'
 import { StickyTable, Row, Cell } from 'react-sticky-table';
-import { Button, ButtonGroup, ButtonToolbar, Dropdown, DropdownButton, ToggleButton } from 'react-bootstrap';
+import { Button, ButtonGroup, ButtonToolbar, Dropdown, DropdownButton } from 'react-bootstrap';
+import Thumbtack from '../icons/Thumbtack';
 import styles from '../../styling/master.scss'
 
 export default function PokemonTable(props) {
     const [rows, setRows] = useState([]);
+    const [pinnedRows, setPinnedRows] = useState([]);
     const [paginator, setPaginator] = useState();
 
     const dispatch = useDispatch();
-    const { fetchingPokemon, fetchedPokemon, pokemonData, searchParams, offset, limit, total } = useSelector(state => state.pokemon);
+    const { fetchingPokemon, fetchedPokemon, pokemonData,
+        searchParams, offset, limit, total, pinnedPokemon } = useSelector(state => state.pokemon);
+
+
+    useEffect(() => {
+        setPaginator(buildPaginator());
+    }, [total, offset, limit, searchParams, pokemonData, pinnedPokemon.size]);
+
+    useEffect(() => {
+        setRows([])
+    }, [fetchingPokemon, searchParams]);
+
+    useEffect(() => {
+        setRows(buildRows(pokemonData, false));
+    }, [pokemonData, pinnedPokemon.size]);
+
+    useEffect(() => {
+        let pinnedArray = Array.from(pinnedPokemon.values());
+        setPinnedRows(buildRows(pinnedArray, true));
+    }, [pinnedPokemon.size]);
 
     useEffect(() => {
         if (!fetchedPokemon && !fetchingPokemon)
             dispatch(fetchPokemon());
     }, []);
 
-    useEffect(() => {
-        setRows([])
-    }, [fetchingPokemon, searchParams]);
+
+    const handleHeaderPinClick = () => {
+        if (pinnedPokemon.size > 0) {
+            dispatch(clearPokemonPins())
+        }
+    }
+
+    const handleRowPinClick = (pokemon) => {
+        if (pinnedPokemon.get(pokemon.name)) {
+            dispatch(removePokemonPin(pokemon.name));
+        } else if (pinnedPokemon.size < 6) {
+            dispatch(addPokemonPin(pokemon.name, pokemon));
+        }
+    }
 
     const handlePageClick = (value) => {
         let newPage = value;
@@ -44,7 +76,7 @@ export default function PokemonTable(props) {
         }));
     }
 
-    useEffect(() => {
+    let buildPaginator = () => {
         let leadingButtons = [];
         let overflow = [];
         let trailingButtons = [];
@@ -53,41 +85,44 @@ export default function PokemonTable(props) {
             let page = parseInt((i / limit) + 1);
             if (page < 6) {
                 leadingButtons.push(
-                    <Button 
+                    <Button
                         onClick={(e) => handlePageClick(e.target.value)}
-                        active={i === offset} 
-                        variant="light" 
+                        active={i === offset}
+                        variant="light"
                         size="sm"
                         value={i}
                     >{page}</Button>);
             } else if (total - i < limit) {
                 trailingButtons.push(
-                    <Button 
+                    <Button
                         onClick={(e) => handlePageClick(e.target.value)}
-                        active={i === offset} 
-                        variant="light" 
+                        active={i === offset}
+                        variant="light"
                         size="sm"
                         value={i}
                     >{page}</Button>);
             } else {
                 overflow.push(
                     <Dropdown.Item
-                        active={i === offset} 
-                        variant="light" 
+                        active={i === offset}
+                        variant="light"
                         size="sm"
                         eventKey={i}
                     >{page}</Dropdown.Item>);
             }
         }
 
-        setPaginator(
-            <ButtonToolbar style={{display: "flex row", justifyContent: "space-around"}} variant="light" size="sm">
+        return (
+            <ButtonToolbar style={{ display: "flex row", justifyContent: "space-around" }} variant="light" size="sm">
                 <h5>Pokedex</h5>
-                {total > 0 ? 
-                    <span>Showing {offset + 1}-{total > offset + limit ? offset + limit : total} of {total} Pokemon</span>
-                    : <span>0 Pokemon matched your search</span>
+                {total > 0 ?
+                    <span>{offset + 1}-{total > offset + limit ? offset + limit : total} of {total} Pokemon</span>
+                    : <span>0 results</span>
                 }
-                <ButtonGroup variant="light" size="sm" style={{padding: "0px 20px 0px 20px"}}>
+                <DropdownButton size="sm" variant="info" title={`(${pinnedPokemon.size}/6 pins)`}>
+                    <Dropdown.Item size="sm">(coming soon) New team from pinned</Dropdown.Item>
+                </DropdownButton>
+                <ButtonGroup variant="light" size="sm" style={{ padding: "0px 20px 0px 20px" }}>
                     <Button variant="light" size="sm" value={"dec"} onClick={(e) => handlePageClick(e.target.value)}>{'<'}</Button>
                     {leadingButtons}
                     {overflow.length > 0 ?
@@ -98,34 +133,40 @@ export default function PokemonTable(props) {
                     {trailingButtons}
                     <Button variant="light" size="sm" value={"inc"} onClick={(e) => handlePageClick(e.target.value)}>{'>'}</Button>
                 </ButtonGroup>
-            </ButtonToolbar>)
-    }, [total, offset, limit, searchParams, pokemonData]);
+            </ButtonToolbar>
+        )
+    }
 
-    useEffect(() => {
-        setRows(pokemonData.map(p => {
+    let buildRows = (pokemon, isPinRow) => {
+        const className = isPinRow ? "pinned-sticky-table-cell" : "sticky-table-cell";
+
+        return pokemon.map(p => {
             return (
                 <Row>
-                    <Cell className="sticky-table-cell">
+                    <Cell onClick={() => handleRowPinClick(p)} className={className} style={{ cursor: "pointer" }}>
+                        <Thumbtack pinned={pinnedPokemon.get(p.name)} />
+                    </Cell>
+                    <Cell className={className}>
                         <span><img className="table-pokemon-icon" src={p.sprite_link} /></span>
                         <span>{p.game_id}.{' '}{p.name}</span>
                     </Cell>
-                    <Cell className="sticky-table-cell">{p.types.map(t => {
+                    <Cell className={className}>{p.types.map(t => {
                         return (<><div className="type-icon" style={{ backgroundColor: t.color }}>{t.name}</div><br /></>)
                     })}</Cell>
-                    <Cell className="sticky-table-cell">{(p.abilities.map((a, index) => {
+                    <Cell className={className}>{(p.abilities.map((a, index) => {
                         return a.is_hidden ?
                             <div style={{ fontStyle: "italic" }}>{a.name}</div>
                             : <span>{a.name + (index !== p.abilities.length - 1 ? ', ' : '')}</span>
                     }))}</Cell>
                     {p.stats.map(s => {
-                        return <Cell className="sticky-table-cell">{s.value}</Cell>
+                        return <Cell className={className}>{s.value}</Cell>
                     })}
                 </Row>
             )
-        }))
-    }, [pokemonData])
+        })
+    }
 
-    let tableStyle = {
+    const tableStyle = {
         height: "auto",
         position: "relative",
         display: "flex column",
@@ -139,6 +180,9 @@ export default function PokemonTable(props) {
 
     var header = (
         <Row>
+            <Cell onClick={handleHeaderPinClick} className="sticky-table-header" style={{ cursor: "pointer" }}>
+                <Thumbtack disabled={pinnedPokemon.size === 0} pinned={pinnedPokemon.size > 0} />
+            </Cell>
             <Cell className="sticky-table-header">Pokemon</Cell>
             <Cell className="sticky-table-header">Type</Cell>
             <Cell className="sticky-table-header">Abilities</Cell>
@@ -155,12 +199,13 @@ export default function PokemonTable(props) {
         <div className="card" style={{ height: '85vh', minWidth: "63%" }}>
             {paginator}
             <div style={tableStyle}>
-                    <LoadSpinner isLoading={fetchingPokemon}>
-                <StickyTable>
+                <StickyTable leftStickyColumnCount={2}>
                     {header}
+                    {pinnedRows}
+                    <LoadSpinner isLoading={fetchingPokemon}>
                         {rows}
-                </StickyTable>
                     </LoadSpinner>
+                </StickyTable>
             </div>
         </div>
     )

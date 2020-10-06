@@ -1,6 +1,7 @@
 import { FETCH_POKEMON, FETCH_POKEMON_SUCCESS, FETCH_POKEMON_FAILURE,
         FETCH_POKEMON_NAMES, FETCH_POKEMON_NAMES_FAILURE, FETCH_POKEMON_NAMES_SUCCESS,
-        SET_POKEMON_OFFSET, SET_POKEMON_SEARCH
+        SET_POKEMON_OFFSET, SET_POKEMON_SEARCH,
+        ADD_POKEMON_PIN, REMOVE_POKEMON_PIN, CLEAR_POKEMON_PINS
 } from './types'
 
 const API_URL_DATA = "/api/pokemon";
@@ -84,4 +85,25 @@ export const setPokemonSearch = (searchParams) => dispatch => {
         type: SET_POKEMON_SEARCH,
         payload: searchParams
     });
+}
+
+export const addPokemonPin = (name, data) => dispatch => {
+    dispatch({
+        type: ADD_POKEMON_PIN,
+        payload: {
+            key: name,
+            value: data
+        }
+    })
+}
+
+export const removePokemonPin = (name) => dispatch => {
+    dispatch({
+        type: REMOVE_POKEMON_PIN,
+        payload: { key: name }
+    })
+}
+
+export const clearPokemonPins = () => dispatch => {
+    dispatch({ type: CLEAR_POKEMON_PINS })
 }
