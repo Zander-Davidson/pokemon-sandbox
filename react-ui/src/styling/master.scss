@@ -43,6 +43,13 @@ $table-row-height: 45px;
     }
 }
 
+/* Rounded border */
+hr.rounded {
+    width: 100%;
+    border-top: 4px solid #bbb;
+    border-radius: 5px;
+  }
+
 .home-page-wrapper {
     top: 70px;
     position: relative;
@@ -117,14 +124,20 @@ $table-row-height: 45px;
     font-weight: bold;
 }
 
-.sticky-table-cell {
+%table-cell {
     display: table-cell;
-    border: 1px solid #e5e5e5;
+    border: none; //1px solid #e5e5e5;
     padding: 3px 10px 3px 10px !important;
     vertical-align: middle;
     font-size: 13px;
-    // height: 40px;
-    // max-height: 40px !important;
+}
+.sticky-table-cell {
+    @extend %table-cell
+}
+
+.pinned-sticky-table-cell {
+    @extend %table-cell;
+    background-color: $lightgray !important;
 }
 
 .table-pokemon-icon {

@@ -29,7 +29,6 @@ const getDamageClassNames = async () => {
     strictPokemon: <boolean>     (if true, include only the common Moves learned by the Pokemon in this list)
 } */
 const getMoves = async (params) => {
-    console.log(params)
     let offset = params.offset ? params.offset : 0;
     let limit = params.limit ? params.limit : 50;
 

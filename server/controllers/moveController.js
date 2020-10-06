@@ -31,7 +31,6 @@ exports.getDamageClassNames = async (req, res) => {
 }
 
 exports.getMove = async (req, res) => {
-    console.log(req.body)
     // all sort/filter params are optional. if no sort/filter specifed, return first 50 moves sorted by game_id ASC
     let params = req.body;
     let { offset, limit, total, names, moves } = await moveCtx.getMoves(params);
