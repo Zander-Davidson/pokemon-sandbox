@@ -1,7 +1,7 @@
 import { combineReducers } from "redux";
+import windowReducer from './windowReducer';
 import authReducer from './authReducer';
 import messageReducer from './messageReducer';
-import postReducer from './postReducer';
 import pokemonReducer from "./pokemonReducer";
 import typesReducer from "./typesReducer";
 import moveReducer from "./moveReducer";
@@ -13,10 +13,10 @@ import iconsReducer from "./iconsReducer";
 // import userSetsReducer from "./userSetsReducer";
 
 export default combineReducers({
+    window: windowReducer,
     auth: authReducer,
     icons: iconsReducer,
     message: messageReducer,
-    posts: postReducer,
     pokemon: pokemonReducer,
     types: typesReducer,
     moves: moveReducer,

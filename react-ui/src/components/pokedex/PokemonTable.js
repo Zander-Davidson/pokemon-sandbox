@@ -1,166 +1,204 @@
-import React from 'react';
-import BootstrapTable from 'react-bootstrap-table-next';
-import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
-import paginationFactory from 'react-bootstrap-table2-paginator';
-import { Button } from 'react-bootstrap';
-import styles from './pokedexstyles.css';
-import { titleFormatter } from '../../utilities/utilities';
- 
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from "react-redux";
+import { fetchPokemon, setPokemonOffset, addPokemonPin, removePokemonPin, clearPokemonPins } from '../../redux/actions/pokemonActions'
+import LoadSpinner from '../tools/LoadSpinner'
+import { StickyTable, Row, Cell } from 'react-sticky-table';
+import { Button, ButtonGroup, ButtonToolbar, Dropdown, DropdownButton } from 'react-bootstrap';
+import Thumbtack from '../icons/Thumbtack';
+import styles from '../../styling/master.scss'
+
 export default function PokemonTable(props) {
-    const tableRef = React.createRef();
+    const dispatch = useDispatch();
+    const { isMobile } = useSelector(state => state.window);
+    const { fetchingPokemon, fetchedPokemon, pokemonData,
+        searchParams, offset, limit, total, pinnedPokemon } = useSelector(state => state.pokemon);
 
-    const { SearchBar } = Search;
-    const columns = [{
-        classes: 'col-style',
-        dataField: 'game_id',
-        text: 'Dex #',
-        sort: true,
-        formatter: spriteFormatter
-    }, {
-        classes: 'col-style',
-        dataField: 'name',
-        text: 'Species',
-        formatter: speciesFormatter,
-        sort: true
-    }, {
-        classes: 'col-style',
-        dataField: 'abilities',
-        text: 'Abilities',
-        formatter: abilityFormatter
-    }, {
-        classes: 'col-style',
-        dataField: 'stats[0].value',
-        text: 'HP',
-        //formatter: statsFormatter,
-        //formatExtraData: {statName: 'hp'},
-        sort: true
-    }, {
-        classes: 'col-style',
-        dataField: 'stats[1].value',
-        text: 'ATK',
-        // formatter: statsFormatter,
-        // formatExtraData: {statName: 'attack'},
-        sort: true
-    }, {
-        classes: 'col-style',
-        dataField: 'stats[2].value',
-        text: 'DEF',
-        // formatter: statsFormatter,
-        // formatExtraData: {statName: 'defense'},
-        sort: true
-    }, {
-        classes: 'col-style',
-        dataField: 'stats[3].value',
-        text: 'SPA',
-        // formatter: statsFormatter,
-        // formatExtraData: {statName: 'special-attack'},
-        sort: true
-    }, {
-        classes: 'col-style',
-        dataField: 'stats[4].value',
-        text: 'SPD',
-        // formatter: statsFormatter,
-        // formatExtraData: {statName: 'special-defense'},
-        sort: true
-    }, {
-        classes: 'col-style',
-        dataField: 'stats[5].value',
-        text: 'SPE',
-        // formatter: statsFormatter,
-        // formatExtraData: {statName: 'speed'},
-        sort: true
-    }]
+    const [rows, setRows] = useState([]);
+    const [pinnedRows, setPinnedRows] = useState([]);
+    const [paginator, setPaginator] = useState();
 
-    function spriteFormatter(cell, row) {
-        return <><img src={row.sprite_link} />{cell}</>
+
+    useEffect(() => {
+        setPaginator(buildPaginator());
+    }, [total, offset, limit, searchParams, pokemonData, pinnedPokemon.size]);
+
+    useEffect(() => {
+        setRows([])
+    }, [fetchingPokemon, searchParams]);
+
+    useEffect(() => {
+        setRows(buildRows(pokemonData, false));
+    }, [pokemonData, pinnedPokemon.size]);
+
+    useEffect(() => {
+        let pinnedArray = Array.from(pinnedPokemon.values());
+        setPinnedRows(buildRows(pinnedArray, true));
+    }, [pinnedPokemon.size]);
+
+    useEffect(() => {
+        if (!fetchedPokemon && !fetchingPokemon)
+            dispatch(fetchPokemon());
+    }, []);
+
+
+    const handleHeaderPinClick = () => {
+        if (pinnedPokemon.size > 0) {
+            dispatch(clearPokemonPins())
+        }
     }
 
-    function speciesFormatter(cell, row) {
-        return (<>
-            {titleFormatter(cell)} <br />
-            {row.types.map(t => {
-                return <div className="type-icon" style={{ backgroundColor: t.color }}>{t.name}</div>
-            })}
-        </>)
+    const handleRowPinClick = (pokemon) => {
+        if (pinnedPokemon.get(pokemon.name)) {
+            dispatch(removePokemonPin(pokemon.name));
+        } else if (pinnedPokemon.size < 6) {
+            dispatch(addPokemonPin(pokemon.name, pokemon));
+        }
     }
 
-    function abilityFormatter(cell, row) {
-        return (row.abilities.map((a, index) => {
-            if (a.is_hidden) {
-                return <div style={{ fontStyle: "italic" }}>{titleFormatter(a.name)}</div>
+    const handlePageClick = (value) => {
+        let newPage = value;
+        let newOffset;
+
+        if (newPage === "inc" && offset + limit > total || newPage === "dec" && offset - limit < 0) {
+            return;
+        } else if (newPage === "inc") {
+            newOffset = offset + limit;
+        } else if (newPage === "dec") {
+            newOffset = offset - limit;
+        } else {
+            newOffset = newPage;
+        }
+
+        dispatch(setPokemonOffset(parseInt(newOffset)));
+        dispatch(fetchPokemon({
+            offset: parseInt(newOffset),
+            limit: limit,
+            ...searchParams
+        }));
+    }
+
+    let buildPaginator = () => {
+        let leadingButtons = [];
+        let overflow = [];
+        let trailingButtons = [];
+
+        for (let i = 0; i < total; i += limit) {
+            let page = parseInt((i / limit) + 1);
+            if (page < 6) {
+                leadingButtons.push(
+                    <Button
+                        onClick={(e) => handlePageClick(e.target.value)}
+                        active={i === offset}
+                        variant="light"
+                        size="sm"
+                        value={i}
+                    >{page}</Button>);
+            } else if (total - i < limit) {
+                trailingButtons.push(
+                    <Button
+                        onClick={(e) => handlePageClick(e.target.value)}
+                        active={i === offset}
+                        variant="light"
+                        size="sm"
+                        value={i}
+                    >{page}</Button>);
             } else {
-                return <span>{titleFormatter(a.name + (index !== row.abilities.length - 1 ? ', ' : ''))}</span>
+                overflow.push(
+                    <Dropdown.Item
+                        active={i === offset}
+                        variant="light"
+                        size="sm"
+                        eventKey={i}
+                    >{page}</Dropdown.Item>);
             }
-        }))
+        }
+
+        return (
+            <ButtonToolbar style={{ display: "flex row", justifyContent: "space-around" }} variant="light" size="sm">
+                <h5>Pokedex</h5>
+                {total > 0 ?
+                    <span>{offset + 1}-{total > offset + limit ? offset + limit : total} of {total} Pokemon</span>
+                    : <span>0 results</span>
+                }
+                <DropdownButton size="sm" variant="info" title={`(${pinnedPokemon.size}/6 pins)`}>
+                    <Dropdown.Item size="sm">(coming soon) New team from pinned</Dropdown.Item>
+                </DropdownButton>
+                <ButtonGroup variant="light" size="sm" style={{ padding: "0px 20px 0px 20px" }}>
+                    <Button variant="light" size="sm" value={"dec"} onClick={(e) => handlePageClick(e.target.value)}>{'<'}</Button>
+                    {leadingButtons}
+                    {overflow.length > 0 ?
+                        <DropdownButton variant="light" size="sm" as={ButtonGroup} onSelect={(e) => handlePageClick(e)} title=". . .">
+                            {overflow}
+                        </DropdownButton>
+                        : null}
+                    {trailingButtons}
+                    <Button variant="light" size="sm" value={"inc"} onClick={(e) => handlePageClick(e.target.value)}>{'>'}</Button>
+                </ButtonGroup>
+            </ButtonToolbar>
+        )
     }
 
-    function statsFormatter(cell, row, rowIndex, { statName }) {
-        return (<>
-            {row.stats.filter(s => s.name === statName)[0].value}
-        </>)
+    let buildRows = (pokemon, isPinRow) => {
+        const className = isPinRow ? "pinned-sticky-table-cell" : "sticky-table-cell";
+
+        return pokemon.map(p => {
+            return (
+                <Row>
+                    <Cell onClick={() => handleRowPinClick(p)} className={className} style={{ cursor: "pointer" }}>
+                        <Thumbtack pinned={pinnedPokemon.get(p.name)} />
+                    </Cell>
+                    <Cell className={className}>
+                        <span><img className="table-pokemon-icon" src={p.sprite_link} /></span>
+                        <span>{p.game_id}.{' '}{p.name}</span>
+                    </Cell>
+                    <Cell className={className}>{p.types.map(t => {
+                        return (<><div className="type-icon" style={{ backgroundColor: t.color }}>{t.name}</div><br /></>)
+                    })}</Cell>
+                    <Cell className={className}>{(p.abilities.map((a, index) => {
+                        return a.is_hidden ?
+                            <div style={{ fontStyle: "italic" }}>{a.name}</div>
+                            : isMobile ? 
+                                <div>{a.name + (index !== p.abilities.length - 1 ? ', ' : '')}</div>
+                                 :<span>{a.name + (index !== p.abilities.length - 1 ? ', ' : '')}</span>
+                    }))}</Cell>
+                    {p.stats.map(s => {
+                        return <Cell className={className}>{s.value}</Cell>
+                    })}
+                </Row>
+            )
+        })
     }
 
-    const customTotal = (from, to, size) => (
-        <span className="react-bootstrap-table-pagination-total">
-            Showing { from} to { to} of { size} Results
-        </span>
+    var header = (
+        <Row>
+            <Cell className="sticky-table-header" onClick={handleHeaderPinClick} className="sticky-table-header" style={{ cursor: "pointer" }}>
+                <Thumbtack disabled={pinnedPokemon.size === 0} pinned={pinnedPokemon.size > 0} />
+            </Cell>
+            <Cell className="sticky-table-header">Pokemon</Cell>
+            <Cell className="sticky-table-header">Type</Cell>
+            <Cell className="sticky-table-header">Abilities</Cell>
+            <Cell className="sticky-table-header">HP</Cell>
+            <Cell className="sticky-table-header">Atk</Cell>
+            <Cell className="sticky-table-header">Def</Cell>
+            <Cell className="sticky-table-header">Sp. Atk</Cell>
+            <Cell className="sticky-table-header">Sp. Def</Cell>
+            <Cell className="sticky-table-header">Speed</Cell>
+        </Row>
     );
 
-    const options = {
-        paginationSize: 4,
-        pageStartIndex: 0,
-        // alwaysShowAllBtns: true, // Always show next and previous button
-        // withFirstAndLast: false, // Hide the going to First and Last page button
-        // hideSizePerPage: true, // Hide the sizePerPage dropdown always
-        // hidePageListOnlyOnePage: true, // Hide the pagination list when only one page
-        firstPageText: 'First',
-        prePageText: 'Back',
-        nextPageText: 'Next',
-        lastPageText: 'Last',
-        nextPageTitle: 'First page',
-        prePageTitle: 'Pre page',
-        firstPageTitle: 'Next page',
-        lastPageTitle: 'Last page',
-        showTotal: true,
-        paginationTotalRenderer: customTotal,
-        disablePageTitle: true,
-        sizePerPageList: [{
-            text: '75', value: 75
-        }, {
-            text: '200', value: 200
-        }, {
-            text: 'All', value: props.pokemon.length
-        }] // A numeric array is also available. the purpose of above example is custom the text
-    };
-
     return (
-        <div className='pokedex-wrapper-class'>
-            <span className='table-wrapper'>
-                <ToolkitProvider
-                    keyField="id"
-                    data={props.pokemon}
-                    columns={columns}
-                    search
-                >
-                    {props => (
-                        <React.Fragment>
-                            <br />
-                            <SearchBar {...props.searchProps} />
-                            <hr />
-                            <BootstrapTable  {...props.baseProps}
-                                ref={n => tableRef.current = n}
-                                condensed
-                                striped
-                                bordered={false}
-                                columnStyle="col-style"
-                                headerStyle={{ position: 'fixed' }}
-                                pagination={paginationFactory(options)}
-
-                            />
-                        </React.Fragment>
-                    )}
-                </ToolkitProvider>
-            </span>
+        <div className="table-card">
+            {paginator}
+            <div className="table-wrapper">
+                <StickyTable leftStickyColumnCount={2}>
+                    {header}
+                    {pinnedRows}
+                    <LoadSpinner isLoading={fetchingPokemon}>
+                        {rows}
+                    </LoadSpinner>
+                </StickyTable>
+            </div>
+            {isMobile ? paginator : null }
         </div>
     )
 }

@@ -376,10 +376,7 @@ const createPokeapiOfficialArtwork = async (offset, limit) => {
 
 const pokemonCtx = {
     getPokemonNames,
-    getPokemon,
-    createPokemon,
-    createOfficialArtwork,
-    createPokemonEvolution
+    getPokemon
 };
 
 module.exports = pokemonCtx;

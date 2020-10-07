@@ -18,6 +18,7 @@
     "axios": "^0.19.2",
     "bootstrap": "^4.4.1",
     "gapi-script": "^1.0.2",
+    "hover.css": "^2.3.2",
     "immutability-helper": "^3.0.2",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.0.0-beta.2",

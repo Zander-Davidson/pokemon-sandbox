@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchPokemonNames } from '../../redux/actions/pokemonActions';
 import { fetchMoveNames, fetchDamageClassNames } from '../../redux/actions/movesActions';
 import { fetchTypes } from '../../redux/actions/typesActions';
-import MoveTable from './MTable';
+import MoveTable from './MoveTable';
 import MoveSearchPanel from './MoveSearchPanel';
 import styles from '../../styling/master.scss';
 
@@ -25,7 +25,7 @@ export default function Movedex() {
     }, []);
 
     return (
-        <div className="pokedex-wrapper">
+        <div className="pokedex">
             <MoveSearchPanel
                 pokemonNames={pokemonNames}
                 typeData={typeData}

@@ -4,7 +4,7 @@ import { fetchPokemonNames } from '../../redux/actions/pokemonActions';
 import { fetchMoveNames } from '../../redux/actions/movesActions';
 import { fetchAbilityNames } from '../../redux/actions/abilitiesActions';
 import { fetchTypes } from '../../redux/actions/typesActions';
-import PokemonTable from './PTable';
+import PokemonTable from './PokemonTable';
 import PokemonSearchPanel from './PokemonSearchPanel';
 import styles from '../../styling/master.scss';
 
@@ -26,7 +26,7 @@ export default function Pokedex() {
     }, []);
 
     return (
-        <div className="pokedex-wrapper">
+        <div className="pokedex">
             <PokemonSearchPanel
                 pokemonNames={pokemonNames}
                 typeData={typeData}

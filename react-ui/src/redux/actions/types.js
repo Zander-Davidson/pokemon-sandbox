@@ -1,3 +1,6 @@
+// window types
+export const UPDATE_WINDOW_SIZE = "UPDATE_WINDOW_SIZE";
+
 // auth types
 export const SIGNUP_REQUEST = "SIGNUP_REQUEST";
 export const SIGNUP_SUCCESS = "SIGNUP_SUCCESS";

@@ -3,6 +3,7 @@ import { clearMessage } from "./redux/actions/messageActions";
 import { checkLoggedIn } from "./redux/actions/authActions";
 import { history } from "./helpers/history";
 import { useDispatch } from "react-redux";
+import { updateWindowSize } from "./redux/actions/windowActions";
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import Header from './components/Header'
 import logo from './logo.svg';
@@ -30,13 +31,24 @@ export default function App() {
   //   });
   // }, [dispatch]);
 
+  useEffect(() => {
+    console.log('app')
+    let windowListener = dispatch(updateWindowSize(window.innerWidth, window.innerHeight));
+
+    window.addEventListener('resize', windowListener);
+    return () => {
+      window.removeEventListener('resize', windowListener);
+    }
+  }, []);
+
   dispatch(checkLoggedIn());
 
   // standard react-router-dom site layout
   return (
     <div className="App">
-        <Router history={history}>
-          <Header />
+      <Router history={history}>
+        <Header />
+        <div className="page">
           <Switch>
             <Route exact path='/' component={Home} />
             <Route path='/home' component={Home} />
@@ -49,7 +61,8 @@ export default function App() {
             {/* <Route path='/damage-calculator' component={DamageCalculator} /> */}
             {/* <Route path='/insertPokedexData' component={FetchPokedexData} /> */}
           </Switch>
-        </Router>
-      </div>
+        </div>
+      </Router>
+    </div>
   );
 }
