@@ -1,16 +1,17 @@
 const userCtx = require("../contexts/userCtx");
 
 exports.createTeam = async (req, res) => {
+    console.log(req.body)
     let params = { 
-        user_id: Number(req.body.user_id),
+        username: req.body.username,//Number(req.body.user_id),
         name: req.body.name
     };
-    let userTeams = await userCtx.createTeam(params);
+    let newTeamPreview = await userCtx.createTeam(params);
 
-    if (userTeams) {
+    if (newTeamPreview) {
         res.status(201).json({
-            message: `${userTeams.length} user team(s) created`,
-            user_teams: userTeams 
+            message: `${newTeamPreview.length} user team(s) created`,
+            newTeamPreview: newTeamPreview[0]
         });
     } else {
         res.status(500).json({

@@ -217,3 +217,6 @@ WITH p, q, preEvo, COLLECT(distinct m.name) as postEvo
 WITH p, q, [x in preEvo WHERE not(x in postEvo)] as missingMoves
 MATCH (l:Move) WHERE l.name IN missingMoves
 MERGE(p)-[:HAS_MOVE]->(l)
+
+CREATE CONSTRAINT unique_user_username ON (u:User) ASSERT u.username IS UNIQUE;
+CREATE CONSTRAINT unique_user_email ON (u:User) ASSERT u.email IS UNIQUE;

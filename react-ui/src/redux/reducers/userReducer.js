@@ -1,12 +1,14 @@
+import { SUCCESS } from "../errorMsgs";
 import {
-    NEW_TEAM, DELETE_TEAM, EDIT_TEAM, SET_ACTIVE_TEAM, NEW_SET, SET_ACTIVE_SET, EDIT_SET, DELETE_SET,
+    DELETE_TEAM, EDIT_TEAM, SET_ACTIVE_TEAM, NEW_SET, SET_ACTIVE_SET, EDIT_SET, DELETE_SET,
     FETCH_TEAM_PREVIEWS, FETCH_TEAM_PREVIEWS_FAILURE, FETCH_TEAM_PREVIEWS_SUCCESS,
-    FETCH_SETS, FETCH_SETS_FAILURE, FETCH_SETS_SUCCESS
+    FETCH_SETS, FETCH_SETS_FAILURE, FETCH_SETS_SUCCESS,
+    CREATE_TEAM_SUCCESS, CREATE_TEAM_FAILURE
 } from '../actions/types'
 
 const initialState = {
     teamPreviews: [],
-    sets: [],
+    setsMap: new Map(),
     userTeams: [],
     userSets: [],
     activeTeamGuid: null,
@@ -63,18 +65,32 @@ export default function (state = initialState, action) {
                 ...state,
                 userFetching: false,
                 userFetched: true,
-                sets: action.payload,
+                setsMap: state.setsMap.set(action.payload.key, action.payload.value),
                 errorMsg: ""
             }
 
-        // payload: userSets
-        case FETCH_SETS:
+        case CREATE_TEAM_FAILURE:
             return {
                 ...state,
-                userSetsFetched: true,
-                userSets: action.payload,
-                activeSetGuid: action.payload === [] ? null : action.payload[0].guid
+                errorMsg: action.payload
             }
+
+        case CREATE_TEAM_SUCCESS:
+            return {
+                ...state,
+                teamPreviews: [action.payload, ...state.teamPreviews],
+                errorMsg: SUCCESS
+            }
+
+
+        // // payload: userSets
+        // case FETCH_SETS:
+        //     return {
+        //         ...state,
+        //         userSetsFetched: true,
+        //         userSets: action.payload,
+        //         activeSetGuid: action.payload === [] ? null : action.payload[0].guid
+        //     }
         case SET_ACTIVE_TEAM:
             return {
                 ...state,
@@ -87,13 +103,13 @@ export default function (state = initialState, action) {
             }
 
 
-        // payload: teams
-        case NEW_TEAM:
-            return {
-                ...state,
-                userTeams: action.payload,
-                activeTeamGuid: state.userTeams[0]
-            }
+        // // payload: teams
+        // case NEW_TEAM:
+        //     return {
+        //         ...state,
+        //         userTeams: action.payload,
+        //         activeTeamGuid: state.userTeams[0]
+        //     }
         // payload: {teamId: teamId, newName: teamName}
         case EDIT_TEAM:
             return {

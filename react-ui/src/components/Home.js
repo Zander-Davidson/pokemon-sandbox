@@ -1,6 +1,5 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import TeamTesting from './team-builder/TeamTesting'
 import styles from '../styling/master.scss';
 
 export default function Home() {

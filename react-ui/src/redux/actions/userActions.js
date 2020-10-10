@@ -1,7 +1,9 @@
+import { SUCCESS, USER_NOT_LOGGED_IN } from "../errorMsgs";
 import {
     NEW_TEAM, DELETE_TEAM, EDIT_TEAM, FETCH_TEAMS, LOADING_TEAMS, SET_ACTIVE_TEAM, CACHE_USER_SETS, NEW_SET, SET_ACTIVE_SET,
     FETCH_TEAM_PREVIEWS, FETCH_TEAM_PREVIEWS_FAILURE, FETCH_TEAM_PREVIEWS_SUCCESS,
-    FETCH_SETS, FETCH_SETS_FAILURE, FETCH_SETS_SUCCESS
+    FETCH_SETS, FETCH_SETS_FAILURE, FETCH_SETS_SUCCESS,
+    CREATE_TEAM_SUCCESS, CREATE_TEAM_FAILURE
 } from './types';
 import authHeader from '../../services/authHeader';
 // normally this isn't recommended, but redux has no builtin solution for caching.
@@ -11,6 +13,7 @@ import { getCacheItemByGuid, cachePush, cacheSearchAndSplice } from '../../utili
 
 const API_TEAM_PREVIEWS_URL = '/api/user/teampreviews'
 const API_SETS_URL = '/api/user/setsbyteamid';
+const API_CREATE_TEAM_URL = '/api/user/createteam';
 
 export const fetchTeamPreviews = () => dispatch => {
     dispatch({ type: FETCH_TEAM_PREVIEWS });
@@ -23,6 +26,9 @@ export const fetchTeamPreviews = () => dispatch => {
             headers: authHeader()
         })
             .then(res => {
+                if (!res.ok) {
+                    throw new Error(res.json())
+                }
                 return res.json();
             })
             .then(json => {
@@ -40,7 +46,7 @@ export const fetchTeamPreviews = () => dispatch => {
     } else {
         dispatch({
             type: FETCH_TEAM_PREVIEWS_FAILURE,
-            payload: "User not signed in."
+            payload: USER_NOT_LOGGED_IN
         })
     }
 }
@@ -56,12 +62,18 @@ export const fetchSets = (teamId) => dispatch => {
             headers: authHeader()
         })
             .then(res => {
+                if (!res.ok) {
+                    throw new Error(res.json())
+                }
                 return res.json();
             })
             .then(json => {
                 dispatch({
                     type: FETCH_SETS_SUCCESS,
-                    payload: json.userSets
+                    payload: {
+                        key: teamId,
+                        value: json.userSets
+                    }
                 })
             })
             .catch(error => {
@@ -72,11 +84,54 @@ export const fetchSets = (teamId) => dispatch => {
             })
     } else {
         dispatch({
-            type: FETCH_TEAM_PREVIEWS_FAILURE,
-            payload: "User not signed in."
+            type: FETCH_SETS_FAILURE,
+            payload: USER_NOT_LOGGED_IN
         })
     }
 }
+
+export const createTeam = (newTeamData) => dispatch => {
+    let user = JSON.parse(localStorage.getItem("user"));
+
+    if (user) {
+        fetch(API_CREATE_TEAM_URL, {
+            method: 'POST',
+            headers: {
+                ...authHeader(),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: user.username,
+                name: newTeamData.name
+            })
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(res.json())
+                }
+                return res.json();
+            })
+            .then(json => {
+                dispatch({
+                    type: CREATE_TEAM_SUCCESS,
+                    payload: json.newTeamPreview
+                })
+            })
+            .catch(error => {
+                dispatch({
+                    type: CREATE_TEAM_FAILURE,
+                    payload: error.message
+                })
+            })
+    } else {
+        dispatch({
+            type: CREATE_TEAM_FAILURE,
+            payload: USER_NOT_LOGGED_IN
+        })
+    }
+}
+
+
 
 export const setActiveUserSet = (userTeamGuid, userSetGuid) => dispatch => {
     let cacheCheck = cacheSearchAndSplice(store.userSets, userSetGuid);

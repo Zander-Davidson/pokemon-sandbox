@@ -94,9 +94,11 @@ export const FETCH_SETS = "FETCH_SETS";
 export const FETCH_SETS_SUCCESS = "FETCH_SETS_SUCCESS";
 export const FETCH_SETS_FAILURE = "FETCH_SETS_FAILURE"; 
 
+export const CREATE_TEAM_SUCCESS = "CREATE_TEAM_SUCCESS";
+export const CREATE_TEAM_FAILURE = "CREATE_TEAM_FAILURE"; 
+
 export const FETCH_TEAMS = "FETCH_TEAMS";
 export const LOADING_TEAMS = "LOADING_TEAMS";
-export const NEW_TEAM = "NEW_TEAM";
 export const EDIT_TEAM = "EDIT_TEAM";
 export const DELETE_TEAM = "DELETE_TEAM";
 export const SET_ACTIVE_TEAM = "SET_ACTIVE_TEAM";

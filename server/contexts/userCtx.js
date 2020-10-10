@@ -6,17 +6,24 @@ const { queryNeo4j } = require("../utilities/utilities");
 } */
 const createTeam = async (params) => {
     let query = `
-        MATCH (u:User) WHERE id(u) = $user_id
-
-        MERGE (ut:UserTeam {
+        MATCH (u:User) WHERE u.username = $username
+        MERGE (u)-[:HAS_TEAM]->(t:UserTeam {
             created_at: datetime(),
             updated_at: datetime(),
             name: $name
         })
 
-        MERGE (u)-[:HAS_TEAM]->(ut)
+        // SET u.locked = true, t.locked = true
+        
+        // MERGE (t)<-[:HAS_TEAM]-(u)
 
-        RETURN ut
+        // SET u.locked = null, t.locked = null
+
+        RETURN {
+            team_id: id(t), 
+            name: t.name, 
+            sets: []
+        }
     `;
     return await queryNeo4j(query, params);
 };
@@ -147,14 +154,14 @@ const getSetsByTeam = async (params) => {
 };
 
 const userCtx = {
-    createTeam: createTeam,
-    updateTeam: updateTeam,
-    deleteTeam: deleteTeam,
-    createSet: createSet,
-    updateSet: updateSet,
-    deleteSet: deleteSet,
-    getTeamPreviews: getTeamPreviews,
-    getSetsByTeam: getSetsByTeam
+    createTeam,
+    updateTeam,
+    deleteTeam,
+    createSet,
+    updateSet,
+    deleteSet,
+    getTeamPreviews,
+    getSetsByTeam
 };
 
 module.exports = userCtx;

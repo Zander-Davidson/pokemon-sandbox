@@ -32,24 +32,22 @@ let jsonReturnFormatter = (records) => {
 
 const queryNeo4j = async (query, params, formatter) => {
     var session = getDb().session();
+    var results;
     try {
-        await session.run(query, params);
-        let results = await session.run(query, params);
-
-        if (await results.records.length === 0) {
-            return null;
-        } else if (formatter) {
-            return await formatter(await results.records);
-        } else {
-            return await jsonReturnFormatter(await results.records);
-        }
-            
+        results = await session.run(query, params);        
     } catch(err) {
         console.log(err);
-        return undefined;
-
+        return undefined;        
     } finally {
         await session.close();
+    }
+    
+    if (await results.records.length === 0) {
+        return null;
+    } else if (formatter) {
+        return await formatter(await results.records);
+    } else {
+        return await jsonReturnFormatter(await results.records);
     }
 }
 
