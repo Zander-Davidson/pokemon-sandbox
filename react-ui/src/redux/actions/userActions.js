@@ -101,7 +101,7 @@ export const createTeam = (newTeamData) => dispatch => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                username: user.username,
+                user_id: user.user_id,
                 name: newTeamData.name
             })
         })

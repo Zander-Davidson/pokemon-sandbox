@@ -113,8 +113,8 @@ CREATE INDEX user_index FOR (u:User) ON (u.username);
 CREATE INDEX user_team_index FOR (ut:UserTeam) ON (ut.name);
 CREATE INDEX user_set_index FOR (us:UserSet) ON (us.name);
 
-CREATE INDEX ON :User(username);
-CREATE INDEX ON :UserTeam(name);
+CREATE CONSTRAINT ON (u:User) ASSERT u.username IS UNIQUE;
+CREATE CONSTRAINT ON (u:User) ASSERT u.email IS UNIQUE;
 CREATE INDEX ON :UserSet(name);
 
 
@@ -218,5 +218,3 @@ WITH p, q, [x in preEvo WHERE not(x in postEvo)] as missingMoves
 MATCH (l:Move) WHERE l.name IN missingMoves
 MERGE(p)-[:HAS_MOVE]->(l)
 
-CREATE CONSTRAINT unique_user_username ON (u:User) ASSERT u.username IS UNIQUE;
-CREATE CONSTRAINT unique_user_email ON (u:User) ASSERT u.email IS UNIQUE;

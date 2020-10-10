@@ -3,7 +3,7 @@ const userCtx = require("../contexts/userCtx");
 exports.createTeam = async (req, res) => {
     console.log(req.body)
     let params = { 
-        username: req.body.username,//Number(req.body.user_id),
+        user_id: req.body.user_id,//Number(req.body.user_id),
         name: req.body.name
     };
     let newTeamPreview = await userCtx.createTeam(params);

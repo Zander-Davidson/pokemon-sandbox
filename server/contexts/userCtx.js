@@ -6,18 +6,12 @@ const { queryNeo4j } = require("../utilities/utilities");
 } */
 const createTeam = async (params) => {
     let query = `
-        MATCH (u:User) WHERE u.username = $username
+        MATCH (u:User) WHERE id(u) = $user_id
         MERGE (u)-[:HAS_TEAM]->(t:UserTeam {
             created_at: datetime(),
             updated_at: datetime(),
             name: $name
         })
-
-        // SET u.locked = true, t.locked = true
-        
-        // MERGE (t)<-[:HAS_TEAM]-(u)
-
-        // SET u.locked = null, t.locked = null
 
         RETURN {
             team_id: id(t), 
