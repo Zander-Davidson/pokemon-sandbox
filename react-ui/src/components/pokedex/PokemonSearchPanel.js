@@ -59,6 +59,7 @@ export default function PokemonSearchPanel(props) {
 
     const handleSubmit = (event) => {
         event.preventDefault()
+        
         let searchParams = {
             sortOrder: sortOrder,
             sortBy: sortBy,
@@ -210,7 +211,7 @@ export default function PokemonSearchPanel(props) {
                     </InputGroup>
 
                     <Form.Row>
-                        <Col><Button variant="info" size="sm" type="submit">Search</Button></Col>
+                        <Col><Button bsStyle="default" className="btn-1" size="sm" type="submit">Search</Button></Col>
                         {/* <Col><Button variant="info" className="mb-3" size="sm" onClick={handleReset}>Reset filters</Button></Col> */}
                         {/* <Col><Button variant="info" disabled className="mb-3" size="sm">Save search (coming soon)</Button></Col> */}
                     </Form.Row>

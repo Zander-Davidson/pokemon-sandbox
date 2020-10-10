@@ -1,39 +1,72 @@
-import { NEW_TEAM, DELETE_TEAM, EDIT_TEAM, FETCH_TEAMS, LOADING_TEAMS, SET_ACTIVE_TEAM, FETCH_SETS, LOADING_SETS, NEW_SET, SET_ACTIVE_SET, EDIT_SET, DELETE_SET } from '../actions/types'
+import {
+    NEW_TEAM, DELETE_TEAM, EDIT_TEAM, SET_ACTIVE_TEAM, NEW_SET, SET_ACTIVE_SET, EDIT_SET, DELETE_SET,
+    FETCH_TEAM_PREVIEWS, FETCH_TEAM_PREVIEWS_FAILURE, FETCH_TEAM_PREVIEWS_SUCCESS,
+    FETCH_SETS, FETCH_SETS_FAILURE, FETCH_SETS_SUCCESS
+} from '../actions/types'
 
 const initialState = {
+    teamPreviews: [],
+    sets: [],
     userTeams: [],
     userSets: [],
     activeTeamGuid: null,
     activeSetGuid: null,
-    userTeamsFetching: false,
-    userTeamsFetched: false,
+    userFetching: false,
+    userFetched: false,
     userSetsFetching: false,
-    userSetsFetched: false
+    userSetsFetched: false,
+    errorMsg: ''
 }
 
 export default function (state = initialState, action) {
 
     switch (action.type) {
-        // payload: ~true or false~
-        case LOADING_TEAMS:
+        case FETCH_TEAM_PREVIEWS:
             return {
                 ...state,
-                userTeamsFetching: action.payload
+                userFetching: true
             }
-        // payload: teams
-        case FETCH_TEAMS:
+
+        case FETCH_TEAM_PREVIEWS_FAILURE:
             return {
                 ...state,
-                userTeamsFetched: true,
-                userTeams: action.payload,
-                activeTeamGuid: action.payload === [] ? null : action.payload[0].guid
+                userFetching: false,
+                userFetched: false,
+                errorMsg: action.payload
             }
-        // payload: ~true or false~
-        case LOADING_SETS:
+
+        case FETCH_TEAM_PREVIEWS_SUCCESS:
             return {
                 ...state,
-                userSetsFetching: action.payload
+                userFetching: false,
+                userFetched: true,
+                teamPreviews: action.payload,
+                errorMsg: ""
             }
+
+        case FETCH_SETS:
+            return {
+                ...state,
+                userFetching: true
+            }
+
+        case FETCH_SETS_FAILURE:
+            return {
+                ...state,
+                userFetching: false,
+                userFetched: false,
+                errorMsg: action.payload
+            }
+
+        case FETCH_SETS_SUCCESS:
+            return {
+                ...state,
+                userFetching: false,
+                userFetched: true,
+                sets: action.payload,
+                errorMsg: ""
+            }
+
         // payload: userSets
         case FETCH_SETS:
             return {
@@ -52,11 +85,6 @@ export default function (state = initialState, action) {
                 ...state,
                 activeSetGuid: state.userSets.filter(s => s.guid === action.payload)[0] || null,
             }
-        
-
-
-
-
 
 
         // payload: teams
@@ -83,8 +111,8 @@ export default function (state = initialState, action) {
                 userTeams: state.userTeams.filter(t => t.id != action.payload),
                 activeTeamGuid: null,
             }
-        
-            // needs lotta work
+
+        // needs lotta work
         // payload: userSets
         case NEW_SET:
             return {

@@ -1,17 +1,82 @@
-import { NEW_TEAM, DELETE_TEAM, EDIT_TEAM, FETCH_TEAMS, LOADING_TEAMS, SET_ACTIVE_TEAM, FETCH_SETS, LOADING_SETS, CACHE_USER_SETS, NEW_SET, SET_ACTIVE_SET } from './types';
+import {
+    NEW_TEAM, DELETE_TEAM, EDIT_TEAM, FETCH_TEAMS, LOADING_TEAMS, SET_ACTIVE_TEAM, CACHE_USER_SETS, NEW_SET, SET_ACTIVE_SET,
+    FETCH_TEAM_PREVIEWS, FETCH_TEAM_PREVIEWS_FAILURE, FETCH_TEAM_PREVIEWS_SUCCESS,
+    FETCH_SETS, FETCH_SETS_FAILURE, FETCH_SETS_SUCCESS
+} from './types';
+import authHeader from '../../services/authHeader';
 // normally this isn't recommended, but redux has no builtin solution for caching.
 // fun fact: the creator of react-redux says caching is an acceptable reason to use the global state in actions
 import { store } from '../store';
 import { getCacheItemByGuid, cachePush, cacheSearchAndSplice } from '../../utilities/cache';
 
+const API_TEAM_PREVIEWS_URL = '/api/user/teampreviews'
+const API_SETS_URL = '/api/user/setsbyteamid';
 
-// TODO: user authentication
+export const fetchTeamPreviews = () => dispatch => {
+    dispatch({ type: FETCH_TEAM_PREVIEWS });
 
-const username = 'Zander';
+    let user = JSON.parse(localStorage.getItem("user"));
 
-const fetchTeamsEndpoint = '/api/auth/get-teams/' + username;
-const fetchSetsEndpoint = '/api/auth/get-sets-by-team/';
+    if (user) {
+        fetch(API_TEAM_PREVIEWS_URL + `/${user.user_id}`, {
+            method: 'GET',
+            headers: authHeader()
+        })
+            .then(res => {
+                return res.json();
+            })
+            .then(json => {
+                dispatch({
+                    type: FETCH_TEAM_PREVIEWS_SUCCESS,
+                    payload: json.teamPreviews
+                })
+            })
+            .catch(error => {
+                dispatch({
+                    type: FETCH_TEAM_PREVIEWS_FAILURE,
+                    payload: error.message
+                })
+            })
+    } else {
+        dispatch({
+            type: FETCH_TEAM_PREVIEWS_FAILURE,
+            payload: "User not signed in."
+        })
+    }
+}
 
+export const fetchSets = (teamId) => dispatch => {
+    dispatch({ type: FETCH_SETS });
+    
+    let user = JSON.parse(localStorage.getItem("user"));
+
+    if (user) {
+        fetch(API_SETS_URL + `/${user.user_id}/${teamId}`, {
+            method: 'GET',
+            headers: authHeader()
+        })
+            .then(res => {
+                return res.json();
+            })
+            .then(json => {
+                dispatch({
+                    type: FETCH_SETS_SUCCESS,
+                    payload: json.userSets
+                })
+            })
+            .catch(error => {
+                dispatch({
+                    type: FETCH_SETS_FAILURE,
+                    payload: error.message
+                })
+            })
+    } else {
+        dispatch({
+            type: FETCH_TEAM_PREVIEWS_FAILURE,
+            payload: "User not signed in."
+        })
+    }
+}
 
 export const setActiveUserSet = (userTeamGuid, userSetGuid) => dispatch => {
     let cacheCheck = cacheSearchAndSplice(store.userSets, userSetGuid);
@@ -22,67 +87,11 @@ export const setActiveUserSet = (userTeamGuid, userSetGuid) => dispatch => {
             payload: cacheCheck
         });
     } else {
-        fetchUserSets(userTeamGuid);
+        fetchSets(userTeamGuid);
     }
 }
 
-export const setActiveUserTeam = (userTeamGuid) => dispatch => {}
-
-export const fetchUserTeams = () => dispatch => {
-    dispatch({
-        type: LOADING_TEAMS,
-        payload: true
-    })
-    fetch(fetchTeamsEndpoint)
-        .then(res => {
-            if (!res.ok)
-                throw new Error(`status ${res.status}`);
-            return res.json();
-        })
-        .then(json => {
-            dispatch({
-                type: FETCH_TEAMS,
-                payload: json.user_teams
-            })
-            dispatch({
-                type: LOADING_TEAMS,
-                payload: false
-            })
-
-            if (json.user_teams !== []) {
-                fetchUserSets(json.user_teams[0].guid)
-            }
-        })
-        .catch(e => {
-            console.log(`API call failed (userTeamsActions.fetchUserTeams): ${e}`);
-        })
-}
-
-export const fetchUserSets = (userTeamGuid) => dispatch => {
-    dispatch({
-        type: LOADING_SETS,
-        payload: true
-    });
-    fetch(fetchSetsEndpoint + userTeamGuid)
-        .then(res => {
-            if (!res.ok)
-                throw new Error(`status ${res.status}`);
-            return res.json();
-        })
-        .then(json => {
-            dispatch({
-                type: FETCH_SETS,
-                payload: cachePush(store.userSets, json.user_sets)
-            })
-            dispatch({
-                type: LOADING_SETS,
-                payload: false
-            })
-        })
-        .catch(e => {
-            console.log(`API call failed: ${e}`);
-        })
-}
+export const setActiveUserTeam = (userTeamGuid) => dispatch => { }
 
 // export const createTeam = (newTeamName) => dispatch => {
 //     fetch(endpoint, {

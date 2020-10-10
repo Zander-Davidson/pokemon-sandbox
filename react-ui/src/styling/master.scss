@@ -8,7 +8,7 @@ $header-height: 56px;
 $table-row-height: 45px;
 
 .App {
-    background-color: $sandyghast-light-sand !important;
+    background-color: $sandyghast-dark-sand !important;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -26,6 +26,7 @@ $table-row-height: 45px;
 
 .page {
     overflow: auto;
+    min-height: 89vh;
 }
 
 .App-logo {
@@ -87,7 +88,7 @@ $table-row-height: 45px;
 %card {
     display: flex column;
     position: relative;
-    background-color: #f7f7f7;
+    background-color: $sandyghast-light-sand;//#f7f7f7;
     padding: 10px;
     border-radius: 2px;
     -moz-border-radius: 2px;
@@ -130,6 +131,12 @@ hr.rounded {
     // top: $header-height;
 }
 
+.btn-1 {
+    @extend .hvr-fade;
+    background-color: $sandyghast-coral !important;
+    border: none !important
+}
+
 ::-webkit-scrollbar { 
     width: 10px; 
 } 
@@ -160,12 +167,12 @@ hr.rounded {
 
 .table-card {
     @extend %card;
-    // width: fit-content;
     min-width: 50%;
     height: 85vh;
 }
 
 .table-wrapper {
+    background-color: whitesmoke;
     justify-content: center;
     align-items: center;
     justify-items: center;
@@ -177,7 +184,6 @@ hr.rounded {
     -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
     -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
     box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-    background-color: white;
     padding: 10px;
     margin-top: 10px;
     width: 100%;
@@ -198,6 +204,8 @@ hr.rounded {
 }
 
 %table-cell {
+    background-color: whitesmoke !important;
+    // background-color: $sandyghast-light-sand !important;
     display: table-cell;
     border: none; //1px solid #e5e5e5;
     padding: 3px 8px 3px 8px !important;
@@ -296,7 +304,7 @@ label {
     overflow-x: hidden;
     margin-top: 10px;
     margin-left: -5px;
-    height: 91%
+    height: 91%;
 }
 
 .team-preview  {
@@ -305,7 +313,7 @@ label {
     cursor: pointer;
     z-index: 10;
     padding: 2px;
-    background-color: white;
+    background-color: whitesmoke;
     font-size: small;
     display: flex column;
     min-width: fit-content !important;
@@ -320,6 +328,8 @@ label {
         margin: 0px -4px 0px 0px;
     }
 
+    display: flex;
+    justify-content: flex-start;
     direction: ltr !important;
     width: 216px;
     max-width: 216px;
@@ -380,7 +390,7 @@ label {
     vertical-align: middle;
     -webkit-transform: perspective(1px) translateZ(0);
     transform: perspective(1px) translateZ(0);
-    box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+    // box-shadow: 0 0 1px rgba(0, 0, 0, 0);
     position: relative;
     overflow: hidden;
   }
@@ -391,7 +401,7 @@ label {
     left: 0;
     right: 100%;
     bottom: 0;
-    background: #2098D1;
+    background: $sandyghast-coral;
     height: 4px;
     -webkit-transition-property: right;
     transition-property: right;
@@ -419,6 +429,24 @@ label {
     -webkit-transform: translateX(12px);
     transform: translateX(12px);
   }
+
+/* Fade */
+.hvr-fade {
+    display: inline-block;
+    vertical-align: middle;
+    -webkit-transform: perspective(1px) translateZ(0);
+    transform: perspective(1px) translateZ(0);
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+    overflow: hidden;
+    -webkit-transition-duration: 0.3s;
+    transition-duration: 0.3s;
+    -webkit-transition-property: color, background-color;
+    transition-property: color, background-color;
+}
+.hvr-fade:hover, .hvr-fade:focus, .hvr-fade:active {
+    background-color: #2098D1 !important;
+    color: white;
+}
 
 
 /* responsive - for mobile */
@@ -453,8 +481,8 @@ label {
     .sticky-table-cell {
         overflow-x: hidden !important;
         overflow-y: hidden !important;
-        font-size: 8px;
-        padding: 0px 1px 0px 1px !important;
+        font-size: 10px;
+        padding: 2px 1px 0px 2px !important;
     }
 
     .table-pokemon-icon {
@@ -468,15 +496,15 @@ label {
     
     .type-icon {
         display: inline-block;
-        width: 32px;
+        width: 35px;
         // margin-bottom: 2px;
         border: 1px solid #a3a3a3;
-        border-radius: 4px;
+        border-radius: 3px;
         border: 1px solid rgba(0,0,0,0.2);
         color: #fff;
         font-size: .45rem;
         font-weight: normal;
-        line-height: 0.5rem;
+        line-height: 0.55rem;
         text-align: center;
         text-shadow: 0px 0px 4px rgba(0,0,0,0.7);
         text-transform: uppercase;

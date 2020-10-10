@@ -114,15 +114,21 @@ export default function PokemonTable(props) {
         }
 
         return (
-            <ButtonToolbar style={{ display: "flex row", justifyContent: "space-around" }} variant="light" size="sm">
+            <ButtonToolbar style={{ display: "flex row", justifyContent: "space-around" }} size="sm">
                 <h5>Pokedex</h5>
                 {total > 0 ?
                     <span>{offset + 1}-{total > offset + limit ? offset + limit : total} of {total} Pokemon</span>
                     : <span>0 results</span>
                 }
-                <DropdownButton size="sm" variant="info" title={`(${pinnedPokemon.size}/6 pins)`}>
-                    <Dropdown.Item size="sm">(coming soon) New team from pinned</Dropdown.Item>
-                </DropdownButton>
+                <Dropdown>
+                    <Dropdown.Toggle bsStyle="default" className="btn-1" size="sm">
+                        {`(${pinnedPokemon.size}/6 pins)`}
+                    </Dropdown.Toggle>
+
+                    <Dropdown.Menu size="sm">
+                        <Dropdown.Item size="sm">(coming soon) New team from pinned</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
                 <ButtonGroup variant="light" size="sm" style={{ padding: "0px 20px 0px 20px" }}>
                     <Button variant="light" size="sm" value={"dec"} onClick={(e) => handlePageClick(e.target.value)}>{'<'}</Button>
                     {leadingButtons}
@@ -157,9 +163,9 @@ export default function PokemonTable(props) {
                     <Cell className={className}>{(p.abilities.map((a, index) => {
                         return a.is_hidden ?
                             <div style={{ fontStyle: "italic" }}>{a.name}</div>
-                            : isMobile ? 
+                            : isMobile ?
                                 <div>{a.name + (index !== p.abilities.length - 1 ? ', ' : '')}</div>
-                                 :<span>{a.name + (index !== p.abilities.length - 1 ? ', ' : '')}</span>
+                                : <span>{a.name + (index !== p.abilities.length - 1 ? ', ' : '')}</span>
                     }))}</Cell>
                     {p.stats.map(s => {
                         return <Cell className={className}>{s.value}</Cell>
@@ -198,7 +204,7 @@ export default function PokemonTable(props) {
                     </LoadSpinner>
                 </StickyTable>
             </div>
-            {isMobile ? paginator : null }
+            {isMobile ? paginator : null}
         </div>
     )
 }

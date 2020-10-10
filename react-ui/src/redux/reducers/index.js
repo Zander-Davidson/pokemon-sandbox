@@ -8,7 +8,7 @@ import moveReducer from "./moveReducer";
 import itemsReducer from "./itemsReducer";
 import abilitiesReducer from "./abilitiesReducer";
 import naturesReducer from "./naturesReducer";
-import userTeamsReducer from "./userTeamsReducer";
+import userReducer from "./userReducer";
 import iconsReducer from "./iconsReducer";
 // import userSetsReducer from "./userSetsReducer";
 
@@ -23,6 +23,6 @@ export default combineReducers({
     items: itemsReducer,
     abilities: abilitiesReducer,
     natures: naturesReducer,
-    userTeams: userTeamsReducer,
+    user: userReducer,
     // userSets: userSetsReducer,
 })

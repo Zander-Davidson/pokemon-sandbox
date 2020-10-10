@@ -82,7 +82,7 @@ export default function PokemonTable(props) {
         }
 
         setPaginator(
-            <ButtonToolbar style={{ display: "flex row", justifyContent: "space-around" }} variant="light" size="sm">
+            <ButtonToolbar style={{ display: "flex row", justifyContent: "space-around" }} size="sm">
                 <h5>Movedex</h5>
                 {total > 0 ?
                     <span>{offset + 1}-{total > offset + limit ? offset + limit : total} of {total} moves</span>

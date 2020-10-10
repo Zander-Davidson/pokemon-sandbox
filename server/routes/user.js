@@ -4,25 +4,25 @@ const { authJwt } = require("../middleware");
 const userController = require("../controllers/userController");
 
 router.get(
-    '/get-team-previews',
+    '/teampreviews/:user_id',
     [authJwt.verifyToken],
     userController.getTeamPreviews
 );
 
 router.get(
-    '/get-sets-by-team', 
+    '/setsbyteamid/:user_id/:team_id', 
     [authJwt.verifyToken],
-    userController.getSetsByTeam
+    userController.getSetsByTeamId
 );
 
 router.post(
-    '/create-team', 
+    '/createteam', 
     [authJwt.verifyToken], 
     userController.createTeam    
 );
 
 router.post(
-    '/create-set', 
+    '/createset', 
     [authJwt.verifyToken],
     userController.createSet    
 );

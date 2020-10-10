@@ -3,7 +3,7 @@ const userCtx = require("../contexts/userCtx");
 exports.createTeam = async (req, res) => {
     let params = { 
         user_id: Number(req.body.user_id),
-        name: req.body.name 
+        name: req.body.name
     };
     let userTeams = await userCtx.createTeam(params);
 
@@ -67,13 +67,13 @@ exports.deleteSet = async (req, res) => {
 }
 
 exports.getTeamPreviews = async (req, res) => {
-    let params = { user_id: Number(req.body.user_id) };
+    let params = { user_id: Number(req.params.user_id) };
     let userTeams = await userCtx.getTeamPreviews(params);
     
     if (userTeams) {
         res.status(200).json({
             message: 'Returned ' + userTeams.length + ' user team(s)',
-            user_teams: userTeams
+            teamPreviews: userTeams
         }); 
     } else if (!userTeams) {
         res.status(400).json({
@@ -86,17 +86,17 @@ exports.getTeamPreviews = async (req, res) => {
     }
 }
 
-exports.getSetsByTeam = async (req, res) => {
+exports.getSetsByTeamId = async (req, res) => {
     let params = {
-        user_id: Number(req.body.user_id),
-        team_id: Number(req.body.team_id)
+        user_id: Number(req.params.user_id),
+        team_id: Number(req.params.team_id)
     };
     let userSets = await userCtx.getSetsByTeam(params);
     
     if (userSets) {
         res.status(200).json({
             message: 'Returned ' + userSets.length + ' user set(s)',
-            user_sets: userSets
+            userSets: userSets
         }); 
     } else if (!userSets) {
         res.status(400).json({
