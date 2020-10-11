@@ -3,7 +3,7 @@ import {
     NEW_TEAM, DELETE_TEAM, EDIT_TEAM, FETCH_TEAMS, LOADING_TEAMS, SET_ACTIVE_TEAM, CACHE_USER_SETS, NEW_SET, SET_ACTIVE_SET,
     FETCH_TEAM_PREVIEWS, FETCH_TEAM_PREVIEWS_FAILURE, FETCH_TEAM_PREVIEWS_SUCCESS,
     FETCH_SETS, FETCH_SETS_FAILURE, FETCH_SETS_SUCCESS,
-    CREATE_TEAM_SUCCESS, CREATE_TEAM_FAILURE
+    CREATE_TEAM_SUCCESS, CREATE_TEAM_FAILURE, UPDATE_TEAM_SUCCESS, UPDATE_TEAM_FAILURE, DELETE_TEAM_SUCCESS, DELETE_TEAM_FAILURE
 } from './types';
 import authHeader from '../../services/authHeader';
 // normally this isn't recommended, but redux has no builtin solution for caching.
@@ -12,8 +12,11 @@ import { store } from '../store';
 import { getCacheItemByGuid, cachePush, cacheSearchAndSplice } from '../../utilities/cache';
 
 const API_TEAM_PREVIEWS_URL = '/api/user/teampreviews'
-const API_SETS_URL = '/api/user/setsbyteamid';
+const API_SETS_URL = '/api/user/setsbyteam';
 const API_CREATE_TEAM_URL = '/api/user/createteam';
+const API_UPDATE_TEAM_URL = '/api/user/updateteam';
+const API_DELETE_TEAM_URL = '/api/user/deleteteam';
+
 
 export const fetchTeamPreviews = () => dispatch => {
     dispatch({ type: FETCH_TEAM_PREVIEWS });
@@ -130,6 +133,91 @@ export const createTeam = (newTeamData) => dispatch => {
         })
     }
 }
+
+export const updateTeam = (teamData) => dispatch => {
+    let user = JSON.parse(localStorage.getItem("user"));
+
+    if (user) {
+        fetch(API_UPDATE_TEAM_URL, {
+            method: 'POST',
+            headers: {
+                ...authHeader(),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: user.user_id,
+                team_id: teamData.team_id,
+                name: teamData.name
+            })
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(res.json())
+                }
+                return res.json();
+            })
+            .then(json => {
+                dispatch({
+                    type: UPDATE_TEAM_SUCCESS,
+                    payload: json.updatedTeam
+                })
+            })
+            .catch(error => {
+                dispatch({
+                    type: UPDATE_TEAM_FAILURE,
+                    payload: error.message
+                })
+            })
+    } else {
+        dispatch({
+            type: UPDATE_TEAM_FAILURE,
+            payload: USER_NOT_LOGGED_IN
+        })
+    }
+}
+
+export const deleteTeam = (teamData) => dispatch => {
+    let user = JSON.parse(localStorage.getItem("user"));
+
+    if (user) {
+        fetch(API_DELETE_TEAM_URL, {
+            method: 'POST',
+            headers: {
+                ...authHeader(),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: user.user_id,
+                team_id: teamData.team_id
+            })
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(res.json())
+                }
+                return res.json();
+            })
+            .then(json => {
+                dispatch({
+                    type: DELETE_TEAM_SUCCESS,
+                    payload: json.deletedTeamId
+                })
+            })
+            .catch(error => {
+                dispatch({
+                    type: DELETE_TEAM_FAILURE,
+                    payload: error.message
+                })
+            })
+    } else {
+        dispatch({
+            type: DELETE_TEAM_FAILURE,
+            payload: USER_NOT_LOGGED_IN
+        })
+    }
+}
+
+
 
 
 

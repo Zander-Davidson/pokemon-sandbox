@@ -95,15 +95,6 @@
     justify-content: flex-start;
 }
 
-.set-tabs-wrapper {
-    width: fit-content;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    /* border-left: 1px solid purple; */
-}
-
 .btn-newset {
     display: flex;
     align-items: center;
@@ -117,7 +108,16 @@
 
 .btn-newset:focus {
     outline: none;
-  }
+}
+
+.set-tabs-wrapper {
+    width: fit-content;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* border-left: 1px solid purple; */
+}
 
 .set-tab {
     z-index: 1;

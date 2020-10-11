@@ -1,9 +1,8 @@
 const userCtx = require("../contexts/userCtx");
 
 exports.createTeam = async (req, res) => {
-    console.log(req.body)
-    let params = { 
-        user_id: req.body.user_id,//Number(req.body.user_id),
+    let params = {
+        user_id: Number(req.body.user_id),
         name: req.body.name
     };
     let newTeamPreview = await userCtx.createTeam(params);
@@ -21,11 +20,42 @@ exports.createTeam = async (req, res) => {
 }
 
 exports.updateTeam = async (req, res) => {
+    let params = {
+        user_id: Number(req.body.user_id),
+        team_id: Number(req.body.team_id),
+        name: req.body.name
+    };
+    let updatedTeam = await userCtx.updateTeam(params);
 
+    if (updatedTeam) {
+        res.status(201).json({
+            message: `${updatedTeam.length} user team(s) updated`,
+            updatedTeam: updatedTeam[0]
+        });
+    } else {
+        res.status(500).json({
+            message: 'An unexpected internal error occurred.'
+        });
+    }
 }
 
 exports.deleteTeam = async (req, res) => {
+    let params = {
+        user_id: Number(req.body.user_id),
+        team_id: Number(req.body.team_id)
+    };
+    let deletedTeam = await userCtx.deleteTeam(params);
 
+    if (deletedTeam) {
+        res.status(201).json({
+            message: `${deletedTeam.length} user team(s) deleted`,
+            deletedTeamId: deletedTeam[0].team_id
+        });
+    } else {
+        res.status(500).json({
+            message: 'An unexpected internal error occurred.'
+        });
+    }
 }
 
 exports.createSet = async (req, res) => {
@@ -70,12 +100,12 @@ exports.deleteSet = async (req, res) => {
 exports.getTeamPreviews = async (req, res) => {
     let params = { user_id: Number(req.params.user_id) };
     let userTeams = await userCtx.getTeamPreviews(params);
-    
+
     if (userTeams) {
         res.status(200).json({
             message: 'Returned ' + userTeams.length + ' user team(s)',
             teamPreviews: userTeams
-        }); 
+        });
     } else if (!userTeams) {
         res.status(400).json({
             message: 'That user could not be found'
@@ -87,18 +117,18 @@ exports.getTeamPreviews = async (req, res) => {
     }
 }
 
-exports.getSetsByTeamId = async (req, res) => {
+exports.getSetsByTeam = async (req, res) => {
     let params = {
         user_id: Number(req.params.user_id),
         team_id: Number(req.params.team_id)
     };
     let userSets = await userCtx.getSetsByTeam(params);
-    
+
     if (userSets) {
         res.status(200).json({
             message: 'Returned ' + userSets.length + ' user set(s)',
             userSets: userSets
-        }); 
+        });
     } else if (!userSets) {
         res.status(400).json({
             message: 'That team could not be found'

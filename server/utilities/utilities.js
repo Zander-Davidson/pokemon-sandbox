@@ -42,7 +42,7 @@ const queryNeo4j = async (query, params, formatter) => {
         await session.close();
     }
     
-    if (await results.records.length === 0) {
+    if (await typeof results.records.length === undefined) {
         return null;
     } else if (formatter) {
         return await formatter(await results.records);

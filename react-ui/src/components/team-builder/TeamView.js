@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchTeamPreviews, createTeam } from '../../redux/actions/userActions';
+import TextForm from "./TextForm";
 import TeamPreview from "./TeamPreview";
 import { Button } from "react-bootstrap";
 import styles from '../../styling/master.scss';
@@ -62,39 +63,5 @@ export default function TeamView() {
                 {previewCards}
             </div>
         </div>
-    )
-}
-
-function TextForm(props) {
-    const inputRef = useRef();
-    let value;
-    const [text, setText] = useState('');
-
-    useEffect(() => {
-        inputRef.current.focus();
-    }, [])
-
-    const handleTextChange = (e) => {
-        e.preventDefault();
-        setText(e.target.value);
-    }
-
-    return (
-        <form className={props.className} style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
-            <input
-                ref={inputRef}
-                type='text'
-                value={value}
-                style={{
-                    fontSize: 'small',
-                    height: '25px',
-                    width: '170px'
-                }}
-                placeholder={props.placeholderValue}
-                // onChange={props.handleTextChange}
-                onKeyDown={props.handleOnKeyDown}
-                onBlur={props.handleOnBlur}
-            />
-        </form>
     )
 }

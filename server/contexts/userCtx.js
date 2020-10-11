@@ -15,8 +15,27 @@ const createTeam = async (params) => {
 
         RETURN {
             team_id: id(t), 
-            name: t.name, 
+            name: t.name,
             sets: []
+        }
+    `;
+    return await queryNeo4j(query, params);
+};
+
+/* params: {
+    user_id: <number>,
+    team_id: <number>,
+    name: <string>
+} */
+const updateTeam = async (params) => {
+    let query = `
+        MATCH (u:User)-[:HAS_TEAM]-(t:UserTeam) 
+        WHERE id(u) = $user_id AND id(t) = $team_id
+        SET t.name = $name, t.updated_at = datetime()
+
+        RETURN {
+            team_id: id(t), 
+            name: t.name
         }
     `;
     return await queryNeo4j(query, params);
@@ -26,13 +45,18 @@ const createTeam = async (params) => {
     user_id: <number>,
     team_id: <number>
 } */
-const updateTeam = async (params) => { };
+const deleteTeam = async (params) => {
+    let query = `
+        MATCH (u:User)-[:HAS_TEAM]->(t:UserTeam) 
+        WHERE id(u) = $user_id AND id(t) = $team_id
+        SET t.updated_at = datetime(), t.deleted_at = datetime()
 
-/* params: {
-    user_id: <number>,
-    team_id: <number>
-} */
-const deleteTeam = async (params) => { };
+        RETURN {
+            team_id: id(t)
+        }
+    `;
+    return await queryNeo4j(query, params);
+};
 
 /* data = {
     user_id: [number],
@@ -96,7 +120,8 @@ const deleteSet = async (params) => { };
 // TODO: make this consistent with the others and change signature to getTeamPreviews
 const getTeamPreviews = async (params) => {
     let query = `
-        MATCH (u:User)-[:HAS_TEAM]->(t:UserTeam) WHERE id(u) = $user_id WITH t
+        MATCH (u:User)-[:HAS_TEAM]->(t:UserTeam) WHERE id(u) = $user_id AND NOT EXISTS(t.deleted_at)
+        WITH t
         OPTIONAL MATCH (t)-[hs:HAS_SET]->(s:UserSet)-[:IS_POKEMON]->(p:Pokemon) WITH t, s, hs, p
         ORDER BY t.updated_at DESC, hs.slot
         RETURN {

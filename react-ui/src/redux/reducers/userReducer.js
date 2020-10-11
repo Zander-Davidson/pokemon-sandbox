@@ -3,12 +3,12 @@ import {
     DELETE_TEAM, EDIT_TEAM, SET_ACTIVE_TEAM, NEW_SET, SET_ACTIVE_SET, EDIT_SET, DELETE_SET,
     FETCH_TEAM_PREVIEWS, FETCH_TEAM_PREVIEWS_FAILURE, FETCH_TEAM_PREVIEWS_SUCCESS,
     FETCH_SETS, FETCH_SETS_FAILURE, FETCH_SETS_SUCCESS,
-    CREATE_TEAM_SUCCESS, CREATE_TEAM_FAILURE
+    CREATE_TEAM_SUCCESS, CREATE_TEAM_FAILURE, UPDATE_TEAM_SUCCESS, UPDATE_TEAM_FAILURE, DELETE_TEAM_SUCCESS, DELETE_TEAM_FAILURE
 } from '../actions/types'
 
 const initialState = {
     teamPreviews: [],
-    setsMap: new Map(),
+    setNest: new Map(),
     userTeams: [],
     userSets: [],
     activeTeamGuid: null,
@@ -60,12 +60,18 @@ export default function (state = initialState, action) {
                 errorMsg: action.payload
             }
 
+        // recieves teamId as key, set array as value
         case FETCH_SETS_SUCCESS:
+            let setMap = new Map();
+            action.payload.value.forEach(s => {
+                setMap.set(s.set_id, s);
+            });
+
             return {
                 ...state,
                 userFetching: false,
                 userFetched: true,
-                setsMap: state.setsMap.set(action.payload.key, action.payload.value),
+                setNest: state.setNest.set(action.payload.key, setMap),
                 errorMsg: ""
             }
 
@@ -76,9 +82,41 @@ export default function (state = initialState, action) {
             }
 
         case CREATE_TEAM_SUCCESS:
+            console.log(action.payload)
             return {
                 ...state,
                 teamPreviews: [action.payload, ...state.teamPreviews],
+                errorMsg: SUCCESS
+            }
+
+        case UPDATE_TEAM_FAILURE:
+            return {
+                ...state,
+                errorMsg: action.payload
+            }
+
+        // action.payload = team
+        case UPDATE_TEAM_SUCCESS:
+            return {
+                ...state,
+                teamPreviews: state.teamPreviews.map(t => {
+                    return t.team_id == action.payload.team_id ? 
+                        { ...t, name: action.payload.name} : t; 
+                }),
+                errorMsg: SUCCESS
+            }
+
+        case DELETE_TEAM_FAILURE:
+            return {
+                ...state,
+                errorMsg: action.payload
+            }
+
+        // action.payload = team_id
+        case DELETE_TEAM_SUCCESS:
+            return {
+                ...state,
+                teamPreviews: state.teamPreviews.filter(t => t.team_id != action.payload),
                 errorMsg: SUCCESS
             }
 

@@ -10,15 +10,27 @@ router.get(
 );
 
 router.get(
-    '/setsbyteamid/:user_id/:team_id', 
+    '/setsbyteam/:user_id/:team_id', 
     [authJwt.verifyToken],
-    userController.getSetsByTeamId
+    userController.getSetsByTeam
 );
 
 router.post(
     '/createteam', 
     [authJwt.verifyToken], 
     userController.createTeam    
+);
+
+router.post(
+    '/updateteam', 
+    [authJwt.verifyToken], 
+    userController.updateTeam    
+);
+
+router.post(
+    '/deleteteam', 
+    [authJwt.verifyToken], 
+    userController.deleteTeam    
 );
 
 router.post(
