@@ -37,6 +37,7 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "^2.1.8",
     "react-select": "^3.1.0",
+    "react-sliding-pane": "^6.1.2",
     "react-sticky-table": "^5.1.7",
     "react-tabs": "^3.1.0",
     "react-tooltip": "^4.2.10",

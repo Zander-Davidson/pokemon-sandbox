@@ -1,5 +1,24 @@
 const userCtx = require("../contexts/userCtx");
 
+exports.getTeamPreviews = async (req, res) => {
+    let userTeams = await userCtx.getTeamPreviews(req.body);
+
+    if (userTeams) {
+        res.status(201).json({
+            message: 'Returned ' + userTeams.length + ' user team(s)',
+            teamPreviews: userTeams
+        });
+    } else if (!userTeams) {
+        res.status(400).json({
+            message: 'That user could not be found'
+        });
+    } else {
+        res.status(500).json({
+            message: 'An unexpected internal error occurred.'
+        });
+    }
+}
+
 exports.createTeam = async (req, res) => {
     let params = {
         user_id: Number(req.body.user_id),
@@ -95,26 +114,6 @@ exports.updateSet = async (req, res) => {
 
 exports.deleteSet = async (req, res) => {
 
-}
-
-exports.getTeamPreviews = async (req, res) => {
-    let params = { user_id: Number(req.params.user_id) };
-    let userTeams = await userCtx.getTeamPreviews(params);
-
-    if (userTeams) {
-        res.status(200).json({
-            message: 'Returned ' + userTeams.length + ' user team(s)',
-            teamPreviews: userTeams
-        });
-    } else if (!userTeams) {
-        res.status(400).json({
-            message: 'That user could not be found'
-        });
-    } else {
-        res.status(500).json({
-            message: 'An unexpected internal error occurred.'
-        });
-    }
 }
 
 exports.getSetsByTeam = async (req, res) => {

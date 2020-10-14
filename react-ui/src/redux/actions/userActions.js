@@ -3,7 +3,8 @@ import {
     NEW_TEAM, DELETE_TEAM, EDIT_TEAM, FETCH_TEAMS, LOADING_TEAMS, SET_ACTIVE_TEAM, CACHE_USER_SETS, NEW_SET, SET_ACTIVE_SET,
     FETCH_TEAM_PREVIEWS, FETCH_TEAM_PREVIEWS_FAILURE, FETCH_TEAM_PREVIEWS_SUCCESS,
     FETCH_SETS, FETCH_SETS_FAILURE, FETCH_SETS_SUCCESS,
-    CREATE_TEAM_SUCCESS, CREATE_TEAM_FAILURE, UPDATE_TEAM_SUCCESS, UPDATE_TEAM_FAILURE, DELETE_TEAM_SUCCESS, DELETE_TEAM_FAILURE
+    CREATE_TEAM_SUCCESS, CREATE_TEAM_FAILURE, UPDATE_TEAM_SUCCESS, UPDATE_TEAM_FAILURE, DELETE_TEAM_SUCCESS, DELETE_TEAM_FAILURE,
+    SET_SHOW_TEAM_SPRITES, SET_ORDER_TEAMS_DIR
 } from './types';
 import authHeader from '../../services/authHeader';
 // normally this isn't recommended, but redux has no builtin solution for caching.
@@ -18,15 +19,19 @@ const API_UPDATE_TEAM_URL = '/api/user/updateteam';
 const API_DELETE_TEAM_URL = '/api/user/deleteteam';
 
 
-export const fetchTeamPreviews = () => dispatch => {
+export const fetchTeamPreviews = (params) => dispatch => {
     dispatch({ type: FETCH_TEAM_PREVIEWS });
 
     let user = JSON.parse(localStorage.getItem("user"));
 
     if (user) {
-        fetch(API_TEAM_PREVIEWS_URL + `/${user.user_id}`, {
-            method: 'GET',
-            headers: authHeader()
+        fetch(API_TEAM_PREVIEWS_URL, {
+            method: 'POST',
+            headers: {
+                ...authHeader(),
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({...params, user_id: user.user_id})
         })
             .then(res => {
                 if (!res.ok) {
@@ -56,7 +61,7 @@ export const fetchTeamPreviews = () => dispatch => {
 
 export const fetchSets = (teamId) => dispatch => {
     dispatch({ type: FETCH_SETS });
-    
+
     let user = JSON.parse(localStorage.getItem("user"));
 
     if (user) {
@@ -217,6 +222,23 @@ export const deleteTeam = (teamData) => dispatch => {
     }
 }
 
+export const setActiveTeam = (teamId) => dispatch => {
+    dispatch({
+        type: SET_ACTIVE_TEAM,
+        payload: teamId
+    })
+}
+
+export const setShowTeamSprites = () => dispatch => {
+    dispatch({ type: SET_SHOW_TEAM_SPRITES });
+}
+
+export const setOrderTeamsBy = (orderBy) => dispatch => {
+    dispatch({
+        type: SET_ORDER_TEAMS_DIR,
+        payload: orderBy
+    })
+}
 
 
 
@@ -234,7 +256,7 @@ export const setActiveUserSet = (userTeamGuid, userSetGuid) => dispatch => {
     }
 }
 
-export const setActiveUserTeam = (userTeamGuid) => dispatch => { }
+
 
 // export const createTeam = (newTeamName) => dispatch => {
 //     fetch(endpoint, {

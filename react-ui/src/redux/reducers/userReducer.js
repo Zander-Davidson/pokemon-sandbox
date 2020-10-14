@@ -3,18 +3,25 @@ import {
     DELETE_TEAM, EDIT_TEAM, SET_ACTIVE_TEAM, NEW_SET, SET_ACTIVE_SET, EDIT_SET, DELETE_SET,
     FETCH_TEAM_PREVIEWS, FETCH_TEAM_PREVIEWS_FAILURE, FETCH_TEAM_PREVIEWS_SUCCESS,
     FETCH_SETS, FETCH_SETS_FAILURE, FETCH_SETS_SUCCESS,
-    CREATE_TEAM_SUCCESS, CREATE_TEAM_FAILURE, UPDATE_TEAM_SUCCESS, UPDATE_TEAM_FAILURE, DELETE_TEAM_SUCCESS, DELETE_TEAM_FAILURE
+    CREATE_TEAM_SUCCESS, CREATE_TEAM_FAILURE, UPDATE_TEAM_SUCCESS, UPDATE_TEAM_FAILURE, DELETE_TEAM_SUCCESS, DELETE_TEAM_FAILURE,
+    SET_SHOW_TEAM_SPRITES, SET_ORDER_TEAMS_DIR
 } from '../actions/types'
 
 const initialState = {
+    activeTeamId: null,
+    activeTeamName: null,
     teamPreviews: [],
     setNest: new Map(),
     userTeams: [],
     userSets: [],
     activeTeamGuid: null,
     activeSetGuid: null,
-    userFetching: false,
-    userFetched: false,
+    showTeamSprites: true,
+    orderTeamsBy: 'desc',
+    teamsFetching: false,
+    teamsFetched: false,
+    setsFetching: false,
+    setsFetched: false,
     userSetsFetching: false,
     userSetsFetched: false,
     errorMsg: ''
@@ -26,37 +33,37 @@ export default function (state = initialState, action) {
         case FETCH_TEAM_PREVIEWS:
             return {
                 ...state,
-                userFetching: true
+                teamsFetching: true
             }
 
         case FETCH_TEAM_PREVIEWS_FAILURE:
             return {
                 ...state,
-                userFetching: false,
-                userFetched: false,
+                teamsFetching: false,
+                teamsFetched: false,
                 errorMsg: action.payload
             }
 
         case FETCH_TEAM_PREVIEWS_SUCCESS:
             return {
                 ...state,
-                userFetching: false,
-                userFetched: true,
+                teamsFetching: false,
+                teamsFetched: true,
                 teamPreviews: action.payload,
-                errorMsg: ""
+                errorMsg: SUCCESS
             }
 
         case FETCH_SETS:
             return {
                 ...state,
-                userFetching: true
+                setsFetching: true
             }
 
         case FETCH_SETS_FAILURE:
             return {
                 ...state,
-                userFetching: false,
-                userFetched: false,
+                setsFetching: false,
+                setsFetched: false,
                 errorMsg: action.payload
             }
 
@@ -69,8 +76,8 @@ export default function (state = initialState, action) {
 
             return {
                 ...state,
-                userFetching: false,
-                userFetched: true,
+                teamsFetching: false,
+                setsFetched: true,
                 setNest: state.setNest.set(action.payload.key, setMap),
                 errorMsg: ""
             }
@@ -85,6 +92,8 @@ export default function (state = initialState, action) {
             console.log(action.payload)
             return {
                 ...state,
+                activeTeamId: action.payload.team_id,
+                activeTeamName: action.payload.name,
                 teamPreviews: [action.payload, ...state.teamPreviews],
                 errorMsg: SUCCESS
             }
@@ -100,8 +109,8 @@ export default function (state = initialState, action) {
             return {
                 ...state,
                 teamPreviews: state.teamPreviews.map(t => {
-                    return t.team_id == action.payload.team_id ? 
-                        { ...t, name: action.payload.name} : t; 
+                    return t.team_id == action.payload.team_id ?
+                        { ...t, name: action.payload.name } : t;
                 }),
                 errorMsg: SUCCESS
             }
@@ -116,10 +125,44 @@ export default function (state = initialState, action) {
         case DELETE_TEAM_SUCCESS:
             return {
                 ...state,
+                activeTeamId: null,
+                activeTeamName: null,
                 teamPreviews: state.teamPreviews.filter(t => t.team_id != action.payload),
                 errorMsg: SUCCESS
             }
 
+        // action.payload = team_id
+        case SET_ACTIVE_TEAM:
+            let clickedTeamId = action.payload;
+            let newActiveId = null;
+            let newActiveName = null;
+
+            if (clickedTeamId != state.activeTeamId) {
+                newActiveId = clickedTeamId;
+
+                for (let i = 0; i < state.teamPreviews.length; i++) {
+                    if (state.teamPreviews[i].team_id == action.payload)
+                        newActiveName = state.teamPreviews[i].name;
+                }
+            }
+
+            return {
+                ...state,
+                activeTeamName: newActiveName,
+                activeTeamId: newActiveId
+            }
+
+        case SET_SHOW_TEAM_SPRITES:
+            return {
+                ...state,
+                showTeamSprites: !state.showTeamSprites
+            }
+
+        case SET_ORDER_TEAMS_DIR:
+            return {
+                ...state,
+                orderTeamsBy: action.payload === 'asc' ? 'asc' : 'desc'
+            }
 
         // // payload: userSets
         // case FETCH_SETS:
@@ -129,11 +172,6 @@ export default function (state = initialState, action) {
         //         userSets: action.payload,
         //         activeSetGuid: action.payload === [] ? null : action.payload[0].guid
         //     }
-        case SET_ACTIVE_TEAM:
-            return {
-                ...state,
-                activeTeamGuid: state.userTeams.filter(t => t.guid === action.payload)[0] || null,
-            }
         case SET_ACTIVE_SET:
             return {
                 ...state,

@@ -8,9 +8,8 @@ const API_URL_DATA = "/api/pokemon";
 const API_URL_NAMES = "/api/pokemon/names";
 
 export const fetchPokemonNames = () => dispatch => {
-    dispatch({
-        type: FETCH_POKEMON_NAMES
-    })
+    dispatch({ type: FETCH_POKEMON_NAMES });
+
     fetch(API_URL_NAMES)
         .then(res => {
             if (!res.ok) {
@@ -36,9 +35,8 @@ export const fetchPokemonNames = () => dispatch => {
 }
 
 export const fetchPokemon = (searchParams) => dispatch => {
-    dispatch({
-        type: FETCH_POKEMON
-    })
+    dispatch({ type: FETCH_POKEMON });
+
     fetch(API_URL_DATA, {
         method: 'POST',
         headers: {
@@ -48,10 +46,7 @@ export const fetchPokemon = (searchParams) => dispatch => {
     })
         .then(res => {
             if (!res.ok) {
-                dispatch({
-                    type: FETCH_POKEMON_FAILURE
-                })
-                throw new Error(`status ${res.status}`);
+                throw new Error(res.json());
             }
             return res.json();
         })
@@ -67,9 +62,9 @@ export const fetchPokemon = (searchParams) => dispatch => {
         })
         .catch(e => {
             dispatch({
-                type: FETCH_POKEMON_FAILURE
+                type: FETCH_POKEMON_FAILURE,
+                payload: e.message
             })
-            console.log(`API call failed: ${e}`);
         })
 }
 

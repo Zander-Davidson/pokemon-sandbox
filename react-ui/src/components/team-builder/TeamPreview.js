@@ -1,73 +1,74 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { fetchSets, updateTeam, deleteTeam } from '../../redux/actions/userActions';
-import TextForm from './TextForm';
-import Edit from '../icons/Edit';
-import Trash from '../icons/Trash';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchSets, setActiveTeam } from '../../redux/actions/userActions';
+import LoadSpinner from '../tools/LoadSpinner';
 import styles from '../../styling/master.scss';
 
-export default function TeamPreview(props) {
-    const dispatch = useDispatch();
+export default function TeamPreview() {
+    const { teamPreviews, teamsFetching } = useSelector(state => state.user);
+    const [previewDeck, setPreviewDeck] = useState([]);
+    
+    useEffect(() => {
+        setPreviewDeck(teamPreviews.map(t => {
+            let spriteUrls = t.sets.map(s => {
+                return s.sprite_link
+            });
+            
+            return <Team team={t} spriteUrls={spriteUrls} />
+        }))
+    }, [teamPreviews]);
+    
+    return (
+        <div className="team-previews-wrapper">
+        {/* <LoadSpinner isLoading={teamsFetching}> */}
+            {previewDeck}
+        {/* </LoadSpinner> */}
 
-    const [imgs, setImgs] = useState();
-    const [showEditForm, setShowEditForm] = useState(false);
+        </div>
+    );
+};
+
+
+const defaultClassName = 'team-preview';
+const activeClassName = 'team-preview-active';
+
+const Team = (props) => {
+    const dispatch = useDispatch();
+    const { activeTeamId, showTeamSprites } = useSelector(state => state.user)
+
+    const [className, setClassName] = useState(defaultClassName)
+    // const [showSprites, setShowSprites] = useState();
+    const [spriteRow, setSpriteRow] = useState();
 
     useEffect(() => {
-        setImgs(props.spriteUrls.map(s => {
-            return <img class="sprite" src={s}/>
-        }));
+        setSpriteRow(
+            <div className="team-preview-sprite-row">
+                {props.spriteUrls.map(s => {
+                    return <img class="sprite" src={s}/>
+                })}
+            </div>
+        );
     }, [props.spriteUrls]);
+
+    useEffect(() => {
+        setClassName(activeTeamId == props.team.team_id ? activeClassName : defaultClassName);
+    }, [activeTeamId]);
     
     const handleTeamClick = () => {
-        dispatch(fetchSets(props.id));
+        dispatch(fetchSets(props.team.team_id));
+        dispatch(setActiveTeam(props.team.team_id));
     };
 
-    const handleEditClick = () => {
-        setShowEditForm(true);
-    }
-
-    const handleDeleteClick = () => {
-        dispatch(deleteTeam({
-            team_id: props.id
-        }));
-    }
-
-    const handleEditBlur = () => {
-        setShowEditForm(false);
-    }
-
-    const handleEditEnter = (event) => {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            event.stopPropagation();
-            let name = event.target.value
-
-            setShowEditForm(false);
-            dispatch(updateTeam({
-                team_id: props.id,
-                name: name
-            }));
-        }
-    }
-
     return (
-        <div className="team-preview">
-            {showEditForm ? 
-                <TextForm 
-                    placeholderValue="new name" 
-                    handleOnKeyDown={handleEditEnter}
-                    handleOnBlur={handleEditBlur}
-                />
-                : 
-                <div className='edit-team-bar'>
-                    <span className='icon' onClick={handleEditClick}><Edit/></span>
-                    <span >{props.name}</span>
-                    <span className="icon" onClick={handleDeleteClick}><Trash/></span>
-                </div> 
-            }
-            <div className="team-preview-sprite-row" onClick={handleTeamClick}>
-                {imgs}
+        <div className={props.team.team_id == activeTeamId ? activeClassName : defaultClassName} onClick={handleTeamClick}>
+            <div className="info-bar">
+                <span>{props.team.name}</span>
+                <span>
+                    <div>{`Created: ${props.team.created_at.month}-${props.team.created_at.day}-${props.team.created_at.year}`}</div>
+                    <div>{`Updated: ${props.team.updated_at.month}-${props.team.updated_at.day}-${props.team.updated_at.year}`}</div>
+                </span>
             </div>
+            {showTeamSprites ? spriteRow : null}
         </div>
     )
 }

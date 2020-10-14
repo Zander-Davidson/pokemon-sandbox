@@ -3,8 +3,8 @@ const router = express.Router();
 const { authJwt } = require("../middleware");
 const userController = require("../controllers/userController");
 
-router.get(
-    '/teampreviews/:user_id',
+router.post(
+    '/teampreviews',
     [authJwt.verifyToken],
     userController.getTeamPreviews
 );

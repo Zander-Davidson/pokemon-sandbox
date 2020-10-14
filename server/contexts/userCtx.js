@@ -1,5 +1,35 @@
 const { queryNeo4j } = require("../utilities/utilities");
 
+const getTeamPreviews = async (params) => {
+    let orderDir = '';
+    if (params.orderDir && params.orderDir === "asc") { orderDir = " ASC "; }
+    else { orderDir = " DESC "; }
+
+    let orderBy = '';
+    if (params.orderBy === 'name') {orderBy = 'name'}
+    else if (params.orderBy === 'created_at') {orderBy = 'created_at'}
+    else {orderBy = 'updated_at'}
+
+    params = {
+        user_id: Number(params.user_id)
+    };
+
+    let query = `
+        MATCH (u:User)-[:HAS_TEAM]->(t:UserTeam) WHERE id(u) = $user_id AND NOT EXISTS(t.deleted_at)
+        WITH t
+        OPTIONAL MATCH (t)-[hs:HAS_SET]->(s:UserSet)-[:IS_POKEMON]->(p:Pokemon) WITH t, s, hs, p
+        ORDER BY t.${orderBy} ${orderDir}, hs.slot
+        RETURN {
+            team_id: id(t), 
+            name: t.name,
+            created_at: t.created_at,
+            updated_at: t.updated_at,
+            sets: CASE WHEN s IS NOT NULL THEN collect({set_id: id(s), slot: hs.slot, sprite_link: p.sprite_link})
+                ELSE [] END
+        }`;
+    return await queryNeo4j(query, params);
+};
+
 /* params = {
     ser_id: <number>
     name: <string>
@@ -16,6 +46,8 @@ const createTeam = async (params) => {
         RETURN {
             team_id: id(t), 
             name: t.name,
+            created_at: t.created_at,
+            updated_at: t.updated_at,
             sets: []
         }
     `;
@@ -116,22 +148,6 @@ const createSet = async (params) => {
 const updateSet = async (params) => { };
 
 const deleteSet = async (params) => { };
-
-// TODO: make this consistent with the others and change signature to getTeamPreviews
-const getTeamPreviews = async (params) => {
-    let query = `
-        MATCH (u:User)-[:HAS_TEAM]->(t:UserTeam) WHERE id(u) = $user_id AND NOT EXISTS(t.deleted_at)
-        WITH t
-        OPTIONAL MATCH (t)-[hs:HAS_SET]->(s:UserSet)-[:IS_POKEMON]->(p:Pokemon) WITH t, s, hs, p
-        ORDER BY t.updated_at DESC, hs.slot
-        RETURN {
-            team_id: id(t), 
-            name: t.name, 
-            sets: CASE WHEN s IS NOT NULL THEN collect({set_id: id(s), slot: hs.slot, sprite_link: p.sprite_link})
-                ELSE [] END
-        }`;
-    return await queryNeo4j(query, params);
-};
 
 /* data = {
     user_id: <number>,

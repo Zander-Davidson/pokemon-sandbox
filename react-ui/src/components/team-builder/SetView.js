@@ -12,11 +12,11 @@ export default function SetView() {
 
     return (
         <div className="set-view">
-            <div className='picker-tabs-wrapper'>
+            {/* <div className='picker-tabs-wrapper'>
                 {['Pokemon', 'Moves', 'Abilities', 'Stats'].map((p, index) => {
                     return <div className='picker-tab'>{p}</div>
                 })}
-            </div>
+            </div> */}
             <div className='set-view-content-wrapper'>
                 
                 <div className='picker-content-wrapper'>
