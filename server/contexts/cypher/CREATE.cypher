@@ -218,3 +218,8 @@ WITH p, q, [x in preEvo WHERE not(x in postEvo)] as missingMoves
 MATCH (l:Move) WHERE l.name IN missingMoves
 MERGE(p)-[:HAS_MOVE]->(l)
 
+match(p:Pokemon) set p.image_link = p.sprite_link
+match(p:Pokemon) set p.sprite_link = 'https://raw.githubusercontent.com/msikma/pokesprite/master/pokemon-gen7x/regular/' + COALESCE(p.name ,"") + '.png'
+
+
+create(e:Error {code: "ucs1"}) set e.message= "Error: This team already has 6 sets."

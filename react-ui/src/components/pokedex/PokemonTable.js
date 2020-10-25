@@ -150,7 +150,7 @@ export default function PokemonTable(props) {
         return pokemon.map(p => {
             return (
                 <Row>
-                    <Cell onClick={() => handleRowPinClick(p)} className={className} style={{ cursor: "pointer" }}>
+                    <Cell style={{cursor: "pointer"}} onClick={() => handleRowPinClick(p)} className={className}>
                         <Thumbtack pinned={pinnedPokemon.get(p.name)} />
                     </Cell>
                     <Cell className={className}>
@@ -160,12 +160,10 @@ export default function PokemonTable(props) {
                     <Cell className={className}>{p.types.map(t => {
                         return (<><div className="type-icon" style={{ backgroundColor: t.color }}>{t.name}</div><br /></>)
                     })}</Cell>
-                    <Cell className={className}>{(p.abilities.map((a, index) => {
+                    <Cell style={{fontSize: isMobile ? "8px" : "10px"}} className={className}>{(p.abilities.map((a, index) => {
                         return a.is_hidden ?
                             <div style={{ fontStyle: "italic" }}>{a.name}</div>
-                            : isMobile ?
-                                <div>{a.name + (index !== p.abilities.length - 1 ? ', ' : '')}</div>
-                                : <span>{a.name + (index !== p.abilities.length - 1 ? ', ' : '')}</span>
+                            : <div>{a.name + (index !== p.abilities.length - 1 ? ', ' : '')}</div>
                     }))}</Cell>
                     {p.stats.map(s => {
                         return <Cell className={className}>{s.value}</Cell>
@@ -177,7 +175,7 @@ export default function PokemonTable(props) {
 
     var header = (
         <Row>
-            <Cell className="sticky-table-header" onClick={handleHeaderPinClick} className="sticky-table-header" style={{ cursor: "pointer" }}>
+            <Cell className="sticky-table-header" onClick={handleHeaderPinClick} style={{ cursor: "pointer" }}>
                 <Thumbtack disabled={pinnedPokemon.size === 0} pinned={pinnedPokemon.size > 0} />
             </Cell>
             <Cell className="sticky-table-header">Pokemon</Cell>
@@ -186,8 +184,8 @@ export default function PokemonTable(props) {
             <Cell className="sticky-table-header">HP</Cell>
             <Cell className="sticky-table-header">Atk</Cell>
             <Cell className="sticky-table-header">Def</Cell>
-            <Cell className="sticky-table-header">Sp. Atk</Cell>
-            <Cell className="sticky-table-header">Sp. Def</Cell>
+            <Cell className="sticky-table-header">SpA</Cell>
+            <Cell className="sticky-table-header">SpD</Cell>
             <Cell className="sticky-table-header">Speed</Cell>
         </Row>
     );
@@ -196,7 +194,7 @@ export default function PokemonTable(props) {
         <div className="table-card">
             {paginator}
             <div className="table-wrapper">
-                <StickyTable leftStickyColumnCount={2}>
+                <StickyTable leftStickyColumnCount={0}>
                     {header}
                     {pinnedRows}
                     <LoadSpinner isLoading={fetchingPokemon}>

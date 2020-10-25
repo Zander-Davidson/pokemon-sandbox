@@ -43,7 +43,7 @@ export default function Header() {
     return (
         <div className='header'>
             <Navbar style={{padding: '0px 0px 0px 0px'}} expand="lg">
-                <Link className='a' to="/home"><img className="img" src={sandygast} /></Link>
+                <Link className='a' to="/home"><img className="logo" src={sandygast} /></Link>
                 <Navbar.Brand style={{color:'white'}} href="/home">Pokemon Sandbox</Navbar.Brand>
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
@@ -52,15 +52,10 @@ export default function Header() {
                         <Link className='a' to="/pokedex">Pokedex</Link>
                         <Link className='a' to="/movedex">Movedex</Link>
                         <Link className='a' to="/teambuilder">Team Builder</Link>
-                        {/* <Link className='a' to="/damage-calculator">Damage Calculator</Link> */}
                     </Nav>
                     
                     {signupButton}
                     {loginButton}
-                    {/* <Form inline>
-                        <FormControl type="text" placeholder="Search" className="mr-sm-2" />
-                        <Button variant="outline-success">Search</Button>
-                    </Form> */}
                 </Navbar.Collapse>
             </Navbar>
         </div>

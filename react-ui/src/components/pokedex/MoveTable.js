@@ -116,10 +116,10 @@ export default function PokemonTable(props) {
                         <span>{m.damage_class}</span>
                     </Cell>
                     <Cell className="sticky-table-cell">
-                        <span>{m.power}</span>
+                        <span>{!m.power ? '-' : m.power}</span>
                     </Cell>
                     <Cell className="sticky-table-cell">
-                        <span>{m.accuracy}</span>
+                        <span>{!m.accuracy ? '-' : m.accuracy}</span>
                     </Cell>
                     <Cell className="sticky-table-cell">
                         <span>{m.priority}</span>

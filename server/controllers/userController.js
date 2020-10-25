@@ -78,29 +78,44 @@ exports.deleteTeam = async (req, res) => {
 }
 
 exports.createSet = async (req, res) => {
+    // let params = {
+    //     user_id: Number(req.body.user_id),
+    //     team_id: Number(req.body.team_id),
+    //     set_name: req.body.set_name,
+    //     pokemon_slot: req.body.pokemon_slot,
+    //     pokemon_name: req.body.pokemon_name,
+    //     nickname: req.body.nickname,
+    //     item_name: req.body.item_name,
+    //     level: req.body.level,
+    //     gender: req.body.gender,
+    //     is_shiny: req.body.is_shiny,
+    //     ability_name: req.body.ability_name,
+    //     nature_name: req.body.nature_name,
+    //     stats: req.body.stats,
+    //     moves: req.body.moves
+    // };
     let params = {
         user_id: Number(req.body.user_id),
         team_id: Number(req.body.team_id),
-        set_name: req.body.set_name,
-        pokemon_slot: req.body.pokemon_slot,
-        pokemon_name: req.body.pokemon_name,
-        nickname: req.body.nickname,
-        item_name: req.body.item_name,
-        level: req.body.level,
-        gender: req.body.gender,
-        is_shiny: req.body.is_shiny,
-        ability_name: req.body.ability_name,
-        nature_name: req.body.nature_name,
-        stats: req.body.stats,
-        moves: req.body.moves
-    };
+        pokemon_name: req.body.pokemon_name
+    }
+
     let userSets = await userCtx.createSet(params);
 
     if (userSets && Array.isArray(userSets)) {
-        res.status(201).json({
-            message: `${userSets.length} user set(s) created`,
-            user_sets: userSets
-        });
+        let newSet = userSets[0];
+
+        if (newSet.is_error) {
+            res.status(500).json({
+                code: newSet.code,
+                message: newSet.message
+            });
+        } else {
+            res.status(201).json({
+                message: `${userSets.length} user set(s) created`,
+                user_set: newSet
+            });
+        }
     } else {
         res.status(500).json({
             message: 'An unexpected internal error occurred.'

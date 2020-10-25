@@ -76,7 +76,7 @@ export default function (state = initialState, action) {
 
             return {
                 ...state,
-                teamsFetching: false,
+                setsFetching: false,
                 setsFetched: true,
                 setNest: state.setNest.set(action.payload.key, setMap),
                 errorMsg: ""

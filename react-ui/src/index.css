@@ -5,6 +5,19 @@ html, body {
   min-width: 100%;
 }
 
+/* input {
+  background-color: #dadada !important;
+  color: black;
+}
+
+select {
+  background-color: #dadada !important;
+}
+
+button {
+  background-color: #dadada !important;
+} */
+
 body {
   margin: 0;
   padding: 0;

@@ -29,7 +29,8 @@ $input-color: white !default;
 }
 
 .App {
-    color: white;
+    color: whitesmoke;
+    font-weight: lighter;
     font-family: Roboto,"Helvetica Neue",sans-serif;
     background-color: $primary-bg-color !important;
     text-align: center;
@@ -49,8 +50,9 @@ $input-color: white !default;
 
 .page {
     overflow: auto;
-    // height: 100%;
-    min-height: 89vh;
+    color: whitesmoke;
+    font-weight: lighter;
+    height: 100%;
 }
 
 .App-logo {
@@ -110,6 +112,15 @@ $input-color: white !default;
     .btn {
         margin: 5px;
     }
+    
+    .logo {
+        max-height: 50px;
+        max-width: 50px;
+        margin-right: 10px;
+        margin-left:10px;
+        margin-top: 3px;
+        margin-bottom: 3px;
+    }
 }
 
 %card {
@@ -165,7 +176,7 @@ hr.rounded {
 }
 
 ::-webkit-scrollbar { 
-    width: 10px; 
+    width: 7px; 
 } 
 
 /* Track */ 
@@ -200,19 +211,20 @@ hr.rounded {
 }
 
 .table-wrapper {
-    background-color: whitesmoke;
+    background-color: $secondary-bg-color !important;
     justify-content: center;
     align-items: center;
     justify-items: center;
     align-content: center;
     position: relative;
     border-radius: 2px;
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-    -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-    padding: 10px;
+    text-align: start;
+    // -moz-border-radius: 2px;
+    // -webkit-border-radius: 2px;
+    // -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    // -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    // box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    // padding: 10px;
     margin-top: 10px;
     width: 100%;
     height: 90%;
@@ -221,19 +233,14 @@ hr.rounded {
     display: flex;
 }
 
-.pokemon-table-header {
-    width: 100%;
-    height: $table-row-height;
-    border: solid black;
-}
-
 .sticky-table-header {
     font-weight: bold;
+    border-bottom: 5px solid rgba(151, 151, 151, 0.25) !important;
 }
 
 %table-cell {
-    background-color: whitesmoke !important;
-    // background-color: $secondary-bg-color !important);
+    // background-color: whitesmoke !important;
+    background-color: $secondary-bg-color !important;
     display: table-cell;
     border: none; //1px solid #e5e5e5;
     padding: 3px 8px 3px 8px !important;
@@ -243,20 +250,21 @@ hr.rounded {
 
 .sticky-table-cell {
     @extend %table-cell;
+    border-bottom: 1px solid rgba(151, 151, 151, 0.25) !important;
 }
 
 .pinned-sticky-table-cell {
     @extend %table-cell;
-    background-color: $lightgray !important;
+    background-color: $primary-bg-color !important;
 }
 
 .table-pokemon-icon {
-    max-height: 50px;
-    max-width: 50px;
-    margin-right: 5px;
-    margin-left: -12px;
-    margin-top: -10px;
-    margin-bottom: -10px;
+    -webkit-transform: scale(1.4); /* Saf3.1+, Chrome */
+    -moz-transform: scale(1.4); /* FF3.5+ */
+    -ms-transform: scale(1.4); /* IE9 */
+    -o-transform: scale(1.4); /* Opera 10.5+ */
+    transform: scale(1.4);
+    margin: -20px -5px 0px -5px
 }
 
 .type-icon {
@@ -274,15 +282,6 @@ hr.rounded {
     text-shadow: 0px 0px 4px rgba(0,0,0,0.7);
     text-transform: uppercase;
     transition: opacity .4s;
-}
-
-img {
-    max-height: 50px;
-    max-width: 50px;
-    margin-right: 10px;
-    margin-left:10px;
-    margin-top: 3px;
-    margin-bottom: 3px;
 }
 
 .icon {
@@ -329,6 +328,7 @@ label {
     height: 100%;
     width: 250px;
     min-width: 250px;
+    max-width: 250px;
 
     .team-name-form {
         display: flex;
@@ -453,8 +453,6 @@ label {
     }
     
     .team-previews-wrapper {
-        // direction: rtl;
-        min-width: fit-content !important;
         overflow-y: auto;
         overflow-x: hidden;
         width: inherit;
@@ -479,6 +477,7 @@ label {
             font-size: 12px;
             display: flex column;
             width: 100%;
+            max-width: 100%;
             border-bottom: 1px solid rgba(151, 151, 151, 0.25);
             text-align: left;
             cursor: pointer;
@@ -497,9 +496,12 @@ label {
 
             .team-preview-sprite-row {
                 .sprite {
-                    max-height: 40px;
-                    max-width: 40px;
-                    margin: 0px -4px 0px 0px;
+                    -webkit-transform: scale(1.1); /* Saf3.1+, Chrome */
+                    -moz-transform: scale(1.1); /* FF3.5+ */
+                    -ms-transform: scale(1.1); /* IE9 */
+                    -o-transform: scale(1.1); /* Opera 10.5+ */
+                    transform: scale(1.1);
+                    margin: -20px -10px 0px -19px;
                 }
                 // @extend .hvr-bob;
                 display: flex;
@@ -512,10 +514,78 @@ label {
 
         .team-preview-active {
             @extend .team-preview;
-            background-color: rgba(151, 151, 151, 0.25) !important;
+            background-color: rgba(151, 151, 151, 0.3) !important;
             color: white;
         } 
     }
+}
+
+.set-view {
+    background-color: $secondary-bg-color;
+    width: 100%;
+    z-index: 20px;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    -webkit-box-shadow: 1px 2px 7px 0px rgba(0,0,0,0.3);
+    -moz-box-shadow: 1px 2px 7px 0px rgba(0,0,0,0.3);
+    box-shadow: 1px 2px 7px 0px rgba(0,0,0,0.3);
+    
+    .set-tabs-wrapper {
+        width: 70px !important;
+        height: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+        align-content: flex-end;
+        align-items: center;
+        border: 1px solid green;
+        
+        
+        .set-tab {
+            @extend .hvr-flash;
+            :hover {
+                cursor: pointer;
+            }
+            height: 70px;
+            width: 100%;
+            display: flex;
+            // align-items: center;
+            border-bottom: 1px solid $gray;
+
+            .sprite {
+                height: inherit;
+                width: inherit;
+                -webkit-transform: scale(1.2); /* Saf3.1+, Chrome */
+                -moz-transform: scale(1.2); /* FF3.5+ */
+                -ms-transform: scale(1.2); /* IE9 */
+                -o-transform: scale(1.2); /* Opera 10.5+ */
+                transform: scale(1.2);
+                margin: -15px -5px -5px 0px;
+            }
+        }    
+    }
+    
+    .set-view-content-wrapper {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        
+        .button-bar {
+            width: 100%;
+            height: 50px;
+            border: 1px solid green;
+        }
+        
+        .set {
+            width: 300px; // fit-content;
+            height: 100%;
+        }
+    }
+
 }
 
 .edit-team-bar {
@@ -637,7 +707,7 @@ label {
   
 /* FLASH (customized) */
 .hvr-flash {
-    display: inline-block;
+    // display: inline-block;
     vertical-align: middle;
     -webkit-transform: perspective(1px) translateZ(0);
     transform: perspective(1px) translateZ(0);
@@ -649,7 +719,7 @@ label {
     transition-property: color, background-color;
 }
 .hvr-flash:hover, .hvr-flash:focus, .hvr-flash:active {
-    background-color: rgba(151, 151, 151, 0.25) !important;
+    background-color: rgba(151, 151, 151, 0.15) !important;
     color: whitesmoke;
  }
 
@@ -767,12 +837,12 @@ label {
     }
 
     .table-pokemon-icon {
-        max-height: 30px;
-        max-width: 30px;
-        margin-right: 0px;
-        margin-left: -7px;
-        margin-top: -10px;
-        margin-bottom: -10px;
+        -webkit-transform: scale(1.3); /* Saf3.1+, Chrome */
+        -moz-transform: scale(1.3); /* FF3.5+ */
+        -ms-transform: scale(1.3); /* IE9 */
+        -o-transform: scale(1.3); /* Opera 10.5+ */
+        transform: scale(1.3);
+        margin: -20px -5px 3px -5px
     }
     
     .type-icon {
@@ -791,40 +861,6 @@ label {
         text-transform: uppercase;
         transition: opacity .4s;
     }
-}
-
-.set-view {
-    width: 100%;
-    z-index: 20px;
-    // padding: 5px 10px 10px 5px;
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    -webkit-box-shadow: 1px 2px 7px 0px rgba(0,0,0,0.3);
-    -moz-box-shadow: 1px 2px 7px 0px rgba(0,0,0,0.3);
-    box-shadow: 1px 2px 7px 0px rgba(0,0,0,0.3);
-}
-
-.set-tabs-wrapper {
-    :hover {
-        cursor: pointer;
-    }
-    width: fit-content;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.set-tab {
-    @extend .hvr-flash;
-    height: 15%;
-    width: fit-content;
-    display: flex;
-    align-items: center;
-    // user-select: none;
-    border-bottom: 1px solid $gray;
 }
 
 .picker-tabs-wrapper {
@@ -854,14 +890,6 @@ label {
     height: 100%;
     display: flex;
     flex-direction: row;
-}
-
-.set-view-content-wrapper {
-    background-color: $secondary-bg-color;
-    display: flex;
-    flex-direction: row;
-    height: 100%;
-    width: 100%;
 }
 
 .set-wrapper {
