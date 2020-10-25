@@ -34,4 +34,4 @@ export default function SetPicker(props) {
             </LoadSpinner>
         </div>
     )
-}
+} 
