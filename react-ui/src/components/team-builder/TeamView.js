@@ -41,6 +41,7 @@ const disabledBtnStyle = {
 
 export default function TeamView() {
     const dispatch = useDispatch();
+    
     const { activeTeamId, activeTeamName, teamsFetching, showTeamSprites } = useSelector(state => state.user);
     const [showNewTeamForm, setShowNewTeamForm] = useState(false);
     const [showEditNameForm, setShowEditNameForm] = useState(false);
@@ -50,12 +51,7 @@ export default function TeamView() {
     const [editNameBtnStyle, setEditNameBtnStyle] = useState({});
     const [newTeamBtnStyle, setNewTeamBtnStyle] = useState({});
     const [flashDisplayColor, setFlashDisplayColor] = useState(false);
-    const [deleteBtnStyle, setDeleteBtnStyle] = useState(disabledBtnStyle);
     const [flashDeleteColor, setFlashDeleteColor] = useState(false);
-
-    useEffect(() => {
-        dispatch(fetchTeamPreviews());
-    }, []);
 
     useEffect(() => {
         if (!activeTeamId) {
@@ -78,7 +74,7 @@ export default function TeamView() {
     const handleNewTeamClick = () => {
         // TODO: conflicts with handleNewTeamBlur, need to fix this. currently using an alt style when clicked
         setShowEditNameForm(false);
-        setShowSearchForm(false)
+        setShowSearchForm(false);
         setShowNewTeamForm(true);
     }
 
@@ -90,10 +86,9 @@ export default function TeamView() {
         if (event.key === 'Enter') {
             event.preventDefault();
             event.stopPropagation();
-            let name = event.target.value
 
             setShowNewTeamForm(false);
-            dispatch(createTeam({ name: name }))
+            dispatch(createTeam({ name: event.target.value }))
         }
     }
 
@@ -168,7 +163,7 @@ export default function TeamView() {
     // }
 
     const handleDisplayClick = () => {
-        setShowSearchForm(false)
+        setShowSearchForm(false);
         setShowNewTeamForm(false);
         setShowEditNameForm(false);
         setFlashDisplayColor(true);
@@ -179,7 +174,7 @@ export default function TeamView() {
     }
 
     const handleDeleteTeamClick = () => {
-        setShowSearchForm(false)
+        setShowSearchForm(false);
         setShowNewTeamForm(false);
         setShowEditNameForm(false);
         setFlashDeleteColor(true);
@@ -191,20 +186,20 @@ export default function TeamView() {
         }));
     }
 
-    let deleter;
+    let deleteBtnStyle;
     if (flashDeleteColor) {
-        deleter = flashDeleteStyle;
+        deleteBtnStyle = flashDeleteStyle;
     } else if (!activeTeamId) {
-        deleter = disabledBtnStyle;
-    } 
-    else {
-        deleter = null;
+        deleteBtnStyle = disabledBtnStyle;
+    } else {
+        deleteBtnStyle = null;
     }
 
     return (
         <div className="team-view">
             <div className={showNewTeamForm || showEditNameForm ? 'team-name-form-open' : 'team-name-form'}>
                 <FocusTextForm
+                    charLimit={20}
                     showForm={showNewTeamForm || showEditNameForm}
                     placeholderValue={showNewTeamForm ? "New team" : activeTeamName}
                     handleOnKeyDown={showNewTeamForm ? handleNewTeamEnter : handleEditNameEnter}
@@ -214,10 +209,6 @@ export default function TeamView() {
 
             <div className={showSearchForm ? 'team-search-form-open' : 'team-search-form'}>
                 <form className="search-stack">
-                    {/* <FocusTextForm
-                            showForm={showSearchForm}
-                            placeholderValue="Search teams"
-                        /> */}
                     <select className="focus-text-box" onChange={handleOrderByChange}>
                         <option value="" selected disabled hidden>Sort by...</option>
                         <option value="name">Team name</option>
@@ -239,7 +230,6 @@ export default function TeamView() {
                         style={orderDir === 'asc' ? isSearchingStyle : null}
                     ><SortAmountDownAlt /></div>
                 </div>
-
             </div>
 
             <div className="button-bar">
@@ -248,7 +238,7 @@ export default function TeamView() {
                 {/* <span className="button" onMouseEnter={handleFilterBtnMouseEnter} onMouseLeave={handleFilterBtnMouseLeave}><SortAmountUp /></span> */}
                 <span className="button" onClick={handleSearchClick} style={showSearchForm ? isSearchingStyle : null}><Sort /></span>
                 <span className="button" onClick={handleDisplayClick} style={flashDisplayColor ? flashDisplayStyle : null}>{showTeamSprites ? <List /> : <Image />}</span>
-                <span className="button" onClick={handleDeleteTeamClick} style={deleter}><Trash /></span>
+                <span className="button" onClick={handleDeleteTeamClick} style={deleteBtnStyle}><Trash /></span>
             </div>
             <div className="divider"></div>
             <TeamPreview />

@@ -5,7 +5,7 @@ import LoadSpinner from '../tools/LoadSpinner';
 import styles from '../../styling/master.scss';
 
 export default function TeamPreview() {
-    const { teamPreviews, teamsFetching } = useSelector(state => state.user);
+    const { teamPreviews } = useSelector(state => state.user);
     const [previewDeck, setPreviewDeck] = useState([]);
 
     useEffect(() => {
@@ -23,7 +23,6 @@ export default function TeamPreview() {
             {/* <LoadSpinner isLoading={teamsFetching}> */}
             {previewDeck}
             {/* </LoadSpinner> */}
-
         </div>
     );
 };
@@ -34,9 +33,8 @@ const activeClassName = 'team-preview-active';
 
 const Team = (props) => {
     const dispatch = useDispatch();
-    const { activeTeamId, showTeamSprites, setNest } = useSelector(state => state.user)
+    const { activeTeamId, showTeamSprites } = useSelector(state => state.user);
 
-    const [className, setClassName] = useState(defaultClassName)
     const [spriteRow, setSpriteRow] = useState();
 
     useEffect(() => {
@@ -48,10 +46,6 @@ const Team = (props) => {
             </div>
         );
     }, [props.spriteUrls]);
-
-    useEffect(() => {
-        setClassName(activeTeamId == props.team.team_id ? activeClassName : defaultClassName);
-    }, [activeTeamId]);
 
     const handleTeamClick = () => {
         if (props.team.team_id != activeTeamId) {
@@ -65,9 +59,9 @@ const Team = (props) => {
         <div className={props.team.team_id == activeTeamId ? activeClassName : defaultClassName} onClick={handleTeamClick}>
             <div className="info-bar">
                 <span>{props.team.name}</span>
-                <span>
-                    <div>{`Created: ${props.team.created_at.month}-${props.team.created_at.day}-${props.team.created_at.year}`}</div>
-                    <div>{`Updated: ${props.team.updated_at.month}-${props.team.updated_at.day}-${props.team.updated_at.year}`}</div>
+                <span style={{textAlign: "right"}}>
+                    <div>{`Created ${props.team.created_at.month}/${props.team.created_at.day}/${props.team.created_at.year}`}</div>
+                    <div>{`Updated ${props.team.updated_at.month}/${props.team.updated_at.day}/${props.team.updated_at.year}`}</div>
                 </span>
             </div>
             {showTeamSprites ? spriteRow : null}

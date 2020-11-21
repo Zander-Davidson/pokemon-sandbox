@@ -10,7 +10,9 @@ export default function FocusTextForm(props) {
     }, [props.showForm]);
 
     const handleOnChange = (e) => {
-        setValue(e.target.value);
+        if (e.target.value.length <= props.charLimit) {
+            setValue(e.target.value);
+        }
     };
 
     return (

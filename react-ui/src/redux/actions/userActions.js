@@ -4,6 +4,7 @@ import {
     FETCH_TEAM_PREVIEWS, FETCH_TEAM_PREVIEWS_FAILURE, FETCH_TEAM_PREVIEWS_SUCCESS,
     FETCH_SETS, FETCH_SETS_FAILURE, FETCH_SETS_SUCCESS,
     CREATE_TEAM_SUCCESS, CREATE_TEAM_FAILURE, UPDATE_TEAM_SUCCESS, UPDATE_TEAM_FAILURE, DELETE_TEAM_SUCCESS, DELETE_TEAM_FAILURE,
+    CREATE_SET_SUCCESS, CREATE_SET_FAILURE, UPDATE_SET_SUCCESS, UPDATE_SET_FAILURE, DELETE_SET_SUCCESS, DELETE_SET_FAILURE,
     SET_SHOW_TEAM_SPRITES, SET_ORDER_TEAMS_DIR
 } from './types';
 import authHeader from '../../services/authHeader';
@@ -17,6 +18,9 @@ const API_SETS_URL = '/api/user/setsbyteam';
 const API_CREATE_TEAM_URL = '/api/user/createteam';
 const API_UPDATE_TEAM_URL = '/api/user/updateteam';
 const API_DELETE_TEAM_URL = '/api/user/deleteteam';
+const API_CREATE_SET_URL = '/api/user/createset';
+
+const API_DELETE_SET_URL = '/api/user/deleteset';
 
 
 export const fetchTeamPreviews = (params) => dispatch => {
@@ -229,6 +233,104 @@ export const setActiveTeam = (teamId) => dispatch => {
     })
 }
 
+export const createSet = (newSetData) => (dispatch) => {
+    let user = JSON.parse(localStorage.getItem("user"));
+
+    if (user) {
+        fetch(API_CREATE_SET_URL, {
+            method: 'POST',
+            headers: {
+                ...authHeader(),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: user.user_id,
+                team_id: newSetData.teamId,
+                pokemon_name: newSetData.pokemonName
+            })
+        })
+            .then(res => {
+                if (!res.ok) {
+                    return res.json().then(err => {throw new Error(err.message)})
+                }
+                return res.json();
+            })
+            .then(json => {
+                dispatch({
+                    type: CREATE_SET_SUCCESS,
+                    payload: json.newSet
+                })
+            })
+            .then(() => {
+                fetchTeamPreviews()(dispatch);
+            })
+            .catch(error => {
+                dispatch({
+                    type: CREATE_SET_FAILURE,
+                    payload: error.message
+                })
+            })
+    } else {
+        dispatch({
+            type: CREATE_SET_FAILURE,
+            payload: USER_NOT_LOGGED_IN
+        })
+    }
+}
+
+export const updateSet = (teamId, setId, data) => (dispatch) => {
+    
+}
+
+export const deleteSet = (teamId, setId) => (dispatch) => {
+    let user = JSON.parse(localStorage.getItem("user"));
+
+    if (user) {
+        fetch(API_DELETE_SET_URL, {
+            method: 'POST',
+            headers: {
+                ...authHeader(),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: user.user_id,
+                team_id: teamId,
+                set_id: setId
+            })
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(res.json())
+                }
+                return res.json();
+            })
+            .then(json => {
+                dispatch({
+                    type: DELETE_SET_SUCCESS,
+                    payload: json.deletedSet
+                })
+            })
+            .catch(error => {
+                dispatch({
+                    type: DELETE_SET_FAILURE,
+                    payload: error.message
+                })
+            })
+    } else {
+        dispatch({
+            type: DELETE_SET_FAILURE,
+            payload: USER_NOT_LOGGED_IN
+        })
+    }
+}
+
+export const setActiveSet = (setId) => dispatch => {
+    dispatch({
+        type: SET_ACTIVE_SET,
+        payload: setId
+    })
+}
+
 export const setShowTeamSprites = () => dispatch => {
     dispatch({ type: SET_SHOW_TEAM_SPRITES });
 }
@@ -238,22 +340,6 @@ export const setOrderTeamsBy = (orderBy) => dispatch => {
         type: SET_ORDER_TEAMS_DIR,
         payload: orderBy
     })
-}
-
-
-
-
-export const setActiveUserSet = (userTeamGuid, userSetGuid) => dispatch => {
-    let cacheCheck = cacheSearchAndSplice(store.userSets, userSetGuid);
-
-    if (cacheCheck) {
-        dispatch({
-            type: CACHE_USER_SETS,
-            payload: cacheCheck
-        });
-    } else {
-        fetchSets(userTeamGuid);
-    }
 }
 
 

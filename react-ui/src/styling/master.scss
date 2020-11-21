@@ -31,7 +31,7 @@ $input-color: white !default;
 .App {
     color: whitesmoke;
     font-weight: lighter;
-    font-family: Roboto,"Helvetica Neue",sans-serif;
+    font-family: Menlo;
     background-color: $primary-bg-color !important;
     text-align: center;
     display: flex;
@@ -88,6 +88,7 @@ $input-color: white !default;
     background-color: $tertiary-bg-color;
     padding: 0px 0px 0px 0px;
     width: -webkit-fill-available;
+    height: $header-height;
     position: sticky;
     top: 0px;
     left: 0px;
@@ -324,20 +325,20 @@ label {
     align-items: center;
     justify-content: space-around;
     left: 0px;
-    top:0px;
+    top: 0px;
     height: 100%;
-    width: 250px;
-    min-width: 250px;
-    max-width: 250px;
+    width: 300px;
+    min-width: 300px;
+    max-width: 300px;
 
     .team-name-form {
         display: flex;
         align-items: center;
         justify-content: space-around;
         background-color: $secondary-bg-color;
-        z-index: 5;
-        height: 50px;
-        width: 250px;
+        z-index: 50;
+        height: 60px;
+        width: inherit;
         position: absolute;
         top: 0;
         left: 0;        
@@ -362,11 +363,11 @@ label {
         align-items: center;
         justify-content: space-around;
         background-color: $secondary-bg-color;
-        z-index: 5;
-        height: 100px;
-        width: 250px;
+        z-index: 50;
+        height: 120px;
+        width: inherit;
         position: absolute;
-        top: -50px;
+        top: -60px;
         left: 0;        
         transform: translateY(-100%);
         transition: transform 0.3s ease-out; 
@@ -400,7 +401,7 @@ label {
         justify-content: space-around;
         // these affect font-awesome icons
         color: gray;
-        font-size: 20px; 
+        font-size: 25px; 
         width: 50px;
         height: 100%;
         cursor: pointer;
@@ -420,12 +421,12 @@ label {
         display: flex;
         align-items: center;
         justify-content: space-around;            
-        height: 50px;
-        width: 250px;
+        height: 60px;
+        width: inherit;
         z-index: 10;
         // these affect font-awesome icons
         color: gray;
-        font-size: 20px; 
+        font-size: 30px; 
         cursor: pointer;
 
         .button {
@@ -457,7 +458,7 @@ label {
         overflow-x: hidden;
         width: inherit;
         height: 100%;
-
+        
         .team-divider {
             @extend .divider;
             -webkit-box-shadow: 0px 0px 1px 1px rgba(255,255,255,0.7);
@@ -466,7 +467,7 @@ label {
             opacity: 0.1;
             width: 100%;
         }
-
+        
         .team-preview {
             // @extend .hvr-underline-reveal;
             @extend .hvr-flash;
@@ -481,20 +482,28 @@ label {
             border-bottom: 1px solid rgba(151, 151, 151, 0.25);
             text-align: left;
             cursor: pointer;
-
+            
             .info-bar {
                 display: flex;
                 flex-direction: row;
                 align-items: center;
                 justify-content: space-between;
-
+                
                 :nth-last-child(-n + 1) {
                     color: $gray;
                     font-size: 9px;
                 }
             }
-
+            
             .team-preview-sprite-row {
+                -webkit-user-select: none; /* Chrome/Safari */        
+                -moz-user-select: none; /* Firefox */
+                -ms-user-select: none; /* IE10+ */
+                    
+                /* Rules below not implemented in browsers yet */
+                -o-user-select: none;
+                user-select: none;
+                
                 .sprite {
                     -webkit-transform: scale(1.1); /* Saf3.1+, Chrome */
                     -moz-transform: scale(1.1); /* FF3.5+ */
@@ -527,11 +536,62 @@ label {
     height: 100%;
     width: 100%;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     -webkit-box-shadow: 1px 2px 7px 0px rgba(0,0,0,0.3);
     -moz-box-shadow: 1px 2px 7px 0px rgba(0,0,0,0.3);
     box-shadow: 1px 2px 7px 0px rgba(0,0,0,0.3);
+
+    .new-set-form {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        background-color: $secondary-bg-color;
+        z-index: 60;
+        height: 60px;
+        width: 300px;
+        position: absolute;
+        top: $header-height;
+        left: 300px;        
+        transform: translateY(-100%);
+        transition: transform 0.3s ease-out; 
+    }
+    .new-set-form-open {
+        @extend .new-set-form;
+        transform: translateY(100%);
+        transition: transform 0.3s ease-out;
+        border-radius: 0 0 5px 5px;
+        -moz-border-radius: 0 0 5px 5px;
+        -wekit-border-radius: 0 0 5px 5px;
+        -webkit-box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3);
+        -moz-box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3);
+        box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3);
+    }
     
+    .button-bar {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        height: 60px;
+        z-index: 50;
+        background-color: $secondary-bg-color;
+        border: 1px solid green;
+        // these affect font-awesome icons
+        color: gray;
+        font-size: 30px;
+        :hover {
+            cursor: pointer;
+        }
+
+        .button {
+            @extend .hvr-flash;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-around !important;            
+            height: 100%;
+            width: 70px;
+        }     
+    }
+
     .set-tabs-wrapper {
         width: 70px !important;
         height: 100%;
@@ -565,20 +625,20 @@ label {
                 transform: scale(1.2);
                 margin: -15px -5px -5px 0px;
             }
-        }    
+        }
+
+        .set-tab-active {
+            @extend .set-tab;
+            background-color: rgba(151, 151, 151, 0.3) !important;
+        } 
     }
     
     .set-view-content-wrapper {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         height: 100%;
         width: 100%;
         
-        .button-bar {
-            width: 100%;
-            height: 50px;
-            border: 1px solid green;
-        }
         
         .set {
             width: 300px; // fit-content;
@@ -587,23 +647,6 @@ label {
     }
 
 }
-
-.edit-team-bar {
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    padding: 1px 3px 0px 3px;
-
-    .icon {
-        :hover { 
-            color: $skyblue !important;
-        }
-        color: $gray
-    }
-}
-
-// .focus-text-form {
-// }
 
 .focus-text-box {
     font-size: 14px;

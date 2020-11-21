@@ -1,14 +1,17 @@
 import { SUCCESS } from "../errorMsgs";
 import {
-    DELETE_TEAM, EDIT_TEAM, SET_ACTIVE_TEAM, NEW_SET, SET_ACTIVE_SET, EDIT_SET, DELETE_SET,
+    DELETE_TEAM, EDIT_TEAM, SET_ACTIVE_TEAM, NEW_SET, SET_ACTIVE_SET, EDIT_SET,
     FETCH_TEAM_PREVIEWS, FETCH_TEAM_PREVIEWS_FAILURE, FETCH_TEAM_PREVIEWS_SUCCESS,
     FETCH_SETS, FETCH_SETS_FAILURE, FETCH_SETS_SUCCESS,
     CREATE_TEAM_SUCCESS, CREATE_TEAM_FAILURE, UPDATE_TEAM_SUCCESS, UPDATE_TEAM_FAILURE, DELETE_TEAM_SUCCESS, DELETE_TEAM_FAILURE,
+    CREATE_SET_SUCCESS, CREATE_SET_FAILURE, UPDATE_SET_SUCCESS, UPDATE_SET_FAILURE, DELETE_SET_SUCCESS, DELETE_SET_FAILURE,
     SET_SHOW_TEAM_SPRITES, SET_ORDER_TEAMS_DIR
 } from '../actions/types'
+import { deleteSet } from "../actions/userActions";
 
 const initialState = {
     activeTeamId: null,
+    activeSetId: null,
     activeTeamName: null,
     teamPreviews: [],
     setNest: new Map(),
@@ -28,6 +31,7 @@ const initialState = {
 }
 
 export default function (state = initialState, action) {
+    var setMap;
 
     switch (action.type) {
         case FETCH_TEAM_PREVIEWS:
@@ -69,7 +73,7 @@ export default function (state = initialState, action) {
 
         // recieves teamId as key, set array as value
         case FETCH_SETS_SUCCESS:
-            let setMap = new Map();
+            setMap = new Map();
             action.payload.value.forEach(s => {
                 setMap.set(s.set_id, s);
             });
@@ -89,7 +93,6 @@ export default function (state = initialState, action) {
             }
 
         case CREATE_TEAM_SUCCESS:
-            console.log(action.payload)
             return {
                 ...state,
                 activeTeamId: action.payload.team_id,
@@ -127,7 +130,69 @@ export default function (state = initialState, action) {
                 ...state,
                 activeTeamId: null,
                 activeTeamName: null,
+                activeSetId: null,
                 teamPreviews: state.teamPreviews.filter(t => t.team_id != action.payload),
+                errorMsg: SUCCESS
+            }
+
+        case CREATE_SET_FAILURE:
+            return {
+                ...state,
+                errorMsg: action.payload
+            }
+
+        case CREATE_SET_SUCCESS:
+            let newSet = action.payload;
+            setMap = state.setNest.get(newSet.team_id).set(newSet.set_id, newSet);
+
+            return {
+                ...state,
+                activeSetId: newSet.set_id,
+                setNest: state.setNest.set(newSet.team_id, setMap),
+                errorMsg: SUCCESS
+            }
+
+        case UPDATE_SET_FAILURE:
+            return {
+                ...state,
+                errorMsg: action.payload
+            }
+
+        // action.payload = team
+        case UPDATE_SET_SUCCESS:
+            return {
+                ...state,
+                // teamPreviews: state.teamPreviews.map(t => {
+                //     return t.team_id == action.payload.team_id ?
+                //         { ...t, name: action.payload.name } : t;
+                // }),
+                errorMsg: SUCCESS
+            }
+
+        case DELETE_SET_FAILURE:
+            return {
+                ...state,
+                errorMsg: action.payload
+            }
+
+        // action.payload = {set_id, team_id}
+        case DELETE_SET_SUCCESS:
+            let deletedSet = action.payload;
+            setMap = state.setNest
+            setMap.get(deletedSet.team_id).delete(deletedSet.set_id);
+
+            return {
+                ...state,
+                activeSetId: null,
+                teamPreviews: state.teamPreviews.map(t => {
+                    return t.team_id != deletedSet.team_id ?
+                        t
+                        : {
+                            ...t,
+                            sets: t.sets.filter(s => s.set_id != deletedSet.set_id),
+                        }
+                }),
+                setNest: setMap,
                 errorMsg: SUCCESS
             }
 
@@ -152,6 +217,12 @@ export default function (state = initialState, action) {
                 activeTeamId: newActiveId
             }
 
+        case SET_ACTIVE_SET:
+            return {
+                ...state,
+                activeSetId: action.payload != state.activeSetId ? action.payload : state.activeSetId
+            }
+
         case SET_SHOW_TEAM_SPRITES:
             return {
                 ...state,
@@ -163,21 +234,6 @@ export default function (state = initialState, action) {
                 ...state,
                 orderTeamsBy: action.payload === 'asc' ? 'asc' : 'desc'
             }
-
-        // // payload: userSets
-        // case FETCH_SETS:
-        //     return {
-        //         ...state,
-        //         userSetsFetched: true,
-        //         userSets: action.payload,
-        //         activeSetGuid: action.payload === [] ? null : action.payload[0].guid
-        //     }
-        case SET_ACTIVE_SET:
-            return {
-                ...state,
-                activeSetGuid: state.userSets.filter(s => s.guid === action.payload)[0] || null,
-            }
-
 
         // // payload: teams
         // case NEW_TEAM:
@@ -223,13 +279,7 @@ export default function (state = initialState, action) {
                     return t
                 })
             }
-        // payload: teamId
-        case DELETE_SET:
-            return {
-                ...state,
-                userSets: state.userSets.filter(t => t.id != action.payload),
-                activeSet: null,
-            }
+
         default:
             return state
     }

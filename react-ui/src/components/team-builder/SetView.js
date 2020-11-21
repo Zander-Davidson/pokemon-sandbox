@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import SetPicker from './SetPicker';
+import { createSet } from '../../redux/actions/userActions';
+import FocusTextForm from "./FocusTextForm";
+import { Plus, Trash } from '../icons/FAIcons';
 import styles from '../../styling/master.scss';
+import SetViewButtonBar from './SetViewButtonBar';
+import SetPicker from './SetPicker';
 
 export default function SetView() {
-    const dispatch = useDispatch();
-    const { activeTeamId, teamsFetching, setsFetched } = useSelector(state => state.user);
 
     return (
         <div className="set-view">
-            <SetPicker />
+            <SetViewButtonBar />
             <div className='set-view-content-wrapper'>
-                <div className="button-bar">
-                    Button Bar
-                </div>
+                <SetPicker />
             </div>
         </div>
     )
