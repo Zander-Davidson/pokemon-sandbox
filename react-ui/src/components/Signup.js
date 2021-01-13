@@ -135,14 +135,13 @@ const Signup = () => {
     };
 
     return (
-        <div className="page">
-            <div className="card card-container">
-
+        <div className="card-container">
+            <div className="auth-card">
                 <Form onSubmit={handleSignup} ref={form}>
                     {!successful && (
                         <div>
                             <Dropdown>
-                                <Dropdown.Toggle style={{background:"LightGrey", color:"black", border:"LightGrey"}} id="dropdown-basic">
+                                <Dropdown.Toggle style={{ background: "LightGrey", color: "black", border: "LightGrey" }} id="dropdown-basic">
                                     {iconPick ? iconPick.element : "Choose Icon"}
                                 </Dropdown.Toggle>
 
@@ -205,7 +204,7 @@ const Signup = () => {
                             <div className={successful ? "alert alert-success" : "alert alert-danger"} role="alert">
                                 {message}
                             </div>
-                            {successful ? <button onClick={() => {history.push("/login"); window.location.reload();}} className="btn btn-info btn-block">To Login</button> : ''}
+                            {successful ? <button onClick={() => { history.push("/login"); window.location.reload(); }} className="btn btn-info btn-block">To Login</button> : ''}
                         </div>
                     )}
                     <CheckButton style={{ display: "none" }} ref={checkBtn} />

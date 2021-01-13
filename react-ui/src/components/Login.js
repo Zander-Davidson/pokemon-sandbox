@@ -68,9 +68,8 @@ const Login = (props) => {
     }
 
     return (
-        <div className="page">
-            <div className="card card-container">
-
+        <div className="card-container">
+            <div className="auth-card">
                 <Form onSubmit={handleLogin} ref={form}>
                     <div className="form-group">
                         <label htmlFor="username">Username</label>
