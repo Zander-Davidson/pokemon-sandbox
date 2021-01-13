@@ -41,7 +41,7 @@ function Set(props) {
         if (props.set.set_id != activeSetId) {
             dispatch(setActiveSet(props.set.set_id));
         } else {
-            dispatch(setActiveSet(null))
+            dispatch(setActiveSet(null));
         }
     };
 

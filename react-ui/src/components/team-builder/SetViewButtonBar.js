@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSet, deleteSet } from '../../redux/actions/userActions';
-import FocusTextForm from "./FocusTextForm";
 import { Plus, Trash } from '../icons/FAIcons';
 import styles from '../../styling/master.scss';
+import FocusTypeahead from './FocusTypeahead';
 
 const isCreatingSetStyle = {
     color: "#1ce626", // green 
@@ -22,7 +22,8 @@ const disabledBtnStyle = {
 export default function SetViewButtonBar() {
     const dispatch = useDispatch();
     const { activeTeamId, activeSetId, setNest } = useSelector(state => state.user);
-
+    const { pokemonNames } = useSelector(state => state.pokemon);
+    
     const [showNewSetForm, setShowNewSetForm] = useState(false);
     const [newSetBtnStyle, setNewSetBtnStyle] = useState({});
     const [flashDeleteColor, setFlashDeleteColor] = useState(false);
@@ -85,8 +86,8 @@ export default function SetViewButtonBar() {
     return (
         <div>
             <div className={showNewSetForm ? 'new-set-form-open' : 'new-set-form'}>
-                <FocusTextForm
-                    charLimit= {15}
+                <FocusTypeahead
+                    options={pokemonNames}
                     showForm={showNewSetForm}
                     placeholderValue={"New pokemon"}
                     handleOnKeyDown={handleNewSetEnter}

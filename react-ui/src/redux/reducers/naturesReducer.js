@@ -1,10 +1,7 @@
 import { FETCH_NATURES, LOADING_NATURES } from '../actions/types'
 
 const initialState = {
-    items: [],
-    item: {},
-    fetching: false,
-    fetched: false
+    natures: null,
 }
 
 export default function(state = initialState, action) {
@@ -17,7 +14,7 @@ export default function(state = initialState, action) {
         case FETCH_NATURES:
             return {
                 ...state,
-                items: action.payload,
+                natures: action.payload,
                 fetched: true
             }
         default:

@@ -7,11 +7,11 @@ import {
     CREATE_SET_SUCCESS, CREATE_SET_FAILURE, UPDATE_SET_SUCCESS, UPDATE_SET_FAILURE, DELETE_SET_SUCCESS, DELETE_SET_FAILURE,
     SET_SHOW_TEAM_SPRITES, SET_ORDER_TEAMS_DIR
 } from '../actions/types'
-import { deleteSet } from "../actions/userActions";
 
 const initialState = {
     activeTeamId: null,
     activeSetId: null,
+    activeSetOptions: null,
     activeTeamName: null,
     teamPreviews: [],
     setNest: new Map(),
@@ -32,6 +32,11 @@ const initialState = {
 
 export default function (state = initialState, action) {
     var setMap;
+    var newSet;
+    var deletedSet;
+    var clickedTeamId;
+    var newActiveTeamId;
+    var newActiveTeamName;
 
     switch (action.type) {
         case FETCH_TEAM_PREVIEWS:
@@ -83,6 +88,9 @@ export default function (state = initialState, action) {
                 setsFetching: false,
                 setsFetched: true,
                 setNest: state.setNest.set(action.payload.key, setMap),
+                activeSetId: state.activeTeamId === action.payload.key && action.payload.value.length > 0 ?
+                    action.payload.value[0].set_id
+                    : null,
                 errorMsg: ""
             }
 
@@ -131,6 +139,7 @@ export default function (state = initialState, action) {
                 activeTeamId: null,
                 activeTeamName: null,
                 activeSetId: null,
+                activeSetOptions: null,
                 teamPreviews: state.teamPreviews.filter(t => t.team_id != action.payload),
                 errorMsg: SUCCESS
             }
@@ -142,7 +151,7 @@ export default function (state = initialState, action) {
             }
 
         case CREATE_SET_SUCCESS:
-            let newSet = action.payload;
+            newSet = action.payload;
             setMap = state.setNest.get(newSet.team_id).set(newSet.set_id, newSet);
 
             return {
@@ -177,7 +186,7 @@ export default function (state = initialState, action) {
 
         // action.payload = {set_id, team_id}
         case DELETE_SET_SUCCESS:
-            let deletedSet = action.payload;
+            deletedSet = action.payload;
             setMap = state.setNest
             setMap.get(deletedSet.team_id).delete(deletedSet.set_id);
 
@@ -198,29 +207,40 @@ export default function (state = initialState, action) {
 
         // action.payload = team_id
         case SET_ACTIVE_TEAM:
-            let clickedTeamId = action.payload;
-            let newActiveId = null;
-            let newActiveName = null;
-
+            clickedTeamId = action.payload;
+            newActiveTeamId = null;
+            newActiveTeamName = null;
+            
             if (clickedTeamId != state.activeTeamId) {
-                newActiveId = clickedTeamId;
-
+                newActiveTeamId = clickedTeamId;
+                
                 for (let i = 0; i < state.teamPreviews.length; i++) {
                     if (state.teamPreviews[i].team_id == action.payload)
-                        newActiveName = state.teamPreviews[i].name;
+                    newActiveTeamName = state.teamPreviews[i].name;
+                }
+            }
+            
+            if (newActiveTeamId) {
+                var sets = state.setNest.get(newActiveTeamId);
+                if (sets) {
+                    var newActiveSetId = sets.keys().next().value;
+                    // var newActiveSetId = setIds.length > 0 ? setIds.next().value : null;
                 }
             }
 
             return {
                 ...state,
-                activeTeamName: newActiveName,
-                activeTeamId: newActiveId
+                activeTeamName: newActiveTeamName,
+                activeTeamId: newActiveTeamId,
+                activeSetId: newActiveSetId,
             }
 
         case SET_ACTIVE_SET:
             return {
                 ...state,
-                activeSetId: action.payload != state.activeSetId ? action.payload : state.activeSetId
+                activeSetId: action.payload.setId != state.activeSetId ? action.payload.setId : state.activeSetId,
+                activeSetOptions: action.payload.setOptions,
+                errorMsg: action.payload.errorMsg
             }
 
         case SET_SHOW_TEAM_SPRITES:

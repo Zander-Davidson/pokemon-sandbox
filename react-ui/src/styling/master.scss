@@ -28,6 +28,12 @@ $input-color: white !default;
     $input-color: white;
 }
 
+// input, select {
+//     color: black !important;
+//     background-color: #d1d1d1 !important;
+//     border-color: #d1d1d1 !important;
+// }
+
 .App {
     color: whitesmoke;
     font-weight: lighter;
@@ -574,10 +580,11 @@ label {
         height: 60px;
         z-index: 50;
         background-color: $secondary-bg-color;
-        border: 1px solid green;
         // these affect font-awesome icons
         color: gray;
         font-size: 30px;
+        border-bottom: 1px solid $gray;
+
         :hover {
             cursor: pointer;
         }
@@ -601,8 +608,6 @@ label {
         flex-direction: column;
         align-content: flex-end;
         align-items: center;
-        border: 1px solid green;
-        
         
         .set-tab {
             @extend .hvr-flash;
@@ -639,10 +644,94 @@ label {
         height: 100%;
         width: 100%;
         
-        
-        .set {
-            width: 300px; // fit-content;
+        .set-editor {
+            width: 325px; // fit-content;
             height: 100%;
+            padding: 10px;
+            overflow-y: auto;
+
+            .form-field {
+                // height: 25px !important;
+                margin: 0px 0px 10px 0px !important;
+            }
+
+            .stats-area {
+                // display: flex;
+                // flex-direction: column;
+                table {
+                    table-layout: fixed;
+                    width: 100%;
+                }
+
+                tr {
+                    :nth-child(1) {
+                        width: 35px;
+                    }
+
+                    :nth-child(2) {
+                        width: 60px;
+                    }
+
+                    :nth-child(3) {
+                        width: 100px;
+                    }
+
+                    :nth-child(4) {
+                        width: 60px;
+                    }
+
+                    :nth-child(5) {
+                        width: 35px;
+                    }
+                }
+                
+                th, td {
+                    text-align: center;
+                }
+
+                .slider-row {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+
+                    .text-input {
+                        width: 45px !important;
+                        height: 25px !important;
+                        margin: 3px 5px 3px 5px;
+                    }
+
+                    .ev-slider {
+                        width: 100%;
+                    }
+
+                    span {
+                        width: 65px !important;
+                    }
+                }
+            }
+
+            img {
+                width: 150px;
+                height: 150px;
+            }
+
+            .type-icon {
+                width: 70px;
+                // margin-bottom: 2px;
+                border: 1px solid #a3a3a3;
+                border-radius: 0rem .2rem .2rem 0rem;
+                border: 1px solid rgba(0,0,0,0.2);
+                color: #fff;
+                font-size: .8rem;
+                font-weight: normal;
+                line-height: 1rem;
+                text-align: center;
+                text-shadow: 0px 0px 4px rgba(0,0,0,0.7);
+                text-transform: uppercase;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
         }
     }
 

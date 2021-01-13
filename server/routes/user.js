@@ -39,4 +39,22 @@ router.post(
     userController.createSet    
 );
 
+router.post(
+    '/updateset', 
+    [authJwt.verifyToken],
+    userController.updateSet    
+);
+
+router.post(
+    '/deleteset', 
+    [authJwt.verifyToken],
+    userController.deleteSet    
+);
+
+router.post(
+    '/setoptions',
+    [authJwt.verifyToken],
+    userController.getSetOptions
+)
+
 module.exports = router;
