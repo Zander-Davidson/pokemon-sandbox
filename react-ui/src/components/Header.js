@@ -1,44 +1,15 @@
 import React  from 'react'
-import { Navbar, Nav, Button, Form, FormControl } from 'react-bootstrap'
+import { Navbar, Nav } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import sandygast from '../sandygast.png'
 import styles from '../styling/master.scss'
-import { logout } from "../redux/actions/authActions";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useHistory } from 'react-router-dom';
 
 export default function Header() {
     const dispatch = useDispatch();
 
-    const { isLoggedIn } = useSelector(state => state.auth);
-    const { loggingIn } = useSelector(state => state.auth);
-    const { signingUp } = useSelector(state => state.auth);
-    const { username } = useSelector(state => state.auth);
-    const { icon_url } = useSelector(state => state.auth);
-
     let history = useHistory();
-
-    const handleLogin = () => {
-        if (isLoggedIn) {
-            dispatch(logout());
-            history.push("/home");
-            window.location.reload();
-        } else {
-            history.push("/login");
-            window.location.reload();
-        }
-    }
-
-    const handleSignup = () => {
-        history.push("/signup");
-        window.location.reload();
-    }
-
-    let signupButton = !isLoggedIn ? 
-        <Button className="btn" onClick={handleSignup} variant="success">Sign up</Button> 
-        : <span style={{color:'white', margin:'5px'}}><img className="icon" src={icon_url}/>{username}</span>;
-
-    let loginButton = <Button className="btn" onClick={handleLogin} variant="light" disabled={loggingIn}>{isLoggedIn ? "Log out" : "Log in"}</Button>;
 
     return (
         <div className='header'>
@@ -51,11 +22,7 @@ export default function Header() {
                         <Link className='a' to="/home">Home</Link>
                         <Link className='a' to="/pokedex">Pokedex</Link>
                         <Link className='a' to="/movedex">Movedex</Link>
-                        <Link className='a' to="/teambuilder">Team Builder</Link>
                     </Nav>
-                    
-                    {signupButton}
-                    {loginButton}
                 </Navbar.Collapse>
             </Navbar>
         </div>

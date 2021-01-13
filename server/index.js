@@ -74,7 +74,7 @@ if (!isDev && cluster.isMaster) {
     const natureRoutes = require('./routes/nature');
     const userRoutes = require('./routes/user');
     const iconRoutes = require('./routes/icon');
-    const authRoutes = require('./routes/auth');
+    // const authRoutes = require('./routes/auth');
 
     // .use() sets up some middleware. an incoming request (and its body) must go through .use() 
     app.use('/api/type', typeRoutes);
@@ -85,7 +85,7 @@ if (!isDev && cluster.isMaster) {
     app.use('/api/nature', natureRoutes);
     app.use('/api/user', userRoutes);
     app.use('/api/icon', iconRoutes);
-    app.use('/api/auth', authRoutes);
+    // app.use('/api/auth', authRoutes);
 
     // All remaining requests return the React app, so it can handle routing.
     app.get('*', function (req, res) {
