@@ -1,6 +1,6 @@
 import { FETCH_NATURES, LOADING_NATURES } from './types'
 
-const fetchNaturesUrl = "/api/getAllNatures"
+const fetchNaturesUrl = "/api/nature";
 
 export const fetchNatures = () => dispatch => {
     dispatch({
@@ -13,10 +13,10 @@ export const fetchNatures = () => dispatch => {
             throw new Error(`status ${res.status}`);
         return res.json();
     })
-    .then(natures => {
+    .then(json => {
         dispatch({
             type: FETCH_NATURES,
-            payload: natures.results
+            payload: json.natures
         })
         dispatch({
             type: LOADING_NATURES,

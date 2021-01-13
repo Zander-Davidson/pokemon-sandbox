@@ -222,4 +222,45 @@ match(p:Pokemon) set p.image_link = p.sprite_link
 match(p:Pokemon) set p.sprite_link = 'https://raw.githubusercontent.com/msikma/pokesprite/master/pokemon-gen7x/regular/' + COALESCE(p.name ,"") + '.png'
 
 
-create(e:Error {code: "ucs1"}) set e.message= "Error: This team already has 6 sets."
+create(e:Error {code: "ucs1"}) set e.message= "This team already has 6 sets."
+
+// change pokemon stats to attributes instead of relationships
+MATCH(p:Pokemon)-[hs:HAS_STAT]->(s:Stat) 
+WITH p, hs, s ORDER BY s.order 
+WITH p, collect({name: s.name, order: s.order, value: hs.value }) AS stats
+SET p.stats=[stats[0].value, stats[1].value, stats[2].value, stats[3].value, stats[4].value, stats[5].value]
+
+//change userset stats to attributes instead of relationships
+MATCH(us:UserSet)-[hs:HAS_STAT]->(s:Stat) 
+WITH us, hs, s ORDER BY s.order 
+WITH us, collect({name: s.name, order: s.order, evs: hs.evs, ivs: hs.ivs }) AS stats 
+SET us.evs=[stats[0].evs, stats[1].evs, stats[2].evs, stats[3].evs, stats[4].evs, stats[5].evs],
+    us.ivs=[stats[0].ivs, stats[1].ivs, stats[2].ivs, stats[3].ivs, stats[4].ivs, stats[5].ivs]
+
+MATCH(us:UserSet) WHERE us.evs IS NULL
+SET us.ivs=[31, 31, 31, 31, 31, 31],
+    us.evs=[0, 0, 0, 0, 0, 0]
+
+
+//------add array of multipliers to natures-------
+
+// add x1.0 stat modifiers from all natures to all stats
+OPTIONAL MATCH(s:Stat), (n:Nature)
+MERGE(n)-[:NEUTRAL_STAT {multiplier: 1.0}]->(s)
+
+// delete "neutral" relationships to stats from natures that already had modifiers to them
+MATCH(n:Nature)-[ms:MODIFIES_STAT]->(s:Stat) 
+WITH n, s, ms
+MATCH(n)-[ns:NEUTRAL_STAT]->(s)
+DELETE ns
+
+// rename all "neutral" labels to "modifies" labels
+MATCH (n:Nature)-[ns:NEUTRAL_STAT]->(s:Stat)
+MERGE (n)-[ms:MODIFIES_STAT {multiplier: 1.0}]->(s)
+DELETE ns
+
+// aggregate relationships info into an array of multipliers
+MATCH(n:Nature)-[ms:MODIFIES_STAT]->(s:Stat) 
+WITH n, ms, s ORDER BY s.order 
+WITH n, collect({name: s.name, order: s.order, multiplier: ms.multiplier }) AS stats
+SET n.multipliers=[stats[0].multiplier, stats[1].multiplier, stats[2].multiplier, stats[3].multiplier, stats[4].multiplier, stats[5].multiplier]

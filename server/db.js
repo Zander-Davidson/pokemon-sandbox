@@ -7,24 +7,16 @@ const neo4j = require('neo4j-driver');
 
 let _db;
 
-const isDev = process.env.NODE_ENV !== 'production';
+var neo4jURL;
+var neo4jUser;
+var neo4jPass;
+var neo4jEncryption;
 
-var graphenedbURL;
-var graphenedbUser;
-var graphenedbPass;
-var graphenedbEncryption;
+neo4jURL = process.env.NEO4J_BOLT_URL;
+neo4jUser = process.env.NEO4J_BOLT_USER;
+neo4jPass = process.env.NEO4J_BOLT_PASSWORD;
+neo4jEncryption = process.env.NEO4J_BOLT_ENCRYPTION;
 
-if (isDev) {
-    graphenedbURL = 'bolt://localhost:7687';
-    graphenedbUser = 'neo4j';
-    graphenedbPass = 'password';
-    graphenedbEncryption = 'ENCRYPTION_OFF';
-} else {
-    graphenedbURL = process.env.GRAPHENEDB_BOLT_URL;
-    graphenedbUser = process.env.GRAPHENEDB_BOLT_USER;
-    graphenedbPass = process.env.GRAPHENEDB_BOLT_PASSWORD;
-    graphenedbEncryption = 'ENCRYPTION_ON';
-}
 
 function initDb() {
     if (_db) {
@@ -34,10 +26,10 @@ function initDb() {
     
     try {
         _db = neo4j.driver(
-            graphenedbURL, 
-            neo4j.auth.basic(graphenedbUser, graphenedbPass),
+            neo4jURL, 
+            neo4j.auth.basic(neo4jUser, neo4jPass),
             // without disableLosslessIntegers, neo4j identity numbers are returned as {high: ###, low: ###}
-            {encrypted: graphenedbEncryption, disableLosslessIntegers: true},
+            {encrypted: neo4jEncryption, disableLosslessIntegers: true},
         );
     }
     catch(err) {

@@ -2,7 +2,13 @@ import React, { useEffect } from 'react';
 import { clearMessage } from "./redux/actions/messageActions";
 import { checkLoggedIn } from "./redux/actions/authActions";
 import { history } from "./helpers/history";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchPokemonNames } from './redux/actions/pokemonActions';
+import { fetchMoveNames } from './redux/actions/movesActions';
+import { fetchAbilityNames } from './redux/actions/abilitiesActions';
+import { fetchTypes } from './redux/actions/typesActions';
+import { fetchItemNames } from './redux/actions/itemsActions';
+import { fetchNatures } from './redux/actions/naturesActions';
 import { updateWindowSize } from "./redux/actions/windowActions";
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import Header from './components/Header'
@@ -31,8 +37,28 @@ export default function App() {
   //   });
   // }, [dispatch]);
 
+  const { typeData } = useSelector(state => state.types);
+  const { pokemonNames } = useSelector(state => state.pokemon);
+  const { abilityNames } = useSelector(state => state.abilities);
+  const { moveNames } = useSelector(state => state.moves);
+  const { itemNames } = useSelector(state => state.items);
+  const { natures } = useSelector(state => state.natures);
+
+
   useEffect(() => {
-    console.log('app')
+      if (pokemonNames.length === 0 || typeData.length === 0 
+          || abilityNames.length === 0 || moveNames.length === 0 
+          || itemNames.length === 0 || natures.length === 0) {
+          dispatch(fetchPokemonNames());
+          dispatch(fetchTypes());
+          dispatch(fetchMoveNames());
+          dispatch(fetchAbilityNames());
+          dispatch(fetchItemNames());
+          dispatch(fetchNatures());
+      }
+  }, []);
+
+  useEffect(() => {
     let windowListener = dispatch(updateWindowSize(window.innerWidth, window.innerHeight));
 
     window.addEventListener('resize', windowListener);

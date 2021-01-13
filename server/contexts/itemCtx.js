@@ -2,6 +2,13 @@ const { queryNeo4j } = require("../utilities/utilities");
 const { itemModel } = require("./models/returnModels");
 const fetch = require("node-fetch");
 
+// return array of all item names
+const getItemNames = async () => {
+    let query = `MATCH(i:Item) RETURN collect(i.name)`;
+    let itemNames = await queryNeo4j(query);
+    return itemNames[0];
+}
+
 // return specified Item (or return all Items if no name supplied)
 const getItem = async (params) => {
     let model = itemModel(['i.']);
@@ -49,7 +56,8 @@ const createPokeapiItems = async () => {
 
 const itemCtx = {
     getItem: getItem,
-    createItem: createItem
+    createItem: createItem,
+    getItemNames: getItemNames
 };
 
 module.exports = itemCtx;

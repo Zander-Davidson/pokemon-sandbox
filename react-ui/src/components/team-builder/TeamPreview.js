@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setActiveTeam } from '../../redux/actions/userActions';
+import { setActiveTeam, setActiveSet } from '../../redux/actions/userActions';
 import LoadSpinner from '../tools/LoadSpinner';
 import styles from '../../styling/master.scss';
 
@@ -33,7 +33,7 @@ const activeClassName = 'team-preview-active';
 
 const Team = (props) => {
     const dispatch = useDispatch();
-    const { activeTeamId, showTeamSprites } = useSelector(state => state.user);
+    const { activeTeamId, activeSetId, setNest, showTeamSprites } = useSelector(state => state.user);
 
     const [spriteRow, setSpriteRow] = useState();
 
@@ -50,6 +50,17 @@ const Team = (props) => {
     const handleTeamClick = () => {
         if (props.team.team_id != activeTeamId) {
             dispatch(setActiveTeam(props.team.team_id));
+
+            var setMap = setNest.get(props.team.team_id) ?
+                setNest.get(props.team.team_id) : null
+            
+            if (setMap) {
+                var set = setMap.values().next().value;
+                if (set) {
+                    dispatch(setActiveSet(set.set_id));
+                }
+            }
+
         } else {
             dispatch(setActiveTeam(null))
         }

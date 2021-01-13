@@ -1,5 +1,8 @@
 /* this file spins up an Express application that makes handling requests easier for us */
 
+// configure .env file
+require('dotenv').config();
+
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
@@ -68,6 +71,7 @@ if (!isDev && cluster.isMaster) {
     const moveRoutes = require('./routes/move');
     const pokemonRoutes = require('./routes/pokemon');
     const itemRoutes = require('./routes/item');
+    const natureRoutes = require('./routes/nature');
     const userRoutes = require('./routes/user');
     const iconRoutes = require('./routes/icon');
     const authRoutes = require('./routes/auth');
@@ -78,6 +82,7 @@ if (!isDev && cluster.isMaster) {
     app.use('/api/move', moveRoutes);
     app.use('/api/pokemon', pokemonRoutes);
     app.use('/api/item', itemRoutes);
+    app.use('/api/nature', natureRoutes);
     app.use('/api/user', userRoutes);
     app.use('/api/icon', iconRoutes);
     app.use('/api/auth', authRoutes);

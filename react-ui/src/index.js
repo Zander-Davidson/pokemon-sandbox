@@ -4,6 +4,8 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/css/bootstrap.css'; // or include from a CDN
+import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
 import { store } from './redux/store';
 import { Provider } from 'react-redux';
 // import { persistor, store } from './redux/store';
