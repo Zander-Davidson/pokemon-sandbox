@@ -39,6 +39,10 @@ export default function Home() {
                             On your end, the <Link to='/pokedex'>{' '}Pokedex{' '}</Link> and <Link to='/movedex'>{' '}Movedex</Link>{' '} let you harness
                             the speed of Cypher queries using a familiar, filter-based search interface.
                         </p>
+                        <h4>Hosted by Digital Ocean</h4>
+                        <p>
+                            The Neo4j database and Node.js server are hosted on an Ubuntu Droplet on <a href="https://www.digitalocean.com/">Digital Ocean</a>.
+                        </p>
                         <p>
                             I am in no way affiliated with Nintendo, The Pokemon Company, Gamefreak, Creatures Inc., or any other
                             associates related to the Pokemon brand and games. Pokemon Sandbox is free to use and makes no money from advertising
