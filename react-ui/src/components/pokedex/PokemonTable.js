@@ -194,7 +194,7 @@ export default function PokemonTable(props) {
         <div className="table-card">
             {paginator}
             <div className="table-wrapper">
-                <StickyTable leftStickyColumnCount={0}>
+                <StickyTable leftStickyColumnCount={2}>
                     {header}
                     {pinnedRows}
                     <LoadSpinner isLoading={fetchingPokemon}>
